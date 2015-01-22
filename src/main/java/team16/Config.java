@@ -1,4 +1,4 @@
-package cs261;
+package team16;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -14,7 +14,7 @@ public class Config {
     Properties props = new Properties();
 
     public Config() throws IOException {
-        props.load(new FileReader("config"));
+        props.load(new FileReader(CONFIG_FILE));
     }
 
     public String getHostname() {
