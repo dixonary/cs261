@@ -11,23 +11,28 @@ public class Config {
 
     public static final String CONFIG_FILE = "config";
 
-    Properties props = new Properties();
+    private final String hostname;
+    private final int tradesPort;
+    private final int commsPort;
 
     public Config() throws IOException {
+        Properties props = new Properties();
         props.load(new FileReader(CONFIG_FILE));
+
+        hostname = props.getProperty("HOSTNAME");
+        tradesPort = Integer.parseInt(props.getProperty("TRADES_PORT"));
+        commsPort = Integer.parseInt(props.getProperty("COMMS_PORT"));
     }
 
     public String getHostname() {
-        return props.getProperty("HOSTNAME");
+        return hostname;
     }
 
     public int getTradesPort() {
-        return Integer.parseInt(props.getProperty("TRADES_PORT"));
+        return tradesPort;
     }
 
     public int getCommsPort() {
-        return Integer.parseInt(props.getProperty("COMMS_PORT"));
+        return commsPort;
     }
-
-
 }
