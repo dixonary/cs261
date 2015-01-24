@@ -1,4 +1,6 @@
-package team16;
+package team16.cs261.module;
+
+import team16.cs261.Config;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,14 +10,15 @@ import java.net.Socket;
 /**
  * Created by martin on 22/01/15.
  */
-public abstract class TcpListener implements Runnable {
+public abstract class ListenerModule extends Module {
 
     private final String host;
     private final int port;
 
     Socket socket;
 
-    public TcpListener(String host, int port) {
+    public ListenerModule(Config config, String name, String host, int port) {
+        super(config, name);
         this.host = host;
         this.port = port;
     }

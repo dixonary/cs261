@@ -1,4 +1,4 @@
-package team16;
+package team16.cs261;
 
 import java.io.FileReader;
 import java.io.IOException;
