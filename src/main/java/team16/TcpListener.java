@@ -39,5 +39,5 @@ public abstract class TcpListener implements Runnable {
 
     }
 
-    public abstract void onLine(String in);
+    public abstract void onLine(String in) throws IOException;
 }

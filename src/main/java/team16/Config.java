@@ -2,6 +2,7 @@ package team16;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Properties;
 
 /**
@@ -11,6 +12,8 @@ public class Config {
 
     public static final String CONFIG_FILE = "config";
 
+    private final String storagePath;
+
     private final String hostname;
     private final int tradesPort;
     private final int commsPort;
@@ -19,9 +22,15 @@ public class Config {
         Properties props = new Properties();
         props.load(new FileReader(CONFIG_FILE));
 
+        storagePath = props.getProperty("STORAGE_PATH");
+
         hostname = props.getProperty("HOSTNAME");
         tradesPort = Integer.parseInt(props.getProperty("TRADES_PORT"));
         commsPort = Integer.parseInt(props.getProperty("COMMS_PORT"));
+    }
+
+    public String getStoragePath() {
+        return storagePath;
     }
 
     public String getHostname() {
@@ -35,4 +44,6 @@ public class Config {
     public int getCommsPort() {
         return commsPort;
     }
+
+
 }
