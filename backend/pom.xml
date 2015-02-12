@@ -11,4 +11,10 @@
 
     <artifactId>cs261.backend</artifactId>
 
+    <build>
+        <plugins>
+
+        </plugins>
+    </build>
+
 </project>

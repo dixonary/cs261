@@ -30,6 +30,7 @@ public class Main {
     CommAnalyser commAnalyser;
 
     public Main() throws IOException {
+        System.out.println("Initializing...");
 
         try {
             config = new Config();
@@ -70,6 +71,7 @@ public class Main {
         commsIn = new TcpListener(config.getHostname(), config.getCommsPort()) {
             @Override
             public void onLine(String in) {
+
 
                 String es = in.split(",")[1];
                 String[] ers = in.split(",")[2].split(";");
