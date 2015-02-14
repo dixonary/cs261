@@ -75,10 +75,10 @@ public class TradeListener extends ListenerModule {
         symbolDao.insert(symbol);
         sectorDao.insert(sector);
 
-        traderDao.insertTraders(traderEnts);
+        traderDao.insert(traderEnts);
 
 
-        tradeDao.insertTrade(parsed);
+        tradeDao.insert(parsed);
 
 
     }

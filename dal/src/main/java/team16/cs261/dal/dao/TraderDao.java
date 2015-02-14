@@ -3,10 +3,12 @@ package team16.cs261.dal.dao;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.stereotype.Component;
+import team16.cs261.dal.entity.Comm;
 import team16.cs261.dal.entity.Trader;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,7 +16,7 @@ import java.util.List;
  */
 
 @Component
-public class TraderDao extends AbstractDao {
+public class TraderDao extends AbstractDao<Trader> {
 
 
     private static final String CREATE_TABLE = "CREATE TABLE Trader " +
@@ -37,30 +39,26 @@ public class TraderDao extends AbstractDao {
         //execute(CREATE_TABLE);
     }
 
-
-    public void insertTrader(Trader trader) {
+    @Override
+    public void insert(Trader trader) {
         jdbcTemplate.update(INSERT, trader.getEmail(), trader.getDomain());
     }
 
-    public void insertTraders(final List<Trader> ents) {
-        jdbcTemplate.batchUpdate(INSERT, new BatchPreparedStatementSetter() {
-            @Override
-            public void setValues(PreparedStatement ps, int i) throws SQLException {
-                Trader ent = ents.get(i);
-                ps.setString(1, ent.getEmail());
-                ps.setString(2, ent.getDomain());
-            }
+    @Override
+    public void insert(final Iterable<Trader> ents) {
 
-            @Override
-            public int getBatchSize() {
-                return ents.size();
-            }
-        });
+        List<Object[]> args = new ArrayList<>();
+        for (Trader ent : ents) {
+            args.add(new Object[]{ent.getEmail(), ent.getDomain()});
+        }
+
+        jdbcTemplate.batchUpdate(INSERT, args);
 
 
     }
 
-    public List<Trader> getTraders() {
+    @Override
+    public List<Trader> findAll() {
         List<Trader> results = jdbcTemplate.query(
                 SELECT, new Object[0],
                 new BeanPropertyRowMapper<>(Trader.class));

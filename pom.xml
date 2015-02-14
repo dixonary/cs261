@@ -14,7 +14,6 @@
         <module>dal</module>
     </modules>
 
-
     <properties>
         <org.springframework.version>4.1.4.RELEASE</org.springframework.version>
     </properties>
@@ -30,22 +29,6 @@
                     <target>1.7</target>
                 </configuration>
             </plugin>
-
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.5</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>team16.cs261.backend.Main</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-
         </plugins>
     </build>
-
 </project>

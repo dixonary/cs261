@@ -7,6 +7,7 @@ import team16.cs261.dal.entity.Comm;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,7 +15,7 @@ import java.util.List;
  */
 
 @Component
-public class CommDao extends AbstractDao {
+public class CommDao extends AbstractDao<Comm> {
 
     private static final String SELECT = "SELECT * FROM Comm";
 
@@ -24,17 +25,24 @@ public class CommDao extends AbstractDao {
     public CommDao() {
 
 
-
     }
 
-    public void insertComm(Comm ent) {
+    @Override
+    public void insert(Comm ent) {
         jdbcTemplate.update(INSERT, ent.getTimestamp(), ent.getSender(), ent.getRecipient());
     }
 
-    public void insertComms(final List<Comm> ents) {
+    @Override
+    public void insert(final Iterable<Comm> ents) {
 
+        List<Object[]> args = new ArrayList<>();
+        for (Comm ent : ents) {
+            args.add(new Object[]{ent.getTimestamp(), ent.getSender(), ent.getRecipient()});
+        }
 
-        jdbcTemplate.batchUpdate(INSERT, new BatchPreparedStatementSetter() {
+        jdbcTemplate.batchUpdate(INSERT, args);
+
+       /* jdbcTemplate.batchUpdate(INSERT, new BatchPreparedStatementSetter() {
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
                 Comm ent = ents.get(i);
@@ -47,17 +55,23 @@ public class CommDao extends AbstractDao {
             public int getBatchSize() {
                 return ents.size();
             }
-        });
+        });*/
 
 
     }
 
-    public List<Comm> getComms() {
+    @Override
+    public List<Comm> findAll() {
         List<Comm> results = jdbcTemplate.query(
                 SELECT, new Object[0],
                 new BeanPropertyRowMapper<>(Comm.class));
 
         return results;
+    }
+
+    @Override
+    public Comm findById(int id) {
+        return null;
     }
 
 }

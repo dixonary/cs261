@@ -68,9 +68,6 @@ public class Backend {
             m.log("Module thread started");
         }
 
-
-        List<Trader> traders = traderDao.getTraders();
-        System.out.println("TradeR: " + traders);
     }
 
     public void init2() throws IOException {

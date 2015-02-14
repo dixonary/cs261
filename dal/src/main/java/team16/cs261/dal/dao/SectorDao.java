@@ -8,7 +8,7 @@ import team16.cs261.dal.entity.Sector;
  */
 
 @Component
-public class SectorDao extends AbstractDao {
+public class SectorDao extends AbstractDao<Sector> {
 
     private static final String INSERT = "INSERT IGNORE INTO Sector (name) VALUES (?);";
 
@@ -16,6 +16,7 @@ public class SectorDao extends AbstractDao {
 
     }
 
+    @Override
     public void insert(Sector sector) {
         jdbcTemplate.update(INSERT, sector.getName());
     }

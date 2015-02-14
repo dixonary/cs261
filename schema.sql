@@ -88,6 +88,24 @@ CREATE TABLE CommLink (#COMMLINK TABLE#
   FOREIGN KEY (trader2) REFERENCES Trader (email)
 );
 
+
+
+
+DROP TABLE IF EXISTS Cluster CASCADE;
+CREATE TABLE Cluster (#CLUSTER TABLE#
+  clusterId INTEGER NOT NULL, #Links together a group of related clusters
+  PRIMARY KEY (clusterId)          #Each entity is unique for each clusterId
+);
+
+DROP TABLE IF EXISTS ClusterFactor CASCADE;
+CREATE TABLE ClusterFactor (#FACTORCLUSTER TABLE#
+  clusterId INTEGER NOT NULL, #Linking table to associate multiple factors with one cluster
+  factorId  INTEGER NOT NULL, #Entities are unique for each clusterId, factorId pair
+  PRIMARY KEY (clusterId, factorId),
+  FOREIGN KEY (clusterId) REFERENCES Cluster (clusterId),
+  FOREIGN KEY (factorId) REFERENCES Factor (factorId)
+);
+
 DROP TABLE IF EXISTS Factor CASCADE;
 CREATE TABLE Factor (#FACTOR TABLE#
   factorId INTEGER NOT NULL, #Exists to provide a unique value for each individual factor to refer to
@@ -197,20 +215,7 @@ CREATE TABLE PricesFactor (#PRICESFACTOR TABLE#
   FOREIGN KEY (factorId) REFERENCES Factor (factorId)
 );
 
-DROP TABLE IF EXISTS Cluster CASCADE;
-CREATE TABLE Cluster (#CLUSTER TABLE#
-  clusterId INTEGER NOT NULL, #Links together a group of related clusters
-  PRIMARY KEY (clusterId)          #Each entity is unique for each clusterId
-);
 
-DROP TABLE IF EXISTS FactorCluster CASCADE;
-CREATE TABLE FactorCluster (#FACTORCLUSTER TABLE#
-  clusterId INTEGER NOT NULL, #Linking table to associate multiple factors with one cluster
-  factorId  INTEGER NOT NULL, #Entities are unique for each clusterId, factorId pair
-  PRIMARY KEY (clusterId, factorId),
-  FOREIGN KEY (clusterId) REFERENCES Cluster (clusterId),
-  FOREIGN KEY (factorId) REFERENCES Factor (factorId)
-);
 
 DROP TABLE IF EXISTS StockOwnership CASCADE;
 CREATE TABLE StockOwnership (#STOCKOWNERSHIP TABLE#

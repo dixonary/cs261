@@ -11,11 +11,12 @@ import java.util.List;
  */
 
 @Component
-public class TradeDao extends AbstractDao {
+public class TradeDao extends AbstractDao<Trade> {
 
     private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS votes (pollId integer, voter string NOT NULL, answerIndex integer NOT NULL)";
 
     private static final String SELECT = "SELECT * FROM Trade";
+    private static final String SELECT_AND_LIMIT = "SELECT * FROM Trade LIMIT ?, ?";
 
     private static final String INSERT = "INSERT INTO Trade (time, buyer, seller, price, currency, size, symbol, sector, bid, ask) VALUES (?,?,?,?,?,?,?,?,?,?);";
 
@@ -25,7 +26,8 @@ public class TradeDao extends AbstractDao {
 
     }
 
-    public void insertTrade(Trade ent) {
+    @Override
+    public void insert(Trade ent) {
         jdbcTemplate.update(INSERT, ent.getTime(),
                 ent.getBuyer(),
                 ent.getSeller(),
@@ -38,9 +40,19 @@ public class TradeDao extends AbstractDao {
                 ent.getAsk());
     }
 
-    public List<Trade> getTrades() {
+    @Override
+    public List<Trade> findAll() {
         List<Trade> results = jdbcTemplate.query(
                 SELECT, new Object[0],
+                new BeanPropertyRowMapper<>(Trade.class));
+
+        return results;
+    }
+
+
+    public List<Trade> selectAndLimit(int offset, int length) {
+        List<Trade> results = jdbcTemplate.query(
+                SELECT_AND_LIMIT, new Object[]{offset, length},
                 new BeanPropertyRowMapper<>(Trade.class));
 
         return results;

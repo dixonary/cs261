@@ -63,14 +63,14 @@ public class CommListener extends ListenerModule {
             traderEnts.add(Trader.parseRaw(rec));
         }
 
-        traderDao.insertTraders(traderEnts);
+        traderDao.insert(traderEnts);
 
         List<Comm> commEnts = new ArrayList<>();
         for (String rec : recipients) {
             commEnts.add(new Comm(time, sender, rec));
         }
 
-        commDao.insertComms(commEnts);
+        commDao.insert(commEnts);
 
     }
 
