@@ -8,14 +8,11 @@
       http://www.springframework.org/schema/context
       http://www.springframework.org/schema/context/spring-context-3.2.xsd">
 
-    <context:property-placeholder location="classpath:*.properties" />
+    <context:property-placeholder location="classpath:config.properties" />
 
     <context:component-scan base-package="team16.cs261" />
 
-    <import resource="configuration.xml"/>
     <import resource="datasource.xml"/>
-
-
 
 
     <bean id="backend" class="team16.cs261.backend.Backend"

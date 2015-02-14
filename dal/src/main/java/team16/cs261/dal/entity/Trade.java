@@ -21,7 +21,7 @@ public class Trade {
     private float bid;
     private float ask;
 
-    protected Trade() {
+    public Trade() {
     }
 
     public Trade(long time, String buyer, String seller, float price, int size, String currency, String symbol, String sector, float bid, float ask) {
