@@ -3,27 +3,34 @@
 
 DROP TABLE IF EXISTS Trader CASCADE;
 CREATE TABLE Trader (						--TRADER TABLE--
-	email varchar(50) NOT NULL,				--Contains entities which represent individual Traders and moving averages for their use
+	email varchar(50) NOT NULL,				--Contains entities which represent individual Traders and averages for Trading volume and Profit
 	domain varchar(30) NOT NULL,			--There email addresses are unique and so are used as our primary key
-	avg1 integer NOT NULL,
-	avg2 integer NOT NULL,
-	avg3 integer NOT NULL,
+	Tavg1 integer NOT NULL,
+	Tavg2 integer NOT NULL,
+	Tavg3 integer NOT NULL,
+	Pavg1 integer NOT NULL,
+	Pavg2 integer NOT NULL,
+	Pavg3 integer NOT NULL,
 	PRIMARY KEY(email)
 );
 
 DROP TABLE IF EXISTS Symbol CASCADE;
 CREATE TABLE symbol (						--SYMBOL TABLE--
-	name varchar(10) NOT NULL,				--Contains entities which represent individual Stocks
-	totalTrades integer NOT NULL,			--Each Stock is unique on it's name/symbol
-	avg1 integer NOT NULL,
-	avg2 integer NOT NULL,
-	avg3 integer NOT NULL,
+	name varchar(10) NOT NULL,				--Contains entities which represent individual Stocks and averages for Trading volume and Profit
+	price float NOT NULL,					--Each Stock is unique on it's name/symbol
+	totalTrades integer NOT NULL,
+	Tavg1 integer NOT NULL,
+	Tavg2 integer NOT NULL,
+	Tavg3 integer NOT NULL,
+	Pavg1 integer NOT NULL,
+	Pavg2 integer NOT NULL,
+	Pavg3 integer NOT NULL,
 	PRIMARY KEY(name)
 );
 
 DROP TABLE IF EXISTS Sector CASCADE;
 CREATE TABLE sector (						--SECTOR TABLE--
-	name varchar(40) NOT NULL,				--Contains entities which represent individual sectors
+	name varchar(40) NOT NULL,				--Contains entities which represent individual sectors and averages for Trading volume
 	totalTrades integer NOT NULL,			--Each sector is unique on it's name
 	avg1 integer NOT NULL,
 	avg2 integer NOT NULL,
@@ -54,7 +61,7 @@ CREATE TABLE Trade (						--TRADE TABLE--
 DROP TABLE IF EXISTS CommLink CASCADE;
 CREATE TABLE CommLink (						--COMMLINK TABLE--
 	trader1 varchar(50) NOT NULL,			--Contains the link between individual Communications and individual Traders
-	trader2 varchar(50) NOT NULL,			--Tracks the history of communication between two traders in both directions
+	trader2 varchar(50) NOT NULL,			--Tracks the history of communication between two traders in both directions and averages
 	totalTrades integer NOT NULL,			--Each entity is unique for each Trader pair
 	avg1 integer NOT NULL,
 	avg2 integer NOT NULL,
@@ -99,8 +106,8 @@ CREATE TABLE CommFactor (					--COMMFACTOR TABLE--
 	FOREIGN KEY(factorId) REFERENCES Factor(factorId)
 );
 
-DROP TABLE IF EXISTS CommsFactor CASCADE;
-CREATE TABLE CommsFactor (					--COMMSFACTOR TABLE--
+DROP TABLE IF EXISTS EmailsFactor CASCADE;
+CREATE TABLE EmailsFactor (					--EMAILSFACTOR TABLE--
 	factorId integer NOT NULL,				--Represents the factor "Which traders are communicating with who"
 	email1 varchar(50) NOT NULL,			--Unique for each factorId
 	email2 varchar(50) NOT NULL,
@@ -132,8 +139,8 @@ CREATE TABLE StylesFactor (					--STYLESFACTOR TABLE--
 	FOREIGN KEY(factorId) REFERENCES Factor(factorId)
 );
 
-DROP TABLE IF EXISTS sectorsFactor CASCADE;
-CREATE TABLE sectorsFactor (				--SECTORSFACTOR TABLE--
+DROP TABLE IF EXISTS SectorsFactor CASCADE;
+CREATE TABLE SectorsFactor (				--SECTORSFACTOR TABLE--
 	factorId integer NOT NULL,				--Represents the factor "Active sectors"
 	sector varchar(40) NOT NULL,			--Unique for each factorId
 	timeFrom datetime NOT NULL,
@@ -142,8 +149,8 @@ CREATE TABLE sectorsFactor (				--SECTORSFACTOR TABLE--
 	FOREIGN KEY(factorId) REFERENCES Factor(factorId)
 );
 
-DROP TABLE IF EXISTS symbolsFactor CASCADE;
-CREATE TABLE symbolsFactor (				--SYMBOLSFACTOR TABLE--
+DROP TABLE IF EXISTS SymbolsFactor CASCADE;
+CREATE TABLE SymbolsFactor (				--SYMBOLSFACTOR TABLE--
 	factorId integer NOT NULL,				--Represents the factor "Active Stocks (symbol)"
 	symbol varchar(10) NOT NULL,			--Unique for each factorId
 	timeFrom datetime NOT NULL,
