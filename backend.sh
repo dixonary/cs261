@@ -1,2 +1,2 @@
-mvn exec:java -pl backend -Dexec.mainClass=team16.261.backend.Main
+mvn exec:java -pl backend -Dexec.mainClass=team16.cs261.backend.Main
 
