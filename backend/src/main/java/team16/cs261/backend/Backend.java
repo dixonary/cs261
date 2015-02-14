@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import team16.cs261.dal.dao.TraderDao;
 import team16.cs261.dal.entity.Trader;
-import team16.cs261.module.Module;
-import team16.cs261.module.ListenerModule;
+import team16.cs261.backend.module.Module;
+import team16.cs261.backend.module.ListenerModule;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
