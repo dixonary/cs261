@@ -1,8 +1,5 @@
 package menu;
 
-import play.api.mvc.Call;
-import play.twirl.api.Html;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,9 +30,5 @@ public class Menu extends Item {
             }
         }
         return false;
-    }
-
-    public Html toHtml() {
-        return new Html("mayo");
     }
 }

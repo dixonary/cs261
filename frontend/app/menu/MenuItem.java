@@ -1,7 +1,6 @@
 package menu;
 
 import play.api.mvc.Call;
-import play.twirl.api.Html;
 
 /**
  * Created by martin on 14/02/15.
@@ -21,11 +20,6 @@ public class MenuItem extends Item {
 
     @Override
     public boolean isActive(String uri) {
-        System.out.println("uri: " + uri + " call url: " + call.url());
         return uri.equals(call.url());
-    }
-
-    public Html toHtml() {
-        return new Html("mayo");
     }
 }
