@@ -71,8 +71,8 @@ CREATE TABLE CommLink (						#COMMLINK TABLE#
 	FOREIGN KEY(trader2) REFERENCES Trader(email)
 );
 	
-DROP TABLE IF EXISTS Communication CASCADE;
-CREATE TABLE Communication (				#COMMUNICATION TABLE#
+DROP TABLE IF EXISTS Comm CASCADE;
+CREATE TABLE Comm (				#COMM TABLE#
 	id integer NOT NULL,					#Contains individual Communcations between Traders
 	time datetime NOT NULL,					#Has an id field as the timestamp cannot be guaranteed to be unique
 	sender varchar(50) NOT NULL,
