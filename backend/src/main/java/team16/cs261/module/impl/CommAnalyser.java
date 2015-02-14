@@ -1,5 +1,7 @@
 package team16.cs261.module.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import team16.cs261.Config;
 import team16.cs261.module.Module;
 
@@ -13,17 +15,15 @@ import java.nio.file.Paths;
 /**
  * Created by martin on 22/01/15.
  */
+
+@Component
 public class CommAnalyser extends Module {
 
-    BufferedReader reader;
-
+    @Autowired
     public CommAnalyser(Config config) throws IOException {
         super(config, "COMM-ANALYSER");
 
-        Path path = Paths.get(config.getStoragePath(), "comms");
-        Path dayPath = path.resolve("2015-01-22.csv");
 
-        reader = Files.newBufferedReader(dayPath, Charset.defaultCharset());
     }
 
     @Override

@@ -10,14 +10,25 @@
 
     <context:property-placeholder location="classpath:*.properties" />
 
+    <context:component-scan base-package="team16.cs261" />
+
     <import resource="configuration.xml"/>
     <import resource="datasource.xml"/>
+
+
 
 
     <bean id="application" class="team16.cs261.Application"
           init-method="init">
 
-        <property name="traderDao" ref="traderDao"/>
-        <!--<property name="tradeDao" ref="tradeDao"/>-->
+        <property name="modules">
+            <list>
+                <ref bean="tradeListener" />
+                <ref bean="commListener" />
+                <ref bean="tradeAnalyser" />
+                <ref bean="commAnalyser" />
+            </list>
+        </property>
+
     </bean>
 </beans>

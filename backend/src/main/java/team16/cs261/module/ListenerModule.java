@@ -17,6 +17,9 @@ public abstract class ListenerModule extends Module {
 
     Socket socket;
 
+    boolean seenHeaders = false;
+
+
     public ListenerModule(Config config, String name, String host, int port) {
         super(config, name);
         this.host = host;
@@ -33,6 +36,12 @@ public abstract class ListenerModule extends Module {
 
             String in;
             while ((in = reader.readLine()) != null) {
+
+                if (!seenHeaders) {
+                    seenHeaders = true;
+                    continue;
+                }
+
                 onLine(in);
             }
 

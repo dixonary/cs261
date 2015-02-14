@@ -1,5 +1,8 @@
 package team16.cs261;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -8,42 +11,42 @@ import java.util.Properties;
 /**
  * Created by martin on 22/01/15.
  */
+
+@Component
 public class Config {
 
-    public static final String CONFIG_FILE = "config";
+    @Value("${stream.hostname}")
+    private String hostname;
+    @Value("${stream.trade.port}")
+    private int tradesPort;
+    @Value("${stream.comm.port}")
+    private int commsPort;
 
-    private final String storagePath;
+    public Config() {
 
-    private final String hostname;
-    private final int tradesPort;
-    private final int commsPort;
-
-    public Config() throws IOException {
-        Properties props = new Properties();
-        props.load(new FileReader(CONFIG_FILE));
-
-        storagePath = props.getProperty("STORAGE_PATH");
-
-        hostname = props.getProperty("HOSTNAME");
-        tradesPort = Integer.parseInt(props.getProperty("TRADES_PORT"));
-        commsPort = Integer.parseInt(props.getProperty("COMMS_PORT"));
-    }
-
-    public String getStoragePath() {
-        return storagePath;
     }
 
     public String getHostname() {
         return hostname;
     }
 
+    public void setHostname(String hostname) {
+        this.hostname = hostname;
+    }
+
     public int getTradesPort() {
         return tradesPort;
+    }
+
+    public void setTradesPort(int tradesPort) {
+        this.tradesPort = tradesPort;
     }
 
     public int getCommsPort() {
         return commsPort;
     }
 
-
+    public void setCommsPort(int commsPort) {
+        this.commsPort = commsPort;
+    }
 }

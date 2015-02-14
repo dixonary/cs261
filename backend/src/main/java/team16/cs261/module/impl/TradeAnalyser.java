@@ -1,5 +1,7 @@
 package team16.cs261.module.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import team16.cs261.Config;
 import team16.cs261.module.Module;
 
@@ -13,18 +15,14 @@ import java.nio.file.Paths;
 /**
  * Created by martin on 22/01/15.
  */
+
+@Component
 public class TradeAnalyser extends Module {
 
-    BufferedReader reader;
-
+    @Autowired
     public TradeAnalyser(Config config) throws IOException {
         super(config, "TRADE-ANALYSER");
 
-        Path path = Paths.get(config.getStoragePath(), "trades");
-        Path dayPath = path.resolve("2015-01-22.csv");
-        //Path dayPath = path;
-
-        reader = Files.newBufferedReader(dayPath, Charset.defaultCharset());
 
     }
 

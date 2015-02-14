@@ -1,4 +1,4 @@
-package team16.cs261.model;
+package team16.cs261.entity;
 
 /**
  * Created by martin on 24/01/15.
@@ -6,13 +6,15 @@ package team16.cs261.model;
 public class Trade {
 
     private int id;
-    private long datetime;
+
+    private long time;
     private String buyer;
     private String seller;
 
     private float price;
-    private String currency;
     private int size;
+
+    private String currency;
     private String symbol;
     private String sector;
 
@@ -20,6 +22,19 @@ public class Trade {
     private float ask;
 
     protected Trade() {
+    }
+
+    public Trade(long time, String buyer, String seller, float price, int size, String currency, String symbol, String sector, float bid, float ask) {
+        this.time = time;
+        this.buyer = buyer;
+        this.seller = seller;
+        this.price = price;
+        this.size = size;
+        this.currency = currency;
+        this.symbol = symbol;
+        this.sector = sector;
+        this.bid = bid;
+        this.ask = ask;
     }
 
     public int getId() {
@@ -30,12 +45,12 @@ public class Trade {
         this.id = id;
     }
 
-    public long getDatetime() {
-        return datetime;
+    public long getTime() {
+        return time;
     }
 
-    public void setDatetime(long datetime) {
-        this.datetime = datetime;
+    public void setTime(long time) {
+        this.time = time;
     }
 
     public String getBuyer() {
@@ -62,20 +77,20 @@ public class Trade {
         this.price = price;
     }
 
-    public String getCurrency() {
-        return currency;
-    }
-
-    public void setCurrency(String currency) {
-        this.currency = currency;
-    }
-
     public int getSize() {
         return size;
     }
 
     public void setSize(int size) {
         this.size = size;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
     }
 
     public String getSymbol() {
@@ -109,9 +124,4 @@ public class Trade {
     public void setAsk(float ask) {
         this.ask = ask;
     }
-
-    public static Trade parseRaw(String raw) {
-        return new Trade();
-    }
-
 }
