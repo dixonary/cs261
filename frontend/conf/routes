@@ -5,8 +5,6 @@
 # Home page
 GET        /        @controllers.Application.index()
 
-GET         /socket         @controllers.Application.socket()
-
 GET        /clusters        @controllers.Clusters.collection()
 GET        /clusters/query        @controllers.Clusters.query()
 GET        /clusters/:id        @controllers.Clusters.element(id: Integer)

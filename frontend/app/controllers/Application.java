@@ -26,13 +26,7 @@ public class Application {
     }
 
 
-    public WebSocket<String> socket() {
-        return WebSocket.withActor(new Function<ActorRef, Props>() {
-            public Props apply(ActorRef out) throws Throwable {
-                return MyWebSocketActor.props(out);
-            }
-        });
-    }
+
 
 
     public static Map<Call, String> getNavigation() {
