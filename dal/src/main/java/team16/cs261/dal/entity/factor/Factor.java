@@ -7,9 +7,15 @@ public class Factor {
 
     private int factorId;
 
-    protected Factor() {
+    public Factor() {
 
     }
 
+    public int getFactorId() {
+        return factorId;
+    }
 
+    public void setFactorId(int factorId) {
+        this.factorId = factorId;
+    }
 }

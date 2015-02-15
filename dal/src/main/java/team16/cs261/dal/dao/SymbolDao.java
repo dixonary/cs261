@@ -8,9 +8,13 @@ import team16.cs261.dal.entity.Symbol;
  */
 
 @Component
-public class SymbolDao extends AbstractDao {
+public class SymbolDao extends AbstractDao<Integer, Symbol> {
 
     private static final String INSERT = "INSERT IGNORE INTO Symbol (name) VALUES (?);";
+
+    public SymbolDao() {
+        super(Symbol.class);
+    }
 
     public void insert(Symbol symbol) {
         jdbcTemplate.update(INSERT, symbol.getName());

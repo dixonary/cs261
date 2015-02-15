@@ -12,12 +12,16 @@ import java.util.List;
  */
 
 @Component
-public class FactorDao extends AbstractDao {
+public class FactorDao extends AbstractDao<Integer, Factor> {
 
     private static final String SELECT = "SELECT * FROM Factor";
 
+    public FactorDao() {
+        super(Factor.class);
+    }
+
     @Override
-    public List<Factor> findAll() {
+    public List<Factor> selectAll() {
         return jdbcTemplate.query(
                 SELECT, new Object[0],
                 new BeanPropertyRowMapper<>(Factor.class));
@@ -26,13 +30,13 @@ public class FactorDao extends AbstractDao {
     private static final String SELECT_BY_ID = "SELECT * FROM Factor WHERE factorId = ?";
 
     @Override
-    public Factor findById(int id) {
+    public Factor selectWhereId(Integer id) {
         return jdbcTemplate.queryForObject(
                 SELECT_BY_ID, new Object[]{id},
                 new BeanPropertyRowMapper<>(Factor.class));
     }
 
-    private static final String SELECT_BY_CLUSTER_ID = "SELECT * FROM Factor WHERE clusterId = ?";
+    private static final String SELECT_BY_CLUSTER_ID = "SELECT * FROM Factor WHERE factorId IN (SELECT factorId FROM ClusterFactor WHERE clusterId = ?)";
 
     public List<Factor> findByClusterId(int clusterId) {
         return jdbcTemplate.query(

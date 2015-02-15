@@ -17,9 +17,8 @@ public class Trades {
     @Autowired
     TradeDao trades;
 
-    public Result index() {
-        return play.mvc.Controller.ok(views.html.trades.render());
-        //return play.mvc.Controller.ok(Json.toJson(trades.getTrades()));
+    public Result collection() {
+        return play.mvc.Controller.ok(views.html.trades.collection.render());
     }
 
     private static final String SELECT_COUNT = "SELECT COUNT(*) FROM Trade";
@@ -33,9 +32,8 @@ public class Trades {
         int length = Integer.parseInt(request().getQueryString("length"));
 
 
-        int recordsTotal = trades.jdbcTemplate.queryForObject(SELECT_COUNT, Integer.class);
-
-        List<Trade> data = trades.selectAndLimit(start, length);
+        int recordsTotal = trades.selectCountAll();
+        List<Trade> data = trades.selectAllLimit(start, length);
 
 
         ObjectNode response = Json.newObject();
@@ -46,7 +44,19 @@ public class Trades {
         return play.mvc.Controller.ok(response);
     }
 
-    public Result get(int clusterId) {
-        return play.mvc.Controller.ok("sup");
+    public Result queryByTraderId(String email) {
+        int draw = Integer.parseInt(request().getQueryString("draw"));
+        int start = Integer.parseInt(request().getQueryString("start"));
+        int length = Integer.parseInt(request().getQueryString("length"));
+
+        int recordsTotal = trades.countByTraderIdAndLimit(email, start, length);
+        List<Trade> data = trades.findByTraderIdAndLimit(email, start, length);
+
+        ObjectNode response = Json.newObject();
+        response.put("draw", draw);
+        response.put("recordsTotal", recordsTotal);
+        response.put("recordsFiltered", recordsTotal);
+        response.put("data", Json.toJson(data));
+        return play.mvc.Controller.ok(response);
     }
 }

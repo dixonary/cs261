@@ -1,14 +1,17 @@
 #Suspicious Activity Detection Tool#
 #Schema#
 
-
-
-
 DROP TABLE IF EXISTS Trade CASCADE;
 DROP TABLE IF EXISTS Comm CASCADE;
 DROP TABLE IF EXISTS Trader CASCADE;
 DROP TABLE IF EXISTS Symbol CASCADE;
 DROP TABLE IF EXISTS Sector CASCADE;
+
+DROP TABLE IF EXISTS ClusterFactor CASCADE;
+DROP TABLE IF EXISTS Cluster CASCADE;
+DROP TABLE IF EXISTS Factor CASCADE;
+
+# raw data tables
 
 CREATE TABLE Trader (#TRADER TABLE#
   email  VARCHAR(50) NOT NULL, #Contains entities which represent individual Traders and averages for Trading volume and Profit
@@ -24,7 +27,7 @@ CREATE TABLE Trader (#TRADER TABLE#
 
 
 CREATE TABLE Symbol (#SYMBOL TABLE#
-  name      VARCHAR(10) NOT NULL, #Contains entities which represent individual Stocks and averages for Trading volume and Profit
+  name        VARCHAR(10) NOT NULL, #Contains entities which represent individual Stocks and averages for Trading volume and Profit
   price       FLOAT       NOT NULL DEFAULT 0, #Each Stock is unique on it's name/symbol
   totalTrades INTEGER     NOT NULL DEFAULT 0,
   Tavg1       INTEGER     NOT NULL DEFAULT 0,
@@ -74,6 +77,35 @@ CREATE TABLE Comm (#COMM TABLE#
   FOREIGN KEY (recipient) REFERENCES Trader (email)
 );
 
+# analysis results
+
+CREATE TABLE Cluster (#CLUSTER TABLE#
+  clusterId INTEGER NOT NULL AUTO_INCREMENT , #Links together a group of related factors
+  time LONG NOT NULL,
+  day LONG NOT NULL,
+  PRIMARY KEY (clusterId)          #Each entity is unique for each clusterId
+);
+
+
+CREATE TABLE Factor (#FACTOR TABLE#
+  factorId INTEGER NOT NULL AUTO_INCREMENT , #Exists to provide a unique value for each individual factor to refer to
+  time LONG NOT NULL,
+  PRIMARY KEY (factorId)          #Each factorId is unique
+);
+
+
+CREATE TABLE ClusterFactor (#FACTORCLUSTER TABLE#
+  clusterId INTEGER NOT NULL, #Linking table to associate multiple factors with one cluster
+  factorId  INTEGER NOT NULL, #Entities are unique for each clusterId, factorId pair
+  PRIMARY KEY (clusterId, factorId),
+  FOREIGN KEY (clusterId) REFERENCES Cluster (clusterId),
+  FOREIGN KEY (factorId) REFERENCES Factor (factorId)
+);
+
+
+
+
+
 /*
 DROP TABLE IF EXISTS CommLink CASCADE;
 CREATE TABLE CommLink (#COMMLINK TABLE#
@@ -91,26 +123,9 @@ CREATE TABLE CommLink (#COMMLINK TABLE#
 
 
 
-DROP TABLE IF EXISTS Cluster CASCADE;
-CREATE TABLE Cluster (#CLUSTER TABLE#
-  clusterId INTEGER NOT NULL, #Links together a group of related clusters
-  PRIMARY KEY (clusterId)          #Each entity is unique for each clusterId
-);
 
-DROP TABLE IF EXISTS ClusterFactor CASCADE;
-CREATE TABLE ClusterFactor (#FACTORCLUSTER TABLE#
-  clusterId INTEGER NOT NULL, #Linking table to associate multiple factors with one cluster
-  factorId  INTEGER NOT NULL, #Entities are unique for each clusterId, factorId pair
-  PRIMARY KEY (clusterId, factorId),
-  FOREIGN KEY (clusterId) REFERENCES Cluster (clusterId),
-  FOREIGN KEY (factorId) REFERENCES Factor (factorId)
-);
 
-DROP TABLE IF EXISTS Factor CASCADE;
-CREATE TABLE Factor (#FACTOR TABLE#
-  factorId INTEGER NOT NULL, #Exists to provide a unique value for each individual factor to refer to
-  PRIMARY KEY (factorId)          #Each factorId is unique
-);
+
 
 DROP TABLE IF EXISTS TradeFactor CASCADE;
 CREATE TABLE TradeFactor (#TRADEFACTOR TABLE#

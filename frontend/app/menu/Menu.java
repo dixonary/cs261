@@ -10,8 +10,8 @@ public class Menu extends Item {
 
     private final List<MenuItem> items = new ArrayList<>();
 
-    public Menu(String label) {
-        super(label);
+    public Menu(String icon, String label) {
+        super(icon, label);
     }
 
     public void addItem(MenuItem item) {

@@ -1,12 +1,9 @@
 package team16.cs261.dal.dao;
 
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.stereotype.Component;
-import team16.cs261.dal.entity.Comm;
 import team16.cs261.dal.entity.Trader;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +13,7 @@ import java.util.List;
  */
 
 @Component
-public class TraderDao extends AbstractDao<Trader> {
+public class TraderDao extends AbstractDao<String, Trader> {
 
 
     private static final String CREATE_TABLE = "CREATE TABLE Trader " +
@@ -26,12 +23,16 @@ public class TraderDao extends AbstractDao<Trader> {
     private static final String INSERT = "INSERT IGNORE INTO Trader (email, domain)  VALUES (?, ?)";
 
     private static final String SELECT = "SELECT * FROM Trader";
+    private static final String SELECT_BY_ID = "SELECT * FROM Trader WHERE email = ?";
+
+    private static final String SELECT_AND_LIMIT = "SELECT * FROM Trader LIMIT ?, ?";
+
 
     //private static final String
 
 
     public TraderDao() {
-
+        super(Trader.class);
 
     }
 
@@ -57,12 +58,24 @@ public class TraderDao extends AbstractDao<Trader> {
 
     }
 
-    @Override
-    public List<Trader> findAll() {
-        List<Trader> results = jdbcTemplate.query(
+/*    @Override
+    public List<Trader> selectAll() {
+        return jdbcTemplate.query(
                 SELECT, new Object[0],
                 new BeanPropertyRowMapper<>(Trader.class));
+    }*/
 
-        return results;
+/*    @Override
+    public Trader selectWhereId(String id) {
+        return jdbcTemplate.queryForObject(
+                SELECT_BY_ID, new Object[]{id},
+                new BeanPropertyRowMapper<>(Trader.class));
+    }*/
+
+
+    public List<Trader> selectAndLimit(int offset, int length) {
+        return jdbcTemplate.query(
+                SELECT_AND_LIMIT, new Object[]{offset, length},
+                new BeanPropertyRowMapper<>(Trader.class));
     }
 }

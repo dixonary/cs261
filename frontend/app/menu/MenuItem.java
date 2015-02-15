@@ -7,11 +7,17 @@ import play.api.mvc.Call;
  */
 public class MenuItem extends Item {
 
-    Call call;
+    final Call call;
+    final Call[] children;
 
-    public MenuItem(String label, Call call) {
-        super(label);
+    public MenuItem(String icon, String label, Call call) {
+        this(icon, label, call, new Call[0]);
+    }
+
+    public MenuItem(String icon, String label, Call call, Call[] children) {
+        super(icon, label);
         this.call = call;
+        this.children = children;
     }
 
     public Call getCall() {

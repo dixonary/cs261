@@ -8,12 +8,12 @@ import team16.cs261.dal.entity.Sector;
  */
 
 @Component
-public class SectorDao extends AbstractDao<Sector> {
+public class SectorDao extends AbstractDao<Integer, Sector> {
 
     private static final String INSERT = "INSERT IGNORE INTO Sector (name) VALUES (?);";
 
     public SectorDao() {
-
+        super(Sector.class);
     }
 
     @Override

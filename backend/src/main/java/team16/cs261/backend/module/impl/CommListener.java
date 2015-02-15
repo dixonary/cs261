@@ -78,7 +78,7 @@ public class CommListener extends ListenerModule {
 
 
     /**
-     * For the moment it strips precision down to milliseconds because:
+     * Strips precision down to milliseconds because:
      * - it's what SDF supports
      * - the extra digits of precision play no role in our system
      *

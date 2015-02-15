@@ -3,15 +3,18 @@ package team16.cs261.dal.dao;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.stereotype.Component;
 import team16.cs261.dal.entity.Trade;
+import team16.cs261.dal.entity.Trader;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by martin on 13/02/15.
  */
 
 @Component
-public class TradeDao extends AbstractDao<Trade> {
+public class TradeDao extends AbstractDao<Integer, Trade> {
 
     private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS votes (pollId integer, voter string NOT NULL, answerIndex integer NOT NULL)";
 
@@ -22,8 +25,7 @@ public class TradeDao extends AbstractDao<Trade> {
 
 
     public TradeDao() {
-
-
+        super(Trade.class);
     }
 
     @Override
@@ -40,22 +42,50 @@ public class TradeDao extends AbstractDao<Trade> {
                 ent.getAsk());
     }
 
-    @Override
-    public List<Trade> findAll() {
-        List<Trade> results = jdbcTemplate.query(
+    /*@Override
+    public List<Trade> selectAll() {
+        return jdbcTemplate.query(
                 SELECT, new Object[0],
                 new BeanPropertyRowMapper<>(Trade.class));
+    }*/
 
-        return results;
+    private static final String SELECT_BY_TRADER_ID = "SELECT * FROM Trade WHERE buyer = ? OR seller = ?";
+
+    public List<Trade> findByTraderId(String id) {
+        /*Map<String, Object> conds = new HashMap<>();
+
+        conds.put("buyer", id);
+        conds.put("seller", id);
+
+        return selectWhere(conds);*/
+
+        return jdbcTemplate.query(
+                SELECT_BY_TRADER_ID,
+                new Object[]{id, id},
+                new BeanPropertyRowMapper<>(Trade.class)
+        );
+    }
+
+    private static final String SELECT_BY_TRADER_ID_AND_LIMIT = "SELECT * FROM Trade WHERE buyer = ? OR seller = ? LIMIT ?, ?";
+
+    public List<Trade> findByTraderIdAndLimit(String id, int start, int length) {
+        return jdbcTemplate.query(
+                SELECT_BY_TRADER_ID_AND_LIMIT,
+                new Object[]{id, id, start, length},
+                new BeanPropertyRowMapper<>(Trade.class)
+        );
     }
 
 
-    public List<Trade> selectAndLimit(int offset, int length) {
-        List<Trade> results = jdbcTemplate.query(
-                SELECT_AND_LIMIT, new Object[]{offset, length},
-                new BeanPropertyRowMapper<>(Trade.class));
 
-        return results;
+    private static final String SELECT_COUNT_BY_TRADER_ID_AND_LIMIT = "SELECT COUNT(*) FROM Trade WHERE buyer = ? OR seller = ? LIMIT ?, ?";
+
+    public Integer countByTraderIdAndLimit(String id, int start, int length) {
+        return jdbcTemplate.queryForObject(
+                SELECT_COUNT_BY_TRADER_ID_AND_LIMIT,
+                new Object[]{id, id, start, length},
+                Integer.class
+        );
     }
 
 

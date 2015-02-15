@@ -7,9 +7,25 @@ public class Cluster {
 
     private int clusterId;
 
-    protected Cluster() {
+    private long time;
+
+    public Cluster() {
 
     }
 
+    public int getClusterId() {
+        return clusterId;
+    }
 
+    public void setClusterId(int clusterId) {
+        this.clusterId = clusterId;
+    }
+
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
+    }
 }

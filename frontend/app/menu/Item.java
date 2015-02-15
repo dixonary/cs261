@@ -5,10 +5,16 @@ package menu;
  */
 public abstract class Item {
 
+    private final String icon;
     private final String label;
 
-    public Item(String label) {
+    public Item(String icon, String label) {
+        this.icon = icon;
         this.label = label;
+    }
+
+    public String getIcon() {
+        return icon;
     }
 
     public String getLabel() {

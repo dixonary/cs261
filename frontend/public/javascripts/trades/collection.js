@@ -16,7 +16,7 @@ $(function () {
         //"autoWidth": false,
         //"bPaginate": true,
         //"bProcessing": true,
-        "lengthMenu": [ 10,  25, 50, 100 ],
+        "lengthMenu": [ 10, 25, 50, 100 ],
         serverSide: true,
         ajax: '/trades/query',
         "columns": [
@@ -61,7 +61,7 @@ $(function () {
         //"bAutoWidth" : false
     });
 
-    $( "#trades-table_length").find("> label > select" ).removeClass( "input-sm" )
+    $("#trades-table_length").find("> label > select").removeClass("input-sm")
 
 });
 

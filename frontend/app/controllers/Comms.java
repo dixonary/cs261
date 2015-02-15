@@ -11,8 +11,8 @@ public class Comms {
     @Autowired
     TraderDao traders;
 
-    public Result index() {
-        return play.mvc.Controller.ok(views.html.trades.render());
+    public Result collection() {
+        return play.mvc.Controller.ok(views.html.trades.collection.render());
     }
 
     public Result get(int clusterId) {

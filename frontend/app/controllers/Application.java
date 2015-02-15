@@ -1,5 +1,6 @@
 package controllers;
 
+import actor.MyWebSocketActor;
 import menu.Menu;
 import menu.MenuItem;
 import menu.Navigation;
@@ -11,6 +12,10 @@ import views.html.index;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import akka.actor.*;
+import play.libs.F.*;
+import play.mvc.WebSocket;
+
 import static play.mvc.Results.ok;
 
 @Controller
@@ -21,30 +26,46 @@ public class Application {
     }
 
 
+    public WebSocket<String> socket() {
+        return WebSocket.withActor(new Function<ActorRef, Props>() {
+            public Props apply(ActorRef out) throws Throwable {
+                return MyWebSocketActor.props(out);
+            }
+        });
+    }
+
+
     public static Map<Call, String> getNavigation() {
         Map<Call, String> map = new LinkedHashMap<>();
 
         map.put(controllers.routes.Application.index(), "Dashboard");
-        map.put(controllers.routes.Clusters.index(), "Clusters");
-        map.put(controllers.routes.Trades.index(), "Trades");
+        map.put(controllers.routes.Clusters.collection(), "Clusters");
+        map.put(controllers.routes.Trades.collection(), "Trades");
 
         return map;
     }
 
     public static Navigation getMenu() {
-        MenuItem dashboard = new MenuItem("Dashboard", controllers.routes.Application.index());
+        MenuItem dashboard = new MenuItem("fa-dashboard", "Dashboard", controllers.routes.Application.index());
 
-        MenuItem clusters = new MenuItem("Clusters", controllers.routes.Clusters.index());
+        MenuItem clusters = new MenuItem("fa-cubes", "Clusters", controllers.routes.Clusters.collection());
+        MenuItem factors = new MenuItem("fa-cube", "Factors", controllers.routes.Clusters.collection());
 
-        Menu rawData = new Menu("Raw Data");
-        rawData.addItem(new MenuItem("Traders", controllers.routes.Traders.index()));
-        rawData.addItem(new MenuItem("Communications", controllers.routes.Comms.index()));
-        rawData.addItem(new MenuItem("Trades", controllers.routes.Trades.index()));
+        Menu rawData = new Menu("fa-database", "Raw Data");
+        rawData.addItem(new MenuItem("fa-exchange", "Trades", controllers.routes.Trades.collection()));
+        rawData.addItem(new MenuItem("fa-envelope", "Communications", controllers.routes.Comms.collection()));
+        rawData.addItem(new MenuItem("fa-user", "Traders",
+                controllers.routes.Traders.collection(),
+                new Call[]{
+                        controllers.routes.Traders.element("test")
+                }
+        ));
 
 
         Navigation navigation = new Navigation("Navigation");
         navigation.addItem(dashboard);
         navigation.addItem(clusters);
+        navigation.addItem(factors);
         navigation.addItem(rawData);
 
         return navigation;

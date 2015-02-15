@@ -3,17 +3,23 @@
 # ~~~~
 
 # Home page
-GET        /                     @controllers.Application.index()
+GET        /        @controllers.Application.index()
 
-GET        /clusters        @controllers.Clusters.index()
-GET        /clusters/:id        @controllers.Clusters.get(id: Integer)
+GET         /socket         @controllers.Application.socket()
 
-GET        /trades        @controllers.Trades.index()
+GET        /clusters        @controllers.Clusters.collection()
+GET        /clusters/query        @controllers.Clusters.query()
+GET        /clusters/:id        @controllers.Clusters.element(id: Integer)
+
+GET        /trades        @controllers.Trades.collection()
 GET        /trades/query        @controllers.Trades.query()
+GET        /trades/query/:email        @controllers.Trades.queryByTraderId(email: String)
 
-GET        /comms @controllers.Comms.index()
+GET        /comms        @controllers.Comms.collection()
 
-GET        /traders        @controllers.Traders.index()
+GET        /traders        @controllers.Traders.collection()
+GET        /traders/query        @controllers.Traders.query()
+GET        /traders/:email        @controllers.Traders.element(email: String)
 
 # Map static resources from the /public folder to the /assets URL path
-GET        /assets/*file         controllers.Assets.at(path="/public", file)
+GET        /assets/*file        controllers.Assets.at(path="/public", file)
