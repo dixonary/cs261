@@ -38,7 +38,7 @@ public class Application {
         MenuItem dashboard = new MenuItem("fa-dashboard", "Dashboard", controllers.routes.Application.index());
 
         MenuItem clusters = new MenuItem("fa-cubes", "Clusters", controllers.routes.Clusters.collection());
-        MenuItem factors = new MenuItem("fa-cube", "Factors", controllers.routes.Clusters.collection());
+        MenuItem factors = new MenuItem("fa-cube", "Factors", controllers.routes.Factors.collection());
 
         Menu rawData = new Menu("fa-database", "Raw Data");
         rawData.addItem(new MenuItem("fa-exchange", "Trades", controllers.routes.Trades.collection()));
