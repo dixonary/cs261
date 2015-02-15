@@ -1,6 +1,5 @@
 package controllers;
 
-import actor.MyWebSocketActor;
 import menu.Menu;
 import menu.MenuItem;
 import menu.Navigation;
@@ -11,10 +10,6 @@ import views.html.index;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import akka.actor.*;
-import play.libs.F.*;
-import play.mvc.WebSocket;
 
 import static play.mvc.Results.ok;
 
