@@ -23,9 +23,9 @@ $(function () {
             { "data": "id" },
             { "data": "time",
                 "render": function (data) {
-                    var d = new Date(data)
-                    return d.toLocaleString()
-                }},
+                    return moment(data).format(timeFormat)
+                }
+            },
             {
                 "data": "buyer",
                 "render": function (data) {

@@ -92,7 +92,6 @@ $(document).ready(function() {
 
 
 
-
 var viewModel;
 
 function ViewModel() {
@@ -177,7 +176,7 @@ function ViewModel() {
                 'This Month': [moment().startOf('month'), moment().endOf('month')],
             },
 
-            format: 'MM/DD/YYYY HH:mm',
+            format: timeFormat,
             locale: 'en'
         },
         function(start, end, label) {
@@ -225,8 +224,7 @@ function ViewModel() {
                 {
                     "data": "cluster.time",
                     "render": function (data) {
-                        var d = new Date(data)
-                        return d.toLocaleString()
+                        return moment(data).format(timeFormat)
                     }
                 }
             ]
