@@ -53,11 +53,31 @@ public class Clusters {
         int length = Integer.parseInt(request().getQueryString("length"));
 
 
+        String daterange = request().getQueryString("columns[0][search][value]");
+        System.out.println("Daterange: " + daterange);
+
         int recordsTotal = clusterDao.selectCountAll();
-        List<Cluster> data = clusterDao.selectAllLimit(start, length);
+        int recordsFiltered = recordsTotal;
+
+        List<Cluster> data;
+        try {
+            long dateFrom = Long.parseLong(daterange.split(",")[0]);
+            long dateTo = Long.parseLong(daterange.split(",")[1]);
+
+             recordsFiltered = clusterDao.selectCountWhereDaterange(dateFrom, dateTo);
+
+            data = clusterDao.selectWhereDaterange(dateFrom, dateTo, start, length);
+        } catch (Exception e) {
+
+            data = clusterDao.selectAllLimit(start, length);
+        }
+
+
+
+
 
         List<ClusterDto> dtos = new ArrayList<>();
-        for(Cluster clu : data) {
+        for (Cluster clu : data) {
             List<Factor> factorList = factorDao.findByClusterId(clu.getClusterId());
             dtos.add(new ClusterDto(clu, factorList));
         }
@@ -65,7 +85,7 @@ public class Clusters {
         ObjectNode response = Json.newObject();
         response.put("draw", draw);
         response.put("recordsTotal", recordsTotal);
-        response.put("recordsFiltered", recordsTotal);
+        response.put("recordsFiltered", recordsFiltered);
         response.put("data", Json.toJson(dtos));
         return play.mvc.Controller.ok(response);
     }

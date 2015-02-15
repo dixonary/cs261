@@ -78,12 +78,12 @@ public class TradeDao extends AbstractDao<Integer, Trade> {
 
 
 
-    private static final String SELECT_COUNT_BY_TRADER_ID_AND_LIMIT = "SELECT COUNT(*) FROM Trade WHERE buyer = ? OR seller = ? LIMIT ?, ?";
+    private static final String SELECT_COUNT_BY_TRADER_ID = "SELECT COUNT(*) FROM Trade WHERE buyer = ? OR seller = ?";
 
-    public Integer countByTraderIdAndLimit(String id, int start, int length) {
+    public Integer countByTraderId(String id) {
         return jdbcTemplate.queryForObject(
-                SELECT_COUNT_BY_TRADER_ID_AND_LIMIT,
-                new Object[]{id, id, start, length},
+                SELECT_COUNT_BY_TRADER_ID,
+                new Object[]{id, id},
                 Integer.class
         );
     }

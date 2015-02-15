@@ -49,7 +49,7 @@ public class Trades {
         int start = Integer.parseInt(request().getQueryString("start"));
         int length = Integer.parseInt(request().getQueryString("length"));
 
-        int recordsTotal = trades.countByTraderIdAndLimit(email, start, length);
+        int recordsTotal = trades.countByTraderId(email);
         List<Trade> data = trades.findByTraderIdAndLimit(email, start, length);
 
         ObjectNode response = Json.newObject();
