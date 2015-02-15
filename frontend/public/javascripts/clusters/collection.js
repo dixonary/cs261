@@ -145,25 +145,47 @@ function ViewModel() {
         console.log('filters called');
     };
 
+    console.log("moment: " + moment());
+
+    var dayLen = 86400000;
+
+    //var todayStart = Math.round(moment() / dayLen) * dayLen - dayLen
+    //var todayEnd = Math.round(moment() / dayLen) * dayLen
+    var today = (Math.round(moment() / dayLen) - 1) * dayLen
+    var tomorrow = Math.round(moment() / dayLen)
+
+
+    function startOfToday() {
+        return moment().startOf('day');
+    }
 
 
     //Date range picker with time picker
     $('#reservationtime').daterangepicker(
-        {timePicker: true, timePickerIncrement: 30, format: 'MM/DD/YYYY h:mm A'},
-        function(start, end, label) {
-            //alert('A date range was chosen: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
-            //var dateRangeText = start.toString('MM/d/yy') + ' - ' + end.toString('MM/d/yy');
-            //var dateRangeText = start.toString('MM/DD/YYYY h:mm A') + ',' + end.toString('MM/DD/YYYY h:mm A');
-            //console.log(dateRangeText)
+        {
+            startDate: moment().startOf('day'),
+            endDate: moment().endOf('day'),
+            showDropdowns: true,
+            timePicker: true,
+            timePickerIncrement: 1,
+            timePicker12Hour: false,
 
+            ranges: {
+                'Today': [ moment().startOf('day'),  moment().endOf('day') ],
+                'Yesterday': [ moment().startOf('day').subtract('days', 1),  moment().endOf('day').subtract('days', 1) ],
+                'This Week': [moment().startOf('week'), moment().endOf('week')],
+                'This Month': [moment().startOf('month'), moment().endOf('month')],
+            },
+
+            format: 'MM/DD/YYYY HH:mm',
+            locale: 'en'
+        },
+        function(start, end, label) {
             var daterange = start + ',' + end
 
             self.filters.daterange(daterange)
-            //self.filters.daterange(dateRangeText);
         }
     );
-
-
 
 
     //for (i = 0; i < self.filters.length; i++) {
@@ -171,16 +193,7 @@ function ViewModel() {
         console.log("Filter2: " + f)
         self.filters[f].extend({ rateLimit: 1000 }).subscribe(self.applyFilters);
     }*/
-    //self.filters.daterange.extend({ rateLimit: 1000 }).subscribe(self.applyFilters);
-    //self.filters.daterange.start.subscribe(self.applyFilters);
     self.filters.daterange.subscribe(self.applyFilters);
-
-    /*self.filters.email.extend({ rateLimit: 1000 }).subscribe(self.applyFilters);
-     self.filters.type.extend({ rateLimit: 1000 }).subscribe(self.applyFilters);
-     self.filters.status.extend({ rateLimit: 1000 }).subscribe(self.applyFilters);
-     self.filters.level.extend({ rateLimit: 1000 }).subscribe(self.applyFilters);*/
-    //self.regionFilter.extend({ rateLimit: 1000 }).subscribe(self.applyFilters);
-    //self.nameFilter.extend({ rateLimit: 1000 }).subscribe(self.applyFilters);
 
     self.loadRows = function () {
         var table = $('#clusters-table').DataTable({
