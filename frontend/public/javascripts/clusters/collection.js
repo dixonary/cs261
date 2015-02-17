@@ -144,47 +144,50 @@ function ViewModel() {
         console.log('filters called');
     };
 
-    console.log("moment: " + moment());
-
-    var dayLen = 86400000;
-
-    //var todayStart = Math.round(moment() / dayLen) * dayLen - dayLen
-    //var todayEnd = Math.round(moment() / dayLen) * dayLen
-    var today = (Math.round(moment() / dayLen) - 1) * dayLen
-    var tomorrow = Math.round(moment() / dayLen)
-
-
-    function startOfToday() {
-        return moment().startOf('day');
-    }
 
 
     //Date range picker with time picker
-    $('#reservationtime').daterangepicker(
+
+    var drp =$('#clusters-daterange')
+
+    var startDate = moment().startOf('day')
+    var endDate = moment().endOf('day')
+
+    function onApply(start, end, label) {
+        var daterange = start + ',' + end
+
+        $('#clusters-daterange span').html(start.format(timeFormat) + ' - ' + end.format(timeFormat));
+
+        self.filters.daterange(daterange)
+    }
+
+    drp.daterangepicker(
         {
-            startDate: moment().startOf('day'),
-            endDate: moment().endOf('day'),
+            startDate: startDate,
+            endDate: endDate,
             showDropdowns: true,
             timePicker: true,
             timePickerIncrement: 1,
             timePicker12Hour: false,
-
             ranges: {
                 'Today': [ moment().startOf('day'),  moment().endOf('day') ],
                 'Yesterday': [ moment().startOf('day').subtract('days', 1),  moment().endOf('day').subtract('days', 1) ],
                 'This Week': [moment().startOf('week'), moment().endOf('week')],
-                'This Month': [moment().startOf('month'), moment().endOf('month')],
+                'This Month': [moment().startOf('month'), moment().endOf('month')]
             },
 
             format: timeFormat,
             locale: 'en'
         },
-        function(start, end, label) {
-            var daterange = start + ',' + end
-
-            self.filters.daterange(daterange)
-        }
+        onApply
     );
+
+    var drp_data = drp.data('daterangepicker')
+
+    drp_data.setStartDate(startDate)
+    drp_data.setEndDate(endDate)
+    onApply(startDate, endDate)
+    //$('#clusters-daterange span').html(start.format(timeFormat) + ' - ' + end.format(timeFormat));
 
 
     //for (i = 0; i < self.filters.length; i++) {

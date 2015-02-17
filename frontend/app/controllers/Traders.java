@@ -27,6 +27,19 @@ public class Traders {
         return ok(views.html.traders.collection.render());
     }
 
+    public Result element(String email) {
+        Trader ent = tradersDao.selectWhereId(email);
+
+        if (ent == null) {
+            return redirect(controllers.routes.Traders.collection());
+        }
+
+        List<Trade> tradeEnts = tradesDao.findByTraderId(email);
+
+        return ok(views.html.traders.element.render(ent, tradeEnts));
+        //return play.mvc.Controller.ok(Json.toJson(ent));
+    }
+
     private static final String SELECT_COUNT = "SELECT COUNT(*) FROM Trader";
     private static final String SELECT_AND_LIMIT_COUNT = "SELECT COUNT(*) FROM Trader LIMIT ?, ?";
 
@@ -44,18 +57,5 @@ public class Traders {
         response.put("recordsFiltered", recordsTotal);
         response.put("data", Json.toJson(data));
         return play.mvc.Controller.ok(response);
-    }
-
-    public Result element(String email) {
-        Trader ent = tradersDao.selectWhereId(email);
-
-        if (ent == null) {
-            return redirect(controllers.routes.Traders.collection());
-        }
-
-        List<Trade> tradeEnts = tradesDao.findByTraderId(email);
-
-        return ok(views.html.traders.element.render(ent, tradeEnts));
-        //return play.mvc.Controller.ok(Json.toJson(ent));
     }
 }

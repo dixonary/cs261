@@ -22,8 +22,18 @@ $(function () {
             var d = new Date(data)
             return d.toLocaleString()
             }},
-        { "data": "buyer" },
-        { "data": "seller" },
+        {
+            "data": "buyer",
+            "render": function (data) {
+                return '<a href="/traders/' + data + '">' + data + '</a>'
+            }
+        },
+        {
+            "data": "seller",
+            "render": function (data) {
+                return '<a href="/traders/' + data + '">' + data + '</a>'
+            }
+        },
         {
             "data": "price",
             "render": function (data) {
