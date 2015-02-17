@@ -156,7 +156,7 @@ function ViewModel() {
     function onApply(start, end, label) {
         var daterange = start + ',' + end
 
-        $('#clusters-daterange span').html(start.format(timeFormat) + ' - ' + end.format(timeFormat));
+        drp.find('span').html(start.format(timeFormat) + ' - ' + end.format(timeFormat));
 
         self.filters.daterange(daterange)
     }
