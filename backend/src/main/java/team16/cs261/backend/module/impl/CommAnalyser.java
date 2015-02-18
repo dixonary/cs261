@@ -53,16 +53,18 @@ public class CommAnalyser extends Module {
 
     @Transactional
     public void process() {
-
         List<RawComm> rawCommEnts = rawComms.selectAll();
+        List<Integer> rawIds = new ArrayList<>();
 
         List<Trader> traderEnts = new ArrayList<>();
         List<Comm> commEnts = new ArrayList<>();
 
-        for (RawComm rawComm : rawCommEnts) {
-            String in = rawComm.getRaw();
 
-            String[] parts = in.split(",");
+
+        for (RawComm rawComm : rawCommEnts) {
+            rawIds.add(rawComm.getId());
+
+            String[] parts = rawComm.getRaw().split(",");
 
             long time = parseTimestamp(parts[0]);
             String sender = parts[1];
@@ -80,6 +82,8 @@ public class CommAnalyser extends Module {
 
         traderDao.insert(traderEnts);
         commDao.insert(commEnts);
+
+        rawComms.delete(rawIds);
     }
 
 

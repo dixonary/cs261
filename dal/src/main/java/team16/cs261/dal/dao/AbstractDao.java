@@ -3,6 +3,7 @@ package team16.cs261.dal.dao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import team16.cs261.dal.entity.RawTrade;
 
 import java.util.Iterator;
 import java.util.List;
@@ -25,7 +26,7 @@ public abstract class AbstractDao<ID, E> {
 
     private final String idColumn;
 
-    private final String selectAll, selectAllLimit, selectCount, selectById;
+    private final String selectAll, selectAllLimit, selectCount, selectById, deleteFromIdIn;
 
     protected AbstractDao(Class<E> entityClass) {
         this.entityClass = entityClass;
@@ -37,6 +38,8 @@ public abstract class AbstractDao<ID, E> {
         selectAllLimit = "SELECT * FROM " + tableName + " LIMIT ?, ?";
         selectCount = "SELECT COUNT(*) FROM " + tableName;
         selectById = "SELECT * FROM " + tableName + " WHERE " + idColumn + " = ?";
+
+        deleteFromIdIn = "DELETE FROM " + tableName + " WHERE " + idColumn + " IN ";
     }
 
     public void insert(E e) {
@@ -47,6 +50,13 @@ public abstract class AbstractDao<ID, E> {
 
     }
 
+
+    public void delete(List<Integer> ids) {
+        if(ids.size()==0) return;
+
+
+        jdbcTemplate.update(deleteFromIdIn + toList(ids));
+    }
 
     public List<E> selectAll() {
         return jdbcTemplate.query(
@@ -60,15 +70,17 @@ public abstract class AbstractDao<ID, E> {
         return jdbcTemplate.queryForObject(selectCount, Integer.class);
     }
 
+    public List<E> selectAllLimit(int count) {
+        return selectAllLimit(0, count);
+    }
+
     public List<E> selectAllLimit(int offset, int length) {
         return jdbcTemplate.query(
                 selectAllLimit,
-                new Object[] {offset, length},
+                new Object[]{offset, length},
                 new BeanPropertyRowMapper<>(entityClass)
         );
     }
-
-
 
 
     public E selectWhereId(ID id) {
@@ -102,7 +114,6 @@ public abstract class AbstractDao<ID, E> {
     }
 
 
-
     private static String formatSelect(String tableName) {
         return "SELECT * FROM " + tableName;
     }
@@ -125,6 +136,22 @@ public abstract class AbstractDao<ID, E> {
 
     private static String formatSelectWhereLimit(String tableName, Iterable<String> fields, int offset, int length) {
         return formatSelectWhere(tableName, fields) + " LIMIT " + offset + ", " + length;
+    }
+
+    public static String toList(List<Integer> integers) {
+        StringBuilder builder = new StringBuilder("(");
+
+        Iterator<Integer> ints = integers.iterator();
+        while (ints.hasNext()) {
+            builder.append(ints.next());
+            if (ints.hasNext()) {
+                builder.append(",");
+            }
+        }
+
+        builder.append(")");
+
+        return builder.toString();
     }
 
 }

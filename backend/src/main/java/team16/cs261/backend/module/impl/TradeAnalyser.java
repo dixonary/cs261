@@ -48,7 +48,8 @@ public class TradeAnalyser extends Module {
 
     @Transactional
     public void process() {
-        List<RawTrade> ents = rawTrades.selectAll();
+        List<RawTrade> ents = rawTrades.selectAllLimit(100);
+        List<Integer> rawIds = new ArrayList<>();
 
         Set<Trade> tradeEnts = new HashSet<>();
         List<Trader> traderEnts = new ArrayList<>();
@@ -56,6 +57,8 @@ public class TradeAnalyser extends Module {
         List<Sector> sectorEnts = new ArrayList<>();
 
         for (RawTrade raw : ents) {
+            rawIds.add(raw.getId());
+
             Trade trade;
 
             try {
@@ -81,6 +84,10 @@ public class TradeAnalyser extends Module {
         sectorDao.insert(sectorEnts);
 
         tradeDao.insert(tradeEnts);
+
+        System.out.println("Ids: " + AbstractDao.toList(rawIds));
+
+        rawTrades.delete(rawIds);
     }
 
 
