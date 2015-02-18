@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import team16.cs261.backend.Config;
+import team16.cs261.dal.dao.RawCommDao;
 import team16.cs261.dal.entity.Comm;
+import team16.cs261.dal.entity.RawComm;
 import team16.cs261.dal.entity.Trader;
 import team16.cs261.backend.module.ListenerModule;
 import team16.cs261.dal.dao.CommDao;
@@ -25,6 +27,9 @@ import java.util.List;
 public class CommListener extends ListenerModule {
 
     @Autowired
+    RawCommDao rawComms;
+
+    @Autowired
     TraderDao traderDao;
 
     @Autowired
@@ -36,6 +41,14 @@ public class CommListener extends ListenerModule {
     }
 
     @Override
+    public void onLine(String in) throws IOException {
+        log(in);
+
+rawComms.insert(new RawComm((in)));
+
+    }
+
+    /*@Override
     public void onLine(String in) throws IOException {
         log(in);
 
@@ -72,7 +85,7 @@ public class CommListener extends ListenerModule {
 
         commDao.insert(commEnts);
 
-    }
+    }*/
 
     public static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 

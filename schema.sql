@@ -16,25 +16,14 @@ DROP TABLE IF EXISTS Factor CASCADE;
 # raw data tables
 
 CREATE TABLE RawTrade (#RAWTRADE TABLE#
-  id       INTEGER     NOT NULL AUTO_INCREMENT, #Contains the full representation of a Trade as received from the Trades feed
-  time     LONG        NOT NULL, #Also has an id as primary key as the timestamp cannot be guranteed to be unique
-  buyer    VARCHAR(50) NOT NULL,
-  seller   VARCHAR(50) NOT NULL,
-  price    FLOAT       NOT NULL,
-  size     INTEGER     NOT NULL,
-  currency VARCHAR(3)  NOT NULL,
-  symbol   VARCHAR(10) NOT NULL,
-  sector   VARCHAR(40) NOT NULL,
-  bid      FLOAT       NOT NULL,
-  ask      FLOAT       NOT NULL,
+  id  INTEGER NOT NULL AUTO_INCREMENT, #Contains the full representation of a Trade as received from the Trades feed
+  raw TEXT    NOT NULL,
   PRIMARY KEY (id)
 );
 
 CREATE TABLE RawComm (#RAWCOMM TABLE#
   id        INTEGER     NOT NULL AUTO_INCREMENT, #Contains individual Communcations between Traders
-  time      LONG        NOT NULL, #Has an id field as the timestamp cannot be guaranteed to be unique
-  sender    VARCHAR(50) NOT NULL,
-  recipient TEXT        NOT NULL,
+  raw TEXT    NOT NULL,
   PRIMARY KEY (id)
 );
 
@@ -115,7 +104,7 @@ CREATE TABLE Comm (#COMM TABLE#
 # analysis results
 
 CREATE TABLE Cluster (#CLUSTER TABLE#
-  clusterId INTEGER NOT NULL AUTO_INCREMENT , #Links together a group of related factors
+  clusterId INTEGER NOT NULL AUTO_INCREMENT, #Links together a group of related factors
   time      LONG    NOT NULL,
   day       LONG    NOT NULL,
   PRIMARY KEY (clusterId)          #Each entity is unique for each clusterId
@@ -123,7 +112,7 @@ CREATE TABLE Cluster (#CLUSTER TABLE#
 
 
 CREATE TABLE Factor (#FACTOR TABLE#
-  factorId INTEGER NOT NULL AUTO_INCREMENT , #Exists to provide a unique value for each individual factor to refer to
+  factorId INTEGER NOT NULL AUTO_INCREMENT, #Exists to provide a unique value for each individual factor to refer to
   time     LONG    NOT NULL,
   PRIMARY KEY (factorId)          #Each factorId is unique
 );
@@ -136,9 +125,6 @@ CREATE TABLE ClusterFactor (#FACTORCLUSTER TABLE#
   FOREIGN KEY (clusterId) REFERENCES Cluster (clusterId),
   FOREIGN KEY (factorId) REFERENCES Factor (factorId)
 );
-
-
-
 
 
 /*
