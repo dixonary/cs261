@@ -1,6 +1,8 @@
 #Suspicious Activity Detection Tool#
 #Schema#
 
+SET FOREIGN_KEY_CHECKS = 0;
+
 DROP TABLE IF EXISTS RawTrade CASCADE;
 DROP TABLE IF EXISTS RawComm CASCADE;
 DROP TABLE IF EXISTS Trader CASCADE;
@@ -26,6 +28,8 @@ DROP TABLE IF EXISTS SymbolsFactor CASCADE;
 DROP TABLE IF EXISTS TradersFactor CASCADE;
 DROP TABLE IF EXISTS PerformancesFactor CASCADE;
 DROP TABLE IF EXISTS PricesFactor CASCADE;
+
+SET FOREIGN_KEY_CHECKS = 1;
 
 # raw data tables
 
@@ -175,7 +179,7 @@ CREATE TABLE CommFactor (#COMMFACTOR TABLE#
   commId   INTEGER NOT NULL, #Linking table between the Factor and Communication tables
   factorId INTEGER NOT NULL, #Each entity is unique for a commId factorId pair
   PRIMARY KEY (commId, factorId),
-  FOREIGN KEY (commId)   REFERENCES Communication (id),
+  FOREIGN KEY (commId)   REFERENCES Comm (id),
   FOREIGN KEY (factorId) REFERENCES Factor (factorId)
 );
 
