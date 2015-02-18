@@ -175,7 +175,7 @@ CREATE TABLE CommFactor (#COMMFACTOR TABLE#
   commId   INTEGER NOT NULL, #Linking table between the Factor and Communication tables
   factorId INTEGER NOT NULL, #Each entity is unique for a commId factorId pair
   PRIMARY KEY (commId, factorId),
-  FOREIGN KEY (commId)   REFERENCES Communication (id),
+  FOREIGN KEY (commId)   REFERENCES Comm (id),
   FOREIGN KEY (factorId) REFERENCES Factor (factorId)
 );
 
