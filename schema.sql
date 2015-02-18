@@ -107,10 +107,10 @@ CREATE TABLE CommLink (#COMMLINK TABLE#
 );
 
 CREATE TABLE StockOwnership (#STOCKOWNERSHIP TABLE#
-  symbol     INTEGER     NOT NULL, #Represents the volume of each stock that a Trader owns (can go negative!)
+  symbol     VARCHAR(10) NOT NULL, #Represents the volume of each stock that a Trader owns (can go negative!)
   email      VARCHAR(50) NOT NULL, #Each entity is unique for a symbol, Trader pair
   volume     INTEGER     NOT NULL DEFAULT 0,
-  lastUpdate DATETIME    NOT NULL,
+  lastUpdate LONG        NOT NULL,
   PRIMARY KEY (symbol, email),
   FOREIGN KEY (symbol) REFERENCES Symbol (name),
   FOREIGN KEY (email)  REFERENCES Trader (email)
