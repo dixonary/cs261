@@ -30,12 +30,6 @@ public class CommListener extends ListenerModule {
     RawCommDao rawComms;
 
     @Autowired
-    TraderDao traderDao;
-
-    @Autowired
-    CommDao commDao;
-
-    @Autowired
     public CommListener(Config config) throws IOException {
         super(config, "COMM-LISTENER", config.getHostname(), config.getCommsPort());
     }
@@ -44,66 +38,6 @@ public class CommListener extends ListenerModule {
     public void onLine(String in) throws IOException {
         log(in);
 
-rawComms.insert(new RawComm((in)));
-
+        rawComms.insert(new RawComm((in)));
     }
-
-    /*@Override
-    public void onLine(String in) throws IOException {
-        log(in);
-
-        try {
-
-            String[] parts = in.split(",");
-
-            Date date = formatter.parse(parts[0].substring(0, 23));
-
-            storeComm(date.getTime(), parts[1], parts[2].split(";"));
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    @Transactional
-    public void storeComm(long time, String sender, String[] recipients) {
-
-        List<Trader> traderEnts = new ArrayList<>();
-
-        traderEnts.add(Trader.parseRaw(sender));
-        for (String rec : recipients) {
-            traderEnts.add(Trader.parseRaw(rec));
-        }
-
-        traderDao.insert(traderEnts);
-
-        List<Comm> commEnts = new ArrayList<>();
-        for (String rec : recipients) {
-            commEnts.add(new Comm(time, sender, rec));
-        }
-
-        commDao.insert(commEnts);
-
-    }*/
-
-    public static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-
-
-    /**
-     * Strips precision down to milliseconds because:
-     * - it's what SDF supports
-     * - the extra digits of precision play no role in our system
-     *
-     * @param raw
-     * @return
-     * @throws java.text.ParseException
-     */
-    public static long parseTimestamp(String raw) throws ParseException {
-        Date date = formatter.parse(raw.substring(0, 23));
-
-        return date.getTime();
-    }
-
-
 }
