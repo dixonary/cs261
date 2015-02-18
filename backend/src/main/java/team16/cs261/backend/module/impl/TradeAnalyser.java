@@ -85,48 +85,6 @@ public class TradeAnalyser extends Module {
 
 
 
-
-    /*    @Override
-    public void onLine(String in) throws IOException {
-
-        log(in);
-
-        Trade parsed = null;
-        try {
-            parsed = parseTrade(in);
-
-            storeTrade(parsed);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-
-    }
-
-    @Transactional
-    public void storeTrade(Trade parsed) {
-
-
-        List<Trader> traderEnts = new ArrayList<>();
-
-        traderEnts.add(Trader.parseRaw(parsed.getBuyer()));
-        traderEnts.add(Trader.parseRaw(parsed.getSeller()));
-
-
-        Symbol symbol = new Symbol(parsed.getSymbol());
-        Sector sector = new Sector(parsed.getSector());
-
-        symbolDao.insert(symbol);
-        sectorDao.insert(sector);
-
-        traderDao.insert(traderEnts);
-
-
-        tradeDao.insert(parsed);
-
-
-    }*/
-
     public static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     /**

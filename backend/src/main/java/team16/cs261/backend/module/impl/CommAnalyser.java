@@ -83,33 +83,7 @@ public class CommAnalyser extends Module {
     }
 
 
-
-
-    /*@Override
-    public void onLine(String in) throws IOException {
-        log(in);
-
-        try {
-
-
-
-            storeComm(date.getTime(), parts[1], parts[2].split(";"));
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    @Transactional
-    public void storeComm(long time, String sender, String[] recipients) {
-
-
-
-    }*/
-
     public static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-
 
     /**
      * Strips precision down to milliseconds because:
