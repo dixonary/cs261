@@ -8,7 +8,10 @@ DROP TABLE IF EXISTS Comm CASCADE;
 DROP TABLE IF EXISTS Trader CASCADE;
 DROP TABLE IF EXISTS Symbol CASCADE;
 DROP TABLE IF EXISTS Sector CASCADE;
+DROP TABLE IF EXISTS CommLink CASCADE;
+DROP TABLE IF EXISTS StockOwnership CASCADE;
 
+DROP TABLE IF EXISTS TraderTrader CASCADE;
 DROP TABLE IF EXISTS ClusterFactor CASCADE;
 DROP TABLE IF EXISTS Cluster CASCADE;
 DROP TABLE IF EXISTS Factor CASCADE;
@@ -22,7 +25,7 @@ CREATE TABLE RawTrade (#RAWTRADE TABLE#
 );
 
 CREATE TABLE RawComm (#RAWCOMM TABLE#
-  id        INTEGER     NOT NULL AUTO_INCREMENT, #Contains individual Communcations between Traders
+  id  INTEGER NOT NULL AUTO_INCREMENT, #Contains individual Communcations between Traders
   raw TEXT    NOT NULL,
   PRIMARY KEY (id)
 );
@@ -34,13 +37,9 @@ CREATE TABLE Trader (#TRADER TABLE#
   tAvg1       INTEGER     NOT NULL DEFAULT 0,
   tAvg2       INTEGER     NOT NULL DEFAULT 0,
   tAvg3       INTEGER     NOT NULL DEFAULT 0,
-  tAvg12      BOOLEAN     NOT NULL DEFAULT FALSE,
-  tAvg23      BOOLEAN     NOT NULL DEFAULT FALSE,
   pAvg1       INTEGER     NOT NULL DEFAULT 0,
   pAvg2       INTEGER     NOT NULL DEFAULT 0,
   pAvg3       INTEGER     NOT NULL DEFAULT 0,
-  pAvg12      BOOLEAN     NOT NULL DEFAULT FALSE,
-  pAvg23      BOOLEAN     NOT NULL DEFAULT FALSE,
   PRIMARY KEY (email)
 );
 
@@ -51,13 +50,9 @@ CREATE TABLE Symbol (#SYMBOL TABLE#
   tAvg1       INTEGER     NOT NULL DEFAULT 0,
   tAvg2       INTEGER     NOT NULL DEFAULT 0,
   tAvg3       INTEGER     NOT NULL DEFAULT 0,
-  tAvg12      BOOLEAN     NOT NULL DEFAULT FALSE,
-  tAvg23      BOOLEAN     NOT NULL DEFAULT FALSE,
   pAvg1       INTEGER     NOT NULL DEFAULT 0,
   pAvg2       INTEGER     NOT NULL DEFAULT 0,
   pAvg3       INTEGER     NOT NULL DEFAULT 0,
-  pAvg12      BOOLEAN     NOT NULL DEFAULT FALSE,
-  pAvg23      BOOLEAN     NOT NULL DEFAULT FALSE,
   PRIMARY KEY (name)
 );
 
@@ -67,8 +62,6 @@ CREATE TABLE Sector (#SECTOR TABLE#
   avg1        INTEGER     NOT NULL DEFAULT 0,
   avg2        INTEGER     NOT NULL DEFAULT 0,
   avg3        INTEGER     NOT NULL DEFAULT 0,
-  avg12       BOOLEAN     NOT NULL DEFAULT FALSE,
-  avg23       BOOLEAN     NOT NULL DEFAULT FALSE,
   PRIMARY KEY (name)
 );
 
@@ -101,7 +94,41 @@ CREATE TABLE Comm (#COMM TABLE#
   FOREIGN KEY (recipient) REFERENCES Trader (email)
 );
 
+CREATE TABLE CommLink (#COMMLINK TABLE#
+  trader1     VARCHAR(50) NOT NULL, #Contains the link between individual Communications and individual Traders
+  trader2     VARCHAR(50) NOT NULL, #Tracks the history of communication between two traders in both directions and averages
+  totalTrades INTEGER     NOT NULL DEFAULT 0, #Each entity is unique for each Trader pair
+  avg1        INTEGER     NOT NULL DEFAULT 0,
+  avg2        INTEGER     NOT NULL DEFAULT 0,
+  avg3        INTEGER     NOT NULL DEFAULT 0,
+  PRIMARY KEY (trader1, trader2),
+  FOREIGN KEY (trader1) REFERENCES Trader (email),
+  FOREIGN KEY (trader2) REFERENCES Trader (email)
+);
+
+CREATE TABLE StockOwnership (#STOCKOWNERSHIP TABLE#
+  symbol     INTEGER     NOT NULL, #Represents the volume of each stock that a Trader owns (can go negative!)
+  email      VARCHAR(50) NOT NULL, #Each entity is unique for a symbol, Trader pair
+  volume     INTEGER     NOT NULL DEFAULT 0,
+  lastUpdate DATETIME    NOT NULL,
+  PRIMARY KEY (symbol, email),
+  FOREIGN KEY (symbol) REFERENCES Symbol (name),
+  FOREIGN KEY (email)  REFERENCES Trader (email)
+);
+
 # analysis results
+
+CREATE TABLE TraderTrader (#TRADERTRADER TABLE#
+  trader1     VARCHAR(50) NOT NULL, #Represents the number of Stocks a pair of Traders have in common
+  trader2     VARCHAR(50) NOT NULL, #Each entity is unique for each Trader pair
+  totalStocks INTEGER     NOT NULL DEFAULT 0, 
+  avg1        INTEGER     NOT NULL DEFAULT 0,
+  avg2        INTEGER     NOT NULL DEFAULT 0,
+  avg3        INTEGER     NOT NULL DEFAULT 0,
+  PRIMARY KEY (trader1, trader2),
+  FOREIGN KEY (trader1) REFERENCES Trader (email),
+  FOREIGN KEY (trader2) REFERENCES Trader (email)
+);
 
 CREATE TABLE Cluster (#CLUSTER TABLE#
   clusterId INTEGER NOT NULL AUTO_INCREMENT, #Links together a group of related factors
@@ -110,13 +137,12 @@ CREATE TABLE Cluster (#CLUSTER TABLE#
   PRIMARY KEY (clusterId)          #Each entity is unique for each clusterId
 );
 
-
 CREATE TABLE Factor (#FACTOR TABLE#
   factorId INTEGER NOT NULL AUTO_INCREMENT, #Exists to provide a unique value for each individual factor to refer to
-  time     LONG    NOT NULL,
+  timeFrom LONG    NOT NULL,
+  timeTo   LONG    NOT NULL,
   PRIMARY KEY (factorId)          #Each factorId is unique
 );
-
 
 CREATE TABLE ClusterFactor (#FACTORCLUSTER TABLE#
   clusterId INTEGER NOT NULL, #Linking table to associate multiple factors with one cluster
@@ -125,55 +151,6 @@ CREATE TABLE ClusterFactor (#FACTORCLUSTER TABLE#
   FOREIGN KEY (clusterId) REFERENCES Cluster (clusterId),
   FOREIGN KEY (factorId) REFERENCES Factor (factorId)
 );
-
-
-/*
-DROP TABLE IF EXISTS CommLink CASCADE;
-CREATE TABLE CommLink (#COMMLINK TABLE#
-  trader1     VARCHAR(50) NOT NULL, #Contains the link between individual Communications and individual Traders
-  trader2     VARCHAR(50) NOT NULL, #Tracks the history of communication between two traders in both directions and averages
-  totalTrades INTEGER     NOT NULL DEFAULT 0, #Each entity is unique for each Trader pair
-  avg1        INTEGER     NOT NULL DEFAULT 0,
-  avg2        INTEGER     NOT NULL DEFAULT 0,
-  avg3        INTEGER     NOT NULL DEFAULT 0,
-  avg12       BOOLEAN     NOT NULL DEFAULT FALSE,
-  avg23       BOOLEAN     NOT NULL DEFAULT FALSE,
-  PRIMARY KEY (trader1, trader2),
-  FOREIGN KEY (trader1) REFERENCES Trader (email),
-  FOREIGN KEY (trader2) REFERENCES Trader (email)
-);
-
-
-
-
-<<<<<<< HEAD
-
-
-
-=======
-DROP TABLE IF EXISTS Cluster CASCADE;
-CREATE TABLE Cluster (#CLUSTER TABLE#
-  clusterId INTEGER NOT NULL, #Links together a group of related clusters
-  PRIMARY KEY (clusterId) #Each entity is unique for each clusterId
-);
-
-DROP TABLE IF EXISTS ClusterFactor CASCADE;
-CREATE TABLE ClusterFactor (#FACTORCLUSTER TABLE#
-  clusterId INTEGER NOT NULL, #Linking table to associate multiple factors with one cluster
-  factorId  INTEGER NOT NULL, #Entities are unique for each clusterId, factorId pair
-  PRIMARY KEY (clusterId, factorId),
-  FOREIGN KEY (clusterId) REFERENCES Cluster (clusterId),
-  FOREIGN KEY (factorId)  REFERENCES Factor (factorId)
-);
-
-DROP TABLE IF EXISTS Factor CASCADE;
-CREATE TABLE Factor (#FACTOR TABLE#
-  factorId INTEGER NOT NULL, #Exists to provide a unique value for each individual factor to refer to
-  timeFrom LONG    NOT NULL,
-  timeTo   LONG    NOT NULL,
-  PRIMARY KEY (factorId) #Each factorId is unique
-);
->>>>>>> 605a86acbd02ac0591a1727eff41b405996abec4
 
 DROP TABLE IF EXISTS TradeFactor CASCADE;
 CREATE TABLE TradeFactor (#TRADEFACTOR TABLE#
@@ -265,34 +242,3 @@ CREATE TABLE PricesFactor (#PRICESFACTOR TABLE#
   PRIMARY KEY (factorId),
   FOREIGN KEY (factorId) REFERENCES Factor (factorId)
 );
-
-
-
-DROP TABLE IF EXISTS StockOwnership CASCADE;
-CREATE TABLE StockOwnership (#STOCKOWNERSHIP TABLE#
-  symbol     INTEGER     NOT NULL, #Represents the volume of each stock that a Trader owns (can go negative!)
-  email      VARCHAR(50) NOT NULL, #Each entity is unique for a symbol, email pair
-  volume     INTEGER     NOT NULL DEFAULT 0,
-  lastUpdate DATETIME    NOT NULL,
-  PRIMARY KEY (symbol, email),
-  FOREIGN KEY (symbol) REFERENCES Symbol (name),
-  FOREIGN KEY (email)  REFERENCES Trader (email)
-);
-
-DROP TABLE IF EXISTS TraderTrader CASCADE;
-CREATE TABLE TraderTrader (#TRADERTRADER TABLE#
-  trader1     VARCHAR(50) NOT NULL,
-  trader2     VARCHAR(50) NOT NULL,
-  totalTrades INTEGER     NOT NULL DEFAULT 0, 
-  avg1        INTEGER     NOT NULL DEFAULT 0,
-  avg2        INTEGER     NOT NULL DEFAULT 0,
-  avg3        INTEGER     NOT NULL DEFAULT 0,
-  avg12       BOOLEAN     NOT NULL DEFAULT FALSE,
-  avg23       BOOLEAN     NOT NULL DEFAULT FALSE,
-  PRIMARY KEY (trader1, trader2),
-  FOREIGN KEY (trader1) REFERENCES Trader (email),
-  FOREIGN KEY (trader2) REFERENCES Trader (email)
-);
-
-
-*/
