@@ -3,18 +3,29 @@
 
 DROP TABLE IF EXISTS RawTrade CASCADE;
 DROP TABLE IF EXISTS RawComm CASCADE;
-DROP TABLE IF EXISTS Trade CASCADE;
-DROP TABLE IF EXISTS Comm CASCADE;
 DROP TABLE IF EXISTS Trader CASCADE;
 DROP TABLE IF EXISTS Symbol CASCADE;
 DROP TABLE IF EXISTS Sector CASCADE;
+DROP TABLE IF EXISTS Trade CASCADE;
+DROP TABLE IF EXISTS Comm CASCADE;
 DROP TABLE IF EXISTS CommLink CASCADE;
 DROP TABLE IF EXISTS StockOwnership CASCADE;
 
 DROP TABLE IF EXISTS TraderTrader CASCADE;
 DROP TABLE IF EXISTS ClusterFactor CASCADE;
-DROP TABLE IF EXISTS Cluster CASCADE;
 DROP TABLE IF EXISTS Factor CASCADE;
+DROP TABLE IF EXISTS Cluster CASCADE;
+
+DROP TABLE IF EXISTS TradeFactor CASCADE;
+DROP TABLE IF EXISTS CommFactor CASCADE;
+DROP TABLE IF EXISTS EmailsFactor CASCADE;
+DROP TABLE IF EXISTS PortfoliosFactor CASCADE;
+DROP TABLE IF EXISTS StylesFactor CASCADE;
+DROP TABLE IF EXISTS SectorsFactor CASCADE;
+DROP TABLE IF EXISTS SymbolsFactor CASCADE;
+DROP TABLE IF EXISTS TradersFactor CASCADE;
+DROP TABLE IF EXISTS PerformancesFactor CASCADE;
+DROP TABLE IF EXISTS PricesFactor CASCADE;
 
 # raw data tables
 
@@ -152,7 +163,6 @@ CREATE TABLE ClusterFactor (#FACTORCLUSTER TABLE#
   FOREIGN KEY (factorId) REFERENCES Factor (factorId)
 );
 
-DROP TABLE IF EXISTS TradeFactor CASCADE;
 CREATE TABLE TradeFactor (#TRADEFACTOR TABLE#
   tradeId  INTEGER NOT NULL, #Linking table between the Factor and Trade tables
   factorId INTEGER NOT NULL, #Each entity is unique for a tradeId factorId pair
@@ -161,7 +171,6 @@ CREATE TABLE TradeFactor (#TRADEFACTOR TABLE#
   FOREIGN KEY (factorId) REFERENCES Factor (factorId)
 );
 
-DROP TABLE IF EXISTS CommFactor CASCADE;
 CREATE TABLE CommFactor (#COMMFACTOR TABLE#
   commId   INTEGER NOT NULL, #Linking table between the Factor and Communication tables
   factorId INTEGER NOT NULL, #Each entity is unique for a commId factorId pair
@@ -170,7 +179,6 @@ CREATE TABLE CommFactor (#COMMFACTOR TABLE#
   FOREIGN KEY (factorId) REFERENCES Factor (factorId)
 );
 
-DROP TABLE IF EXISTS EmailsFactor CASCADE;
 CREATE TABLE EmailsFactor (#EMAILSFACTOR TABLE#
   factorId INTEGER     NOT NULL, #Represents the factor "Which traders are communicating with who"
   email1   VARCHAR(50) NOT NULL, #Unique for each factorId
@@ -179,7 +187,6 @@ CREATE TABLE EmailsFactor (#EMAILSFACTOR TABLE#
   FOREIGN KEY (factorId) REFERENCES Factor (factorId)
 );
 
-DROP TABLE IF EXISTS PortfoliosFactor CASCADE;
 CREATE TABLE PortfoliosFactor (#PORTFOLIOSFACTOR TABLE#
   factorId INTEGER     NOT NULL, #Represents the factor "Traders with similar portfolios"
   email1   VARCHAR(50) NOT NULL, #Unique for each factorId
@@ -188,7 +195,6 @@ CREATE TABLE PortfoliosFactor (#PORTFOLIOSFACTOR TABLE#
   FOREIGN KEY (factorId) REFERENCES Factor (factorId)
 );
 
-DROP TABLE IF EXISTS StylesFactor CASCADE;
 CREATE TABLE StylesFactor (#STYLESFACTOR TABLE#
   factorId INTEGER     NOT NULL, #Represents the factor "Traders with similar styles/trading patterns"
   email1   VARCHAR(50) NOT NULL, #Unique for each factorId
@@ -197,7 +203,6 @@ CREATE TABLE StylesFactor (#STYLESFACTOR TABLE#
   FOREIGN KEY (factorId) REFERENCES Factor (factorId)
 );
 
-DROP TABLE IF EXISTS SectorsFactor CASCADE;
 CREATE TABLE SectorsFactor (#SECTORSFACTOR TABLE#
   factorId INTEGER     NOT NULL, #Represents the factor "Active sectors"
   email1   VARCHAR(50) NOT NULL, #Unique for each factorId
@@ -207,7 +212,6 @@ CREATE TABLE SectorsFactor (#SECTORSFACTOR TABLE#
   FOREIGN KEY (factorId) REFERENCES Factor (factorId)
 );
 
-DROP TABLE IF EXISTS SymbolsFactor CASCADE;
 CREATE TABLE SymbolsFactor (#SYMBOLSFACTOR TABLE#
   factorId INTEGER     NOT NULL, #Represents the factor "Active Stocks (symbol)"
   email1   VARCHAR(50) NOT NULL, #Unique for each factorId
@@ -217,7 +221,6 @@ CREATE TABLE SymbolsFactor (#SYMBOLSFACTOR TABLE#
   FOREIGN KEY (factorId) REFERENCES Factor (factorId)
 );
 
-DROP TABLE IF EXISTS TradersFactor CASCADE;
 CREATE TABLE TradersFactor (#TRADERSFACTOR TABLE#
   factorId INTEGER     NOT NULL, #Represents the factor "Particularly active Traders"
   email    VARCHAR(50) NOT NULL, #Unique for each factorId
@@ -225,7 +228,6 @@ CREATE TABLE TradersFactor (#TRADERSFACTOR TABLE#
   FOREIGN KEY (factorId) REFERENCES Factor (factorId)
 );
 
-DROP TABLE IF EXISTS PerformancesFactor CASCADE;
 CREATE TABLE PerformancesFactor (#PERFORMANCESFACTOR TABLE#
   factorId INTEGER     NOT NULL, #Represents the factor "Anomalous market performance for trader"
   email    VARCHAR(50) NOT NULL, #Unique for each factorId
@@ -233,7 +235,6 @@ CREATE TABLE PerformancesFactor (#PERFORMANCESFACTOR TABLE#
   FOREIGN KEY (factorId) REFERENCES Factor (factorId)
 );
 
-DROP TABLE IF EXISTS PricesFactor CASCADE;
 CREATE TABLE PricesFactor (#PRICESFACTOR TABLE#
   factorId INTEGER     NOT NULL, #Represents the factor "Sudden price changes of a stock"
   email1   VARCHAR(50) NOT NULL, #Unique for each factorId
