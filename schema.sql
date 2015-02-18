@@ -1,6 +1,8 @@
 #Suspicious Activity Detection Tool#
 #Schema#
 
+DROP TABLE IF EXISTS RawTrade CASCADE;
+DROP TABLE IF EXISTS RawComm CASCADE;
 DROP TABLE IF EXISTS Trade CASCADE;
 DROP TABLE IF EXISTS Comm CASCADE;
 DROP TABLE IF EXISTS Trader CASCADE;
@@ -13,18 +15,45 @@ DROP TABLE IF EXISTS Factor CASCADE;
 
 # raw data tables
 
-CREATE TABLE Trader (#TRADER TABLE#
-  email  VARCHAR(50) NOT NULL, #Contains entities which represent individual Traders and averages for Trading volume and Profit
-  domain VARCHAR(30) NOT NULL, #There email addresses are unique and so are used as our primary key
-  tAvg1  INTEGER     NOT NULL DEFAULT 0,
-  tAvg2  INTEGER     NOT NULL DEFAULT 0,
-  tAvg3  INTEGER     NOT NULL DEFAULT 0,
-  pAvg1  INTEGER     NOT NULL DEFAULT 0,
-  pAvg2  INTEGER     NOT NULL DEFAULT 0,
-  pAvg3  INTEGER     NOT NULL DEFAULT 0,
-  PRIMARY KEY (email)
+CREATE TABLE RawTrade (#RAWTRADE TABLE#
+  id       INTEGER     NOT NULL AUTO_INCREMENT, #Contains the full representation of a Trade as received from the Trades feed
+  time     LONG        NOT NULL, #Also has an id as primary key as the timestamp cannot be guranteed to be unique
+  buyer    VARCHAR(50) NOT NULL,
+  seller   VARCHAR(50) NOT NULL,
+  price    FLOAT       NOT NULL,
+  size     INTEGER     NOT NULL,
+  currency VARCHAR(3)  NOT NULL,
+  symbol   VARCHAR(10) NOT NULL,
+  sector   VARCHAR(40) NOT NULL,
+  bid      FLOAT       NOT NULL,
+  ask      FLOAT       NOT NULL,
+  PRIMARY KEY (id)
 );
 
+CREATE TABLE RawComm (#RAWCOMM TABLE#
+  id        INTEGER     NOT NULL AUTO_INCREMENT, #Contains individual Communcations between Traders
+  time      LONG        NOT NULL, #Has an id field as the timestamp cannot be guaranteed to be unique
+  sender    VARCHAR(50) NOT NULL,
+  recipient TEXT        NOT NULL,
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE Trader (#TRADER TABLE#
+  email       VARCHAR(50) NOT NULL, #Contains entities which represent individual Traders and averages for Trading volume and Profit
+  domain      VARCHAR(30) NOT NULL, #There email addresses are unique and so are used as our primary key
+  totalTrades INTEGER     NOT NULL DEFAULT 0,
+  tAvg1       INTEGER     NOT NULL DEFAULT 0,
+  tAvg2       INTEGER     NOT NULL DEFAULT 0,
+  tAvg3       INTEGER     NOT NULL DEFAULT 0,
+  tAvg12      BOOLEAN     NOT NULL DEFAULT FALSE,
+  tAvg23      BOOLEAN     NOT NULL DEFAULT FALSE,
+  pAvg1       INTEGER     NOT NULL DEFAULT 0,
+  pAvg2       INTEGER     NOT NULL DEFAULT 0,
+  pAvg3       INTEGER     NOT NULL DEFAULT 0,
+  pAvg12      BOOLEAN     NOT NULL DEFAULT FALSE,
+  pAvg23      BOOLEAN     NOT NULL DEFAULT FALSE,
+  PRIMARY KEY (email)
+);
 
 CREATE TABLE Symbol (#SYMBOL TABLE#
   name        VARCHAR(10) NOT NULL, #Contains entities which represent individual Stocks and averages for Trading volume and Profit
@@ -33,9 +62,13 @@ CREATE TABLE Symbol (#SYMBOL TABLE#
   tAvg1       INTEGER     NOT NULL DEFAULT 0,
   tAvg2       INTEGER     NOT NULL DEFAULT 0,
   tAvg3       INTEGER     NOT NULL DEFAULT 0,
+  tAvg12      BOOLEAN     NOT NULL DEFAULT FALSE,
+  tAvg23      BOOLEAN     NOT NULL DEFAULT FALSE,
   pAvg1       INTEGER     NOT NULL DEFAULT 0,
   pAvg2       INTEGER     NOT NULL DEFAULT 0,
   pAvg3       INTEGER     NOT NULL DEFAULT 0,
+  pAvg12      BOOLEAN     NOT NULL DEFAULT FALSE,
+  pAvg23      BOOLEAN     NOT NULL DEFAULT FALSE,
   PRIMARY KEY (name)
 );
 
@@ -45,6 +78,8 @@ CREATE TABLE Sector (#SECTOR TABLE#
   avg1        INTEGER     NOT NULL DEFAULT 0,
   avg2        INTEGER     NOT NULL DEFAULT 0,
   avg3        INTEGER     NOT NULL DEFAULT 0,
+  avg12       BOOLEAN     NOT NULL DEFAULT FALSE,
+  avg23       BOOLEAN     NOT NULL DEFAULT FALSE,
   PRIMARY KEY (name)
 );
 
@@ -81,15 +116,15 @@ CREATE TABLE Comm (#COMM TABLE#
 
 CREATE TABLE Cluster (#CLUSTER TABLE#
   clusterId INTEGER NOT NULL AUTO_INCREMENT , #Links together a group of related factors
-  time LONG NOT NULL,
-  day LONG NOT NULL,
+  time      LONG    NOT NULL,
+  day       LONG    NOT NULL,
   PRIMARY KEY (clusterId)          #Each entity is unique for each clusterId
 );
 
 
 CREATE TABLE Factor (#FACTOR TABLE#
   factorId INTEGER NOT NULL AUTO_INCREMENT , #Exists to provide a unique value for each individual factor to refer to
-  time LONG NOT NULL,
+  time     LONG    NOT NULL,
   PRIMARY KEY (factorId)          #Each factorId is unique
 );
 
@@ -115,6 +150,8 @@ CREATE TABLE CommLink (#COMMLINK TABLE#
   avg1        INTEGER     NOT NULL DEFAULT 0,
   avg2        INTEGER     NOT NULL DEFAULT 0,
   avg3        INTEGER     NOT NULL DEFAULT 0,
+  avg12       BOOLEAN     NOT NULL DEFAULT FALSE,
+  avg23       BOOLEAN     NOT NULL DEFAULT FALSE,
   PRIMARY KEY (trader1, trader2),
   FOREIGN KEY (trader1) REFERENCES Trader (email),
   FOREIGN KEY (trader2) REFERENCES Trader (email)
@@ -146,6 +183,8 @@ CREATE TABLE ClusterFactor (#FACTORCLUSTER TABLE#
 DROP TABLE IF EXISTS Factor CASCADE;
 CREATE TABLE Factor (#FACTOR TABLE#
   factorId INTEGER NOT NULL, #Exists to provide a unique value for each individual factor to refer to
+  timeFrom LONG    NOT NULL,
+  timeTo   LONG    NOT NULL,
   PRIMARY KEY (factorId) #Each factorId is unique
 );
 >>>>>>> 605a86acbd02ac0591a1727eff41b405996abec4
@@ -173,8 +212,6 @@ CREATE TABLE EmailsFactor (#EMAILSFACTOR TABLE#
   factorId INTEGER     NOT NULL, #Represents the factor "Which traders are communicating with who"
   email1   VARCHAR(50) NOT NULL, #Unique for each factorId
   email2   VARCHAR(50) NOT NULL,
-  timeFrom DATETIME    NOT NULL,
-  timeTo   DATETIME    NOT NULL,
   PRIMARY KEY (factorId),
   FOREIGN KEY (factorId) REFERENCES Factor (factorId)
 );
@@ -184,8 +221,6 @@ CREATE TABLE PortfoliosFactor (#PORTFOLIOSFACTOR TABLE#
   factorId INTEGER     NOT NULL, #Represents the factor "Traders with similar portfolios"
   email1   VARCHAR(50) NOT NULL, #Unique for each factorId
   email2   VARCHAR(50) NOT NULL,
-  timeFrom DATETIME    NOT NULL,
-  timeTo   DATETIME    NOT NULL,
   PRIMARY KEY (factorId),
   FOREIGN KEY (factorId) REFERENCES Factor (factorId)
 );
@@ -195,8 +230,6 @@ CREATE TABLE StylesFactor (#STYLESFACTOR TABLE#
   factorId INTEGER     NOT NULL, #Represents the factor "Traders with similar styles/trading patterns"
   email1   VARCHAR(50) NOT NULL, #Unique for each factorId
   email2   VARCHAR(50) NOT NULL,
-  timeFrom DATETIME    NOT NULL,
-  timeTo   DATETIME    NOT NULL,
   PRIMARY KEY (factorId),
   FOREIGN KEY (factorId) REFERENCES Factor (factorId)
 );
@@ -204,9 +237,9 @@ CREATE TABLE StylesFactor (#STYLESFACTOR TABLE#
 DROP TABLE IF EXISTS SectorsFactor CASCADE;
 CREATE TABLE SectorsFactor (#SECTORSFACTOR TABLE#
   factorId INTEGER     NOT NULL, #Represents the factor "Active sectors"
-  sector   VARCHAR(40) NOT NULL, #Unique for each factorId
-  timeFrom DATETIME    NOT NULL,
-  timeTo   DATETIME    NOT NULL,
+  email1   VARCHAR(50) NOT NULL, #Unique for each factorId
+  email2   VARCHAR(50) NOT NULL,
+  sector   VARCHAR(40) NOT NULL,
   PRIMARY KEY (factorId),
   FOREIGN KEY (factorId) REFERENCES Factor (factorId)
 );
@@ -214,9 +247,9 @@ CREATE TABLE SectorsFactor (#SECTORSFACTOR TABLE#
 DROP TABLE IF EXISTS SymbolsFactor CASCADE;
 CREATE TABLE SymbolsFactor (#SYMBOLSFACTOR TABLE#
   factorId INTEGER     NOT NULL, #Represents the factor "Active Stocks (symbol)"
-  symbol   VARCHAR(10) NOT NULL, #Unique for each factorId
-  timeFrom DATETIME    NOT NULL,
-  timeTo   DATETIME    NOT NULL,
+  email1   VARCHAR(50) NOT NULL, #Unique for each factorId
+  email2   VARCHAR(50) NOT NULL,
+  symbol   VARCHAR(10) NOT NULL,
   PRIMARY KEY (factorId),
   FOREIGN KEY (factorId) REFERENCES Factor (factorId)
 );
@@ -225,8 +258,6 @@ DROP TABLE IF EXISTS TradersFactor CASCADE;
 CREATE TABLE TradersFactor (#TRADERSFACTOR TABLE#
   factorId INTEGER     NOT NULL, #Represents the factor "Particularly active Traders"
   email    VARCHAR(50) NOT NULL, #Unique for each factorId
-  timeFrom DATETIME    NOT NULL,
-  timeTo   DATETIME    NOT NULL,
   PRIMARY KEY (factorId),
   FOREIGN KEY (factorId) REFERENCES Factor (factorId)
 );
@@ -235,8 +266,6 @@ DROP TABLE IF EXISTS PerformancesFactor CASCADE;
 CREATE TABLE PerformancesFactor (#PERFORMANCESFACTOR TABLE#
   factorId INTEGER     NOT NULL, #Represents the factor "Anomalous market performance for trader"
   email    VARCHAR(50) NOT NULL, #Unique for each factorId
-  timeFrom DATETIME    NOT NULL,
-  timeTo   DATETIME    NOT NULL,
   PRIMARY KEY (factorId),
   FOREIGN KEY (factorId) REFERENCES Factor (factorId)
 );
@@ -247,8 +276,6 @@ CREATE TABLE PricesFactor (#PRICESFACTOR TABLE#
   email1   VARCHAR(50) NOT NULL, #Unique for each factorId
   email2   VARCHAR(50) NOT NULL,
   symbol   VARCHAR(10) NOT NULL,
-  timeFrom DATETIME    NOT NULL,
-  timeTo   DATETIME    NOT NULL,
   PRIMARY KEY (factorId),
   FOREIGN KEY (factorId) REFERENCES Factor (factorId)
 );
@@ -265,4 +292,21 @@ CREATE TABLE StockOwnership (#STOCKOWNERSHIP TABLE#
   FOREIGN KEY (symbol) REFERENCES Symbol (name),
   FOREIGN KEY (email)  REFERENCES Trader (email)
 );
+
+DROP TABLE IF EXISTS TraderTrader CASCADE;
+CREATE TABLE TraderTrader (#TRADERTRADER TABLE#
+  trader1     VARCHAR(50) NOT NULL,
+  trader2     VARCHAR(50) NOT NULL,
+  totalTrades INTEGER     NOT NULL DEFAULT 0, 
+  avg1        INTEGER     NOT NULL DEFAULT 0,
+  avg2        INTEGER     NOT NULL DEFAULT 0,
+  avg3        INTEGER     NOT NULL DEFAULT 0,
+  avg12       BOOLEAN     NOT NULL DEFAULT FALSE,
+  avg23       BOOLEAN     NOT NULL DEFAULT FALSE,
+  PRIMARY KEY (trader1, trader2),
+  FOREIGN KEY (trader1) REFERENCES Trader (email),
+  FOREIGN KEY (trader2) REFERENCES Trader (email)
+);
+
+
 */
