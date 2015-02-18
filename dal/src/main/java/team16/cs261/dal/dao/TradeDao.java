@@ -2,9 +2,11 @@ package team16.cs261.dal.dao;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.stereotype.Component;
+import team16.cs261.dal.entity.Comm;
 import team16.cs261.dal.entity.Trade;
 import team16.cs261.dal.entity.Trader;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +32,9 @@ public class TradeDao extends AbstractDao<Integer, Trade> {
 
     @Override
     public void insert(Trade ent) {
-        jdbcTemplate.update(INSERT, ent.getTime(),
+        jdbcTemplate.update(
+                INSERT,
+                ent.getTime(),
                 ent.getBuyer(),
                 ent.getSeller(),
                 ent.getPrice(),
@@ -39,8 +43,33 @@ public class TradeDao extends AbstractDao<Integer, Trade> {
                 ent.getSymbol(),
                 ent.getSector(),
                 ent.getBid(),
-                ent.getAsk());
+                ent.getAsk()
+        );
     }
+
+    @Override
+    public void insert(final Iterable<Trade> ents) {
+        List<Object[]> args = new ArrayList<>();
+        for (Trade ent : ents) {
+            args.add(new Object[]{
+                    ent.getTime(),
+                    ent.getBuyer(),
+                    ent.getSeller(),
+                    ent.getPrice(),
+                    ent.getCurrency(),
+                    ent.getSize(),
+                    ent.getSymbol(),
+                    ent.getSector(),
+                    ent.getBid(),
+                    ent.getAsk()
+            });
+        }
+
+        jdbcTemplate.batchUpdate(INSERT, args);
+    }
+
+
+
 
     /*@Override
     public List<Trade> selectAll() {

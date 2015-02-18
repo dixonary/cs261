@@ -16,7 +16,7 @@ $(function () {
         //"autoWidth": false,
         //"bPaginate": true,
         //"bProcessing": true,
-        "lengthMenu": [ 10, 25, 50, 100 ],
+        "lengthMenu": [ 25, 50, 100, 200 ],
         serverSide: true,
         ajax: '/trades/query',
         "columns": [

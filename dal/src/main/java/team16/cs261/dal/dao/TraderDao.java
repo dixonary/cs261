@@ -47,15 +47,12 @@ public class TraderDao extends AbstractDao<String, Trader> {
 
     @Override
     public void insert(final Iterable<Trader> ents) {
-
         List<Object[]> args = new ArrayList<>();
         for (Trader ent : ents) {
             args.add(new Object[]{ent.getEmail(), ent.getDomain()});
         }
 
         jdbcTemplate.batchUpdate(INSERT, args);
-
-
     }
 
 /*    @Override
