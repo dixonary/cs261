@@ -3,6 +3,17 @@
 
 SET FOREIGN_KEY_CHECKS = 0;
 
+# statistics
+DROP TABLE IF EXISTS Counter CASCADE;
+CREATE TABLE Counter (#RAWTRADE TABLE#
+  id   INTEGER NOT NULL AUTO_INCREMENT, #Contains the full representation of a Trade as received from the Trades feed
+  val  INTEGER NOT NULL DEFAULT 0,
+  avg1 INTEGER NOT NULL DEFAULT 0,
+  avg2 INTEGER NOT NULL DEFAULT 0,
+  avg3 INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (id)
+);
+
 # raw data tables
 DROP TABLE IF EXISTS RawTrade CASCADE;
 CREATE TABLE RawTrade (#RAWTRADE TABLE#
@@ -20,30 +31,20 @@ CREATE TABLE RawComm (#RAWCOMM TABLE#
 
 DROP TABLE IF EXISTS Trader CASCADE;
 CREATE TABLE Trader (#TRADER TABLE#
-  email       VARCHAR(50) NOT NULL, #Contains entities which represent individual Traders and averages for Trading volume and Profit
-  domain      VARCHAR(30) NOT NULL, #There email addresses are unique and so are used as our primary key
-  totalTrades INTEGER     NOT NULL DEFAULT 0,
-  tAvg1       INTEGER     NOT NULL DEFAULT 0,
-  tAvg2       INTEGER     NOT NULL DEFAULT 0,
-  tAvg3       INTEGER     NOT NULL DEFAULT 0,
-  pAvg1       INTEGER     NOT NULL DEFAULT 0,
-  pAvg2       INTEGER     NOT NULL DEFAULT 0,
-  pAvg3       INTEGER     NOT NULL DEFAULT 0,
-  PRIMARY KEY (email)
+  email    VARCHAR(50) NOT NULL, #Contains entities which represent individual Traders and averages for Trading volume and Profit
+  domain   VARCHAR(30) NOT NULL, #There email addresses are unique and so are used as our primary key
+  tradeCnt INTEGER     NOT NULL,
+  PRIMARY KEY (email),
+  FOREIGN KEY (tradeCnt) REFERENCES Counter (id)
 );
 
 DROP TABLE IF EXISTS Symbol CASCADE;
 CREATE TABLE Symbol (#SYMBOL TABLE#
-  name        VARCHAR(10) NOT NULL, #Contains entities which represent individual Stocks and averages for Trading volume and Profit
-  sector      VARCHAR(40) NOT NULL, #Each Stock is unique on it's name/symbol
-  price       FLOAT       NOT NULL DEFAULT 0,
-  totalTrades INTEGER     NOT NULL DEFAULT 0,
-  tAvg1       INTEGER     NOT NULL DEFAULT 0,
-  tAvg2       INTEGER     NOT NULL DEFAULT 0,
-  tAvg3       INTEGER     NOT NULL DEFAULT 0,
-  pAvg1       INTEGER     NOT NULL DEFAULT 0,
-  pAvg2       INTEGER     NOT NULL DEFAULT 0,
-  pAvg3       INTEGER     NOT NULL DEFAULT 0,
+  name     VARCHAR(10) NOT NULL, #Contains entities which represent individual Stocks and averages for Trading volume and Profit
+  sector   VARCHAR(40) NOT NULL, #Each Stock is unique on it's name/symbol
+  price    FLOAT       NOT NULL DEFAULT 0,
+  tradeCnt INTEGER     NOT NULL,
+  priceCnt INTEGER     NOT NULL,
   PRIMARY KEY (name),
   FOREIGN KEY (sector) REFERENCES Sector (name)
 );
