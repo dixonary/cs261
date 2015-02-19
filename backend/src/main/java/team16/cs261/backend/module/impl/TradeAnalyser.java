@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import team16.cs261.backend.Config;
+import team16.cs261.backend.module.AnalyserModule;
 import team16.cs261.backend.module.Module;
 import team16.cs261.dal.dao.*;
 import team16.cs261.dal.entity.*;
@@ -17,8 +18,11 @@ import java.util.*;
  * Created by martin on 22/01/15.
  */
 
+// time,buyer,seller,price,size,currency,symbol,sector,bid,ask
+// 2015-02-14 08:43:55.480228,w.hastings@bridgewater.com,a.clare@sorrel.com,925.50,27714,GBX,ARM.L,Technology,932.19,933.05
+
 @Component
-public class TradeAnalyser extends Module {
+public class TradeAnalyser extends AnalyserModule {
 
     @Autowired
     RawTradeDao rawTrades;
@@ -106,10 +110,8 @@ public class TradeAnalyser extends Module {
     public static Trade parseTrade(String raw) throws ParseException {
         String[] parts = raw.split(",");
 
-        Date date = formatter.parse(parts[0].substring(0, 23));
-
         return new Trade(
-                date.getTime(),
+                parseTimestamp(parts[0]),
                 parts[1],
                 parts[2],
                 Float.parseFloat(parts[3]),

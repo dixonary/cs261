@@ -25,14 +25,9 @@ public class TradeListener extends ListenerModule {
     @Autowired
     RawTradeDao rawTrades;
 
-
-
-
     @Autowired
     public TradeListener(Config config) throws IOException {
         super(config, "TRADE-LISTENER", config.getHostname(), config.getTradesPort());
-
-
     }
 
     @Override
@@ -41,9 +36,4 @@ public class TradeListener extends ListenerModule {
 
         rawTrades.insert(new RawTrade(in));
     }
-
-
-
-// time,buyer,seller,price,size,currency,symbol,sector,bid,ask
-// 2015-02-14 08:43:55.480228,w.hastings@bridgewater.com,a.clare@sorrel.com,925.50,27714,GBX,ARM.L,Technology,932.19,933.05
 }
