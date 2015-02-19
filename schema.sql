@@ -35,6 +35,7 @@ CREATE TABLE Trader (#TRADER TABLE#
 DROP TABLE IF EXISTS Symbol CASCADE;
 CREATE TABLE Symbol (#SYMBOL TABLE#
   name        VARCHAR(10) NOT NULL, #Contains entities which represent individual Stocks and averages for Trading volume and Profit
+  sector        VARCHAR(40) NOT NULL,
   price       FLOAT       NOT NULL DEFAULT 0, #Each Stock is unique on it's name/symbol
   totalTrades INTEGER     NOT NULL DEFAULT 0,
   tAvg1       INTEGER     NOT NULL DEFAULT 0,
@@ -43,7 +44,8 @@ CREATE TABLE Symbol (#SYMBOL TABLE#
   pAvg1       INTEGER     NOT NULL DEFAULT 0,
   pAvg2       INTEGER     NOT NULL DEFAULT 0,
   pAvg3       INTEGER     NOT NULL DEFAULT 0,
-  PRIMARY KEY (name)
+  PRIMARY KEY (name),
+  FOREIGN KEY (sector) REFERENCES Sector (name)
 );
 
 DROP TABLE IF EXISTS Sector CASCADE;
