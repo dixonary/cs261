@@ -35,8 +35,8 @@ CREATE TABLE Trader (#TRADER TABLE#
 DROP TABLE IF EXISTS Symbol CASCADE;
 CREATE TABLE Symbol (#SYMBOL TABLE#
   name        VARCHAR(10) NOT NULL, #Contains entities which represent individual Stocks and averages for Trading volume and Profit
-  sector        VARCHAR(40) NOT NULL,
-  price       FLOAT       NOT NULL DEFAULT 0, #Each Stock is unique on it's name/symbol
+  sector      VARCHAR(40) NOT NULL, #Each Stock is unique on it's name/symbol
+  price       FLOAT       NOT NULL DEFAULT 0,
   totalTrades INTEGER     NOT NULL DEFAULT 0,
   tAvg1       INTEGER     NOT NULL DEFAULT 0,
   tAvg2       INTEGER     NOT NULL DEFAULT 0,
@@ -89,27 +89,13 @@ CREATE TABLE Comm (#COMM TABLE#
   FOREIGN KEY (recipient) REFERENCES Trader (email)
 );
 
-DROP TABLE IF EXISTS CommLink CASCADE;
-CREATE TABLE CommLink (#COMMLINK TABLE#
-  trader1     VARCHAR(50) NOT NULL, #Contains the link between individual Communications and individual Traders
-  trader2     VARCHAR(50) NOT NULL, #Tracks the history of communication between two traders in both directions and averages
-  totalTrades INTEGER     NOT NULL DEFAULT 0, #Each entity is unique for each Trader pair
-  avg1        INTEGER     NOT NULL DEFAULT 0,
-  avg2        INTEGER     NOT NULL DEFAULT 0,
-  avg3        INTEGER     NOT NULL DEFAULT 0,
-  PRIMARY KEY (trader1, trader2),
-  FOREIGN KEY (trader1) REFERENCES Trader (email),
-  FOREIGN KEY (trader2) REFERENCES Trader (email)
-);
-
 DROP TABLE IF EXISTS TraderStock CASCADE;
-CREATE TABLE TraderStock (#STOCKOWNERSHIP TABLE#
-  id         INTEGER         NOT NULL AUTO_INCREMENT,
-  email      VARCHAR(50) NOT NULL, #Each entity is unique for a symbol, Trader pair
-  symbol     VARCHAR(10) NOT NULL, #Represents the volume of each stock that a Trader owns (can go negative!)
+CREATE TABLE TraderStock (#TRADERSTOCK TABLE#
+  id         INTEGER     NOT NULL AUTO_INCREMENT, #Each entity is unique for a symbol, Trader pair
+  email      VARCHAR(50) NOT NULL, #Represents the volume of each stock that a Trader owns (can go negative!)
+  symbol     VARCHAR(10) NOT NULL,
   volume     INTEGER     NOT NULL DEFAULT 0,
   lastUpdate LONG        NOT NULL,
-  #PRIMARY KEY (symbol, email),
   PRIMARY KEY (id),
   UNIQUE KEY (email, symbol),
   FOREIGN KEY (email) REFERENCES Trader (email),
@@ -118,15 +104,25 @@ CREATE TABLE TraderStock (#STOCKOWNERSHIP TABLE#
 
 # analysis results
 
-DROP TABLE IF EXISTS TraderTrader CASCADE;
-CREATE TABLE TraderTrader (#TRADERTRADER TABLE#
-  trader1     VARCHAR(50) NOT NULL, #Represents the number of Stocks a pair of Traders have in common
-  trader2     VARCHAR(50) NOT NULL, #Each entity is unique for each Trader pair
-  totalStocks INTEGER     NOT NULL DEFAULT 0,
-  avg1        INTEGER     NOT NULL DEFAULT 0,
-  avg2        INTEGER     NOT NULL DEFAULT 0,
-  avg3        INTEGER     NOT NULL DEFAULT 0,
-  PRIMARY KEY (trader1, trader2),
+DROP TABLE IF EXISTS TraderPair CASCADE;
+CREATE TABLE TraderPair (#TRADERPAIR TABLE#
+  id          INTEGER     NOT NULL AUTO_INCREMENT,
+  trader1     VARCHAR(50) NOT NULL, #Each entity is unique for a Trader pair
+  trader2     VARCHAR(50) NOT NULL, #Represents the stocks in common, Trades and Communications between Trader pairs
+  totalStocks INTEGER     NOT NULL DEFAULT 0, #number of stocks in common
+  sAvg1       INTEGER     NOT NULL DEFAULT 0,
+  sAvg2       INTEGER     NOT NULL DEFAULT 0,
+  sAvg3       INTEGER     NOT NULL DEFAULT 0,
+  totalTrades INTEGER     NOT NULL DEFAULT 0, #number of trades between them
+  tAvg1       INTEGER     NOT NULL DEFAULT 0,
+  tAvg2       INTEGER     NOT NULL DEFAULT 0,
+  tAvg3       INTEGER     NOT NULL DEFAULT 0,
+  totalComms  INTEGER     NOT NULL DEFAULT 0, #number of communications between them
+  cAvg1       INTEGER     NOT NULL DEFAULT 0,
+  cAvg2       INTEGER     NOT NULL DEFAULT 0,
+  cAvg3       INTEGER     NOT NULL DEFAULT 0,
+  PRIMARY KEY (id),
+  UNIQUE KEY (trader1, trader2),
   FOREIGN KEY (trader1) REFERENCES Trader (email),
   FOREIGN KEY (trader2) REFERENCES Trader (email)
 );
