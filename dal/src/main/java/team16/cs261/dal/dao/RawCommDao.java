@@ -12,11 +12,7 @@ import team16.cs261.dal.entity.Trade;
 @Component
 public class RawCommDao extends AbstractDao<Integer, RawComm> {
 
-    private static final String SELECT = "SELECT * FROM Trade";
-    private static final String SELECT_AND_LIMIT = "SELECT * FROM Trade LIMIT ?, ?";
-
     private static final String INSERT = "INSERT INTO RawComm (raw) VALUES (?);";
-
 
     public RawCommDao() {
         super(RawComm.class);
