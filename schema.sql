@@ -102,13 +102,16 @@ CREATE TABLE CommLink (#COMMLINK TABLE#
 
 DROP TABLE IF EXISTS TraderStock CASCADE;
 CREATE TABLE TraderStock (#STOCKOWNERSHIP TABLE#
+  id         INT         NOT NULL AUTO_INCREMENT,
   symbol     VARCHAR(10) NOT NULL, #Represents the volume of each stock that a Trader owns (can go negative!)
   email      VARCHAR(50) NOT NULL, #Each entity is unique for a symbol, Trader pair
   volume     INTEGER     NOT NULL DEFAULT 0,
   lastUpdate LONG        NOT NULL,
-  PRIMARY KEY (symbol, email),
+  #PRIMARY KEY (symbol, email),
+  PRIMARY KEY (id),
+  UNIQUE KEY (symbol, email),
   FOREIGN KEY (symbol) REFERENCES Symbol (name),
-  FOREIGN KEY (email)  REFERENCES Trader (email)
+  FOREIGN KEY (email) REFERENCES Trader (email)
 );
 
 # analysis results
@@ -117,7 +120,7 @@ DROP TABLE IF EXISTS TraderTrader CASCADE;
 CREATE TABLE TraderTrader (#TRADERTRADER TABLE#
   trader1     VARCHAR(50) NOT NULL, #Represents the number of Stocks a pair of Traders have in common
   trader2     VARCHAR(50) NOT NULL, #Each entity is unique for each Trader pair
-  totalStocks INTEGER     NOT NULL DEFAULT 0, 
+  totalStocks INTEGER     NOT NULL DEFAULT 0,
   avg1        INTEGER     NOT NULL DEFAULT 0,
   avg2        INTEGER     NOT NULL DEFAULT 0,
   avg3        INTEGER     NOT NULL DEFAULT 0,
@@ -156,7 +159,7 @@ CREATE TABLE TradeFactor (#TRADEFACTOR TABLE#
   tradeId  INTEGER NOT NULL, #Linking table between the Factor and Trade tables
   factorId INTEGER NOT NULL, #Each entity is unique for a tradeId factorId pair
   PRIMARY KEY (tradeId, factorId),
-  FOREIGN KEY (tradeId)  REFERENCES Trade (id),
+  FOREIGN KEY (tradeId) REFERENCES Trade (id),
   FOREIGN KEY (factorId) REFERENCES Factor (factorId)
 );
 
@@ -165,7 +168,7 @@ CREATE TABLE CommFactor (#COMMFACTOR TABLE#
   commId   INTEGER NOT NULL, #Linking table between the Factor and Communication tables
   factorId INTEGER NOT NULL, #Each entity is unique for a commId factorId pair
   PRIMARY KEY (commId, factorId),
-  FOREIGN KEY (commId)   REFERENCES Comm (id),
+  FOREIGN KEY (commId) REFERENCES Comm (id),
   FOREIGN KEY (factorId) REFERENCES Factor (factorId)
 );
 
