@@ -104,16 +104,16 @@ CREATE TABLE CommLink (#COMMLINK TABLE#
 
 DROP TABLE IF EXISTS TraderStock CASCADE;
 CREATE TABLE TraderStock (#STOCKOWNERSHIP TABLE#
-  id         INT         NOT NULL AUTO_INCREMENT,
-  symbol     VARCHAR(10) NOT NULL, #Represents the volume of each stock that a Trader owns (can go negative!)
+  id         INTEGER         NOT NULL AUTO_INCREMENT,
   email      VARCHAR(50) NOT NULL, #Each entity is unique for a symbol, Trader pair
+  symbol     VARCHAR(10) NOT NULL, #Represents the volume of each stock that a Trader owns (can go negative!)
   volume     INTEGER     NOT NULL DEFAULT 0,
   lastUpdate LONG        NOT NULL,
   #PRIMARY KEY (symbol, email),
   PRIMARY KEY (id),
-  UNIQUE KEY (symbol, email),
-  FOREIGN KEY (symbol) REFERENCES Symbol (name),
-  FOREIGN KEY (email) REFERENCES Trader (email)
+  UNIQUE KEY (email, symbol),
+  FOREIGN KEY (email) REFERENCES Trader (email),
+  FOREIGN KEY (symbol) REFERENCES Symbol (name)
 );
 
 # analysis results
