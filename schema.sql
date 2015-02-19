@@ -100,8 +100,8 @@ CREATE TABLE CommLink (#COMMLINK TABLE#
   FOREIGN KEY (trader2) REFERENCES Trader (email)
 );
 
-DROP TABLE IF EXISTS StockOwnership CASCADE;
-CREATE TABLE StockOwnership (#STOCKOWNERSHIP TABLE#
+DROP TABLE IF EXISTS TraderStock CASCADE;
+CREATE TABLE TraderStock (#STOCKOWNERSHIP TABLE#
   symbol     VARCHAR(10) NOT NULL, #Represents the volume of each stock that a Trader owns (can go negative!)
   email      VARCHAR(50) NOT NULL, #Each entity is unique for a symbol, Trader pair
   volume     INTEGER     NOT NULL DEFAULT 0,
