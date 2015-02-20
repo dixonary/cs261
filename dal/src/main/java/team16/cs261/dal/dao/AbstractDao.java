@@ -42,14 +42,6 @@ public abstract class AbstractDao<ID, E> {
         deleteFromIdIn = "DELETE FROM " + tableName + " WHERE " + idColumn + " IN ";
     }
 
-    public void insert(E e) {
-
-    }
-
-    public void insert(Iterable<E> e) {
-
-    }
-
 
     public void delete(List<Integer> ids) {
         if(ids.size()==0) return;

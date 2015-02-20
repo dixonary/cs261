@@ -18,14 +18,11 @@ public class RawCommDao extends AbstractDao<Integer, RawComm> {
         super(RawComm.class);
     }
 
-    @Override
     public void insert(RawComm ent) {
         jdbcTemplate.update(
                 INSERT,
                 ent.getRaw()
         );
     }
-
-
 
 }

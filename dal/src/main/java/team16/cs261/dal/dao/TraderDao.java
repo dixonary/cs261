@@ -21,6 +21,7 @@ public class TraderDao extends AbstractDao<String, Trader> {
     //"avg_1 integer NOT NULL,Avg_2 integer NOT NULL,Avg_3 integer NOT NULL,PRIMARY KEY(Email));";
 
     private static final String INSERT = "INSERT IGNORE INTO Trader (email, domain)  VALUES (?, ?)";
+    //private static final String INSERT = "CALL InsertTrader(?, ?)";
 
     private static final String SELECT = "SELECT * FROM Trader";
     private static final String SELECT_BY_ID = "SELECT * FROM Trader WHERE email = ?";
@@ -40,12 +41,10 @@ public class TraderDao extends AbstractDao<String, Trader> {
         //execute(CREATE_TABLE);
     }
 
-    @Override
     public void insert(Trader trader) {
         jdbcTemplate.update(INSERT, trader.getEmail(), trader.getDomain());
     }
 
-    @Override
     public void insert(final Iterable<Trader> ents) {
         List<Object[]> args = new ArrayList<>();
         for (Trader ent : ents) {

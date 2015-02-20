@@ -26,7 +26,7 @@ public class CommListener extends ListenerModule {
 
     @Override
     public void onLine(String in) throws IOException {
-        log(in);
+        //log(in);
 
         rawComms.insert(new RawComm((in)));
     }

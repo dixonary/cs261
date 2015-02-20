@@ -22,12 +22,10 @@ public class CommDao extends AbstractDao<Integer, Comm> {
         super(Comm.class);
     }
 
-    @Override
     public void insert(Comm ent) {
         jdbcTemplate.update(INSERT, ent.getTimestamp(), ent.getSender(), ent.getRecipient());
     }
 
-    @Override
     public void insert(final Iterable<Comm> ents) {
         List<Object[]> args = new ArrayList<>();
         for (Comm ent : ents) {

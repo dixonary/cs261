@@ -1,12 +1,9 @@
 package team16.cs261.dal.dao;
 
-import javafx.beans.binding.Bindings;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.stereotype.Component;
 import team16.cs261.dal.entity.RawTrade;
-import team16.cs261.dal.entity.Trade;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -31,13 +28,11 @@ public class RawTradeDao extends AbstractDao<Integer, RawTrade> {
     }
 
 
-    @Override
     public void insert(RawTrade ent) {
         jdbcTemplate.update(
                 INSERT,
                 ent.getRaw()
         );
     }
-
 
 }

@@ -24,13 +24,14 @@ public class TradeDao extends AbstractDao<Integer, Trade> {
     private static final String SELECT_AND_LIMIT = "SELECT * FROM Trade LIMIT ?, ?";
 
     private static final String INSERT = "INSERT INTO Trade (time, buyer, seller, price, currency, size, symbol, sector, bid, ask) VALUES (?,?,?,?,?,?,?,?,?,?);";
+    //private static final String INSERT = "INSERT INTO Trade (time, buyer, seller, price, currency, size, symbol, sector, bid, ask) VALUES (?,?,?,?,?,?,?,?,?,?);";
 
 
     public TradeDao() {
         super(Trade.class);
     }
 
-    @Override
+    //@Override
     public void insert(Trade ent) {
         jdbcTemplate.update(
                 INSERT,
@@ -47,7 +48,7 @@ public class TradeDao extends AbstractDao<Integer, Trade> {
         );
     }
 
-    @Override
+    //@Override
     public void insert(final Iterable<Trade> ents) {
         List<Object[]> args = new ArrayList<>();
         for (Trade ent : ents) {

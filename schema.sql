@@ -34,8 +34,8 @@ CREATE TABLE Trader (#TRADER TABLE#
   email    VARCHAR(50) NOT NULL, #Contains entities which represent individual Traders and averages for Trading volume and Profit
   domain   VARCHAR(30) NOT NULL, #There email addresses are unique and so are used as our primary key
   tradeCnt INTEGER     NOT NULL,
-  PRIMARY KEY (email),
-  FOREIGN KEY (tradeCnt) REFERENCES Counter (id)
+  PRIMARY KEY (email)#,
+  #FOREIGN KEY (tradeCnt) REFERENCES Counter (id)
 );
 
 DROP TABLE IF EXISTS Symbol CASCADE;
@@ -46,17 +46,17 @@ CREATE TABLE Symbol (#SYMBOL TABLE#
   tradeCnt INTEGER     NOT NULL,
   priceCnt INTEGER     NOT NULL,
   PRIMARY KEY (name),
-  FOREIGN KEY (sector) REFERENCES Sector (name),
-  FOREIGN KEY (tradeCnt) REFERENCES Counter (id),
-  FOREIGN KEY (priceCnt) REFERENCES Counter (id)
+  FOREIGN KEY (sector) REFERENCES Sector (name)#,
+  #FOREIGN KEY (tradeCnt) REFERENCES Counter (id),
+  #FOREIGN KEY (priceCnt) REFERENCES Counter (id)
 );
 
 DROP TABLE IF EXISTS Sector CASCADE;
 CREATE TABLE Sector (#SECTOR TABLE#
   name        VARCHAR(40) NOT NULL, #Contains entities which represent individual sectors and averages for Trading volume
   tradeCnt    INTEGER     NOT NULL, #Each sector is unique on it's name
-  PRIMARY KEY (name),
-  FOREIGN KEY (tradeCnt) REFERENCES Counter (id)
+  PRIMARY KEY (name)#,
+  #FOREIGN KEY (tradeCnt) REFERENCES Counter (id)
 );
 
 DROP TABLE IF EXISTS Trade CASCADE;
@@ -110,16 +110,16 @@ CREATE TABLE TraderPair (#TRADERPAIR TABLE#
   id          INTEGER     NOT NULL AUTO_INCREMENT,
   trader1     VARCHAR(50) NOT NULL, #Each entity is unique for a Trader pair
   trader2     VARCHAR(50) NOT NULL, #Represents the stocks in common, Trades and Communications between Trader pairs
-  stockCnt    INTEGER     NOT NULL, #number of stocks in common
-  tradeCnt    INTEGER     NOT NULL, #number of trades between them
-  commCnt     INTEGER     NOT NULL, #number of communications between them
+  #stockCnt    INTEGER     NOT NULL, #number of stocks in common
+  #tradeCnt    INTEGER     NOT NULL, #number of trades between them
+  #commCnt     INTEGER     NOT NULL, #number of communications between them
   PRIMARY KEY (id),
   UNIQUE KEY (trader1, trader2),
   FOREIGN KEY (trader1) REFERENCES Trader (email),
-  FOREIGN KEY (trader2) REFERENCES Trader (email),
-  FOREIGN KEY (stockCnt) REFERENCES Counter (id),
-  FOREIGN KEY (tradeCnt) REFERENCES Counter (id),
-  FOREIGN KEY (commCnt) REFERENCES Counter (id)
+  FOREIGN KEY (trader2) REFERENCES Trader (email)#,
+  #FOREIGN KEY (stockCnt) REFERENCES Counter (id),
+  #FOREIGN KEY (tradeCnt) REFERENCES Counter (id),
+  #FOREIGN KEY (commCnt) REFERENCES Counter (id)
 );
 
 DROP TABLE IF EXISTS Cluster CASCADE;

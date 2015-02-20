@@ -3,7 +3,6 @@ package team16.cs261.dal.dao;
 import org.springframework.stereotype.Component;
 import team16.cs261.dal.entity.Counter;
 import team16.cs261.dal.entity.Trade;
-import team16.cs261.dal.entity.TraderPair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,14 +20,12 @@ public class CounterDao extends AbstractDao<Integer, Counter> {
         super(Counter.class);
     }
 
-    @Override
     public void insert(Counter ent) {
         jdbcTemplate.update(
                 INSERT, 0
         );
     }
 
-    @Override
     public void insert(final Iterable<Counter> ents) {
         List<Object[]> args = new ArrayList<>();
         for (Counter ent : ents) {

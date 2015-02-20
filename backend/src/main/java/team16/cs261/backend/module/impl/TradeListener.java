@@ -32,7 +32,7 @@ public class TradeListener extends ListenerModule {
 
     @Override
     public void onLine(String in) throws IOException {
-        log(in);
+        //log(in);
 
         rawTrades.insert(new RawTrade(in));
     }

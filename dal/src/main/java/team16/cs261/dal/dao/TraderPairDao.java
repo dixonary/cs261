@@ -27,7 +27,6 @@ public class TraderPairDao extends AbstractDao<Integer, TraderPair> {
         super(TraderPair.class);
     }
 
-    @Override
     public void insert(TraderPair ent) {
         jdbcTemplate.update(
                 INSERT,
@@ -36,7 +35,6 @@ public class TraderPairDao extends AbstractDao<Integer, TraderPair> {
         );
     }
 
-    @Override
     public void insert(final Iterable<TraderPair> ents) {
         List<Object[]> args = new ArrayList<>();
         for (TraderPair ent : ents) {

@@ -53,6 +53,7 @@ public class TradeAnalyser extends AnalyserModule {
 
     @Transactional
     public void process() {
+        long started = System.currentTimeMillis();
         List<RawTrade> ents = rawTrades.selectAllLimit(100);
         List<Integer> rawIds = new ArrayList<>();
 
@@ -93,10 +94,11 @@ public class TradeAnalyser extends AnalyserModule {
         tradeDao.insert(tradeEnts);
 
         System.out.println("Ids: " + AbstractDao.toList(rawIds));
-
         rawTrades.delete(rawIds);
 
         traderStockDao.updateTraderStock(tradeEnts);
+
+        System.out.println("Elapsed: " + (System.currentTimeMillis() - started));
     }
 
 

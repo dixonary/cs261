@@ -19,12 +19,10 @@ public class SectorDao extends AbstractDao<Integer, Sector> {
         super(Sector.class);
     }
 
-    @Override
     public void insert(Sector sector) {
         jdbcTemplate.update(INSERT, sector.getName());
     }
 
-    @Override
     public void insert(final Iterable<Sector> ents) {
         List<Object[]> args = new ArrayList<>();
         for (Sector ent : ents) {
