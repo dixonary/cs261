@@ -31,10 +31,15 @@ public abstract class AnalyserModule extends Module {
      */
 
     public static long parseTimestamp(String raw) {
+
+
+
         try {
             Date date = formatter.parse(raw.substring(0, 23));
             return date.getTime();
         } catch (ParseException e) {
+            System.out.println("Failed parsing: '" +  raw +"'");
+            e.printStackTrace();
             return 0;
         }
     }

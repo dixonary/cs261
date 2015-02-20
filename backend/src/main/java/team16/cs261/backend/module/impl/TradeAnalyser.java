@@ -62,6 +62,15 @@ public class TradeAnalyser extends AnalyserModule {
         List<Symbol> symbolEnts = new ArrayList<>();
         List<Sector> sectorEnts = new ArrayList<>();
 
+        if(ents.size() == 0) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+
         for (RawTrade raw : ents) {
             rawIds.add(raw.getId());
 
