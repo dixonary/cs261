@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import team16.cs261.backend.Config;
 import team16.cs261.backend.module.AnalyserModule;
-import team16.cs261.backend.module.Module;
 import team16.cs261.dal.dao.CommDao;
 import team16.cs261.dal.dao.RawCommDao;
 import team16.cs261.dal.dao.TradeDao;
@@ -15,10 +14,7 @@ import team16.cs261.dal.entity.RawComm;
 import team16.cs261.dal.entity.Trader;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -59,8 +55,6 @@ public class CommAnalyser extends AnalyserModule {
 
         List<Trader> traderEnts = new ArrayList<>();
         List<Comm> commEnts = new ArrayList<>();
-
-
 
         for (RawComm rawComm : rawCommEnts) {
             rawIds.add(rawComm.getId());

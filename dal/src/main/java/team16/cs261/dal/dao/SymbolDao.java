@@ -14,21 +14,21 @@ import java.util.List;
 @Component
 public class SymbolDao extends AbstractDao<Integer, Symbol> {
 
-    private static final String INSERT = "INSERT IGNORE INTO Symbol (name) VALUES (?);";
+    private static final String INSERT = "INSERT IGNORE INTO Symbol (name, sector) VALUES (?, ?);";
 
     public SymbolDao() {
         super(Symbol.class);
     }
 
     public void insert(Symbol symbol) {
-        jdbcTemplate.update(INSERT, symbol.getName());
+        jdbcTemplate.update(INSERT, symbol.getName(), symbol.getSector());
     }
 
     @Override
     public void insert(final Iterable<Symbol> ents) {
         List<Object[]> args = new ArrayList<>();
         for (Symbol ent : ents) {
-            args.add(new Object[]{ent.getName()});
+            args.add(new Object[]{ent.getName(), ent.getSector()});
         }
 
         jdbcTemplate.batchUpdate(INSERT, args);

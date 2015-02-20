@@ -5,14 +5,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import team16.cs261.backend.Config;
 import team16.cs261.backend.module.AnalyserModule;
-import team16.cs261.backend.module.Module;
 import team16.cs261.dal.dao.*;
 import team16.cs261.dal.entity.*;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by martin on 22/01/15.
@@ -36,6 +35,8 @@ public class TradeAnalyser extends AnalyserModule {
     @Autowired
     SectorDao sectorDao;
 
+    @Autowired
+    TraderStockDao traderStockDao;
 
     @Autowired
     public TradeAnalyser(Config config) throws IOException {
@@ -55,7 +56,7 @@ public class TradeAnalyser extends AnalyserModule {
         List<RawTrade> ents = rawTrades.selectAllLimit(100);
         List<Integer> rawIds = new ArrayList<>();
 
-        Set<Trade> tradeEnts = new HashSet<>();
+        List<Trade> tradeEnts = new ArrayList<>();
         List<Trader> traderEnts = new ArrayList<>();
         List<Symbol> symbolEnts = new ArrayList<>();
         List<Sector> sectorEnts = new ArrayList<>();
@@ -71,32 +72,34 @@ public class TradeAnalyser extends AnalyserModule {
                 return;
             }
 
-            Symbol symbol = new Symbol(trade.getSymbol());
+            Trader buyer = Trader.parseRaw(trade.getBuyer());
+            Trader seller = Trader.parseRaw(trade.getSeller());
             Sector sector = new Sector(trade.getSector());
+            Symbol symbol = new Symbol(trade.getSymbol(), trade.getSector());
 
-            traderEnts.add(Trader.parseRaw(trade.getBuyer()));
-            traderEnts.add(Trader.parseRaw(trade.getSeller()));
+            traderEnts.add(buyer);
+            traderEnts.add(seller);
+            sectorEnts.add(sector);
+            symbolEnts.add(symbol);
 
             tradeEnts.add(trade);
-            symbolEnts.add(symbol);
-            sectorEnts.add(sector);
         }
 
         traderDao.insert(traderEnts);
 
-        symbolDao.insert(symbolEnts);
         sectorDao.insert(sectorEnts);
+        symbolDao.insert(symbolEnts);
 
         tradeDao.insert(tradeEnts);
 
         System.out.println("Ids: " + AbstractDao.toList(rawIds));
 
         rawTrades.delete(rawIds);
+
+        traderStockDao.updateTraderStock(tradeEnts);
     }
 
 
-
-    public static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     /**
      * For the moment it strips precision down to milliseconds because:

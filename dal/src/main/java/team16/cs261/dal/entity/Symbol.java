@@ -6,6 +6,7 @@ package team16.cs261.dal.entity;
 public class Symbol {
 
     private String name;
+    private String sector;
     private float price;
     private int totalTrades;
 
@@ -14,8 +15,9 @@ public class Symbol {
     public Symbol() {
     }
 
-    public Symbol(String name) {
+    public Symbol(String name, String sector) {
         this.name = name;
+        this.sector = sector;
     }
 
     public String getName() {
@@ -24,6 +26,14 @@ public class Symbol {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getSector() {
+        return sector;
+    }
+
+    public void setSector(String sector) {
+        this.sector = sector;
     }
 
     public float getPrice() {
