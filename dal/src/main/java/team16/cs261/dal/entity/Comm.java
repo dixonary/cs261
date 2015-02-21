@@ -6,7 +6,7 @@ package team16.cs261.dal.entity;
 public class Comm {
 
     private int id;
-    private long timestamp;
+    private long time;
     private String sender;
     private String recipient;
 
@@ -14,8 +14,8 @@ public class Comm {
 
     }
 
-    public Comm(long timestamp, String sender, String recipient) {
-        this.timestamp = timestamp;
+    public Comm(long time, String sender, String recipient) {
+        this.time = time;
         this.sender = sender;
         this.recipient = recipient;
     }
@@ -28,12 +28,12 @@ public class Comm {
         this.id = id;
     }
 
-    public long getTimestamp() {
-        return timestamp;
+    public long getTime() {
+        return time;
     }
 
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
+    public void setTime(long time) {
+        this.time = time;
     }
 
     public String getSender() {
@@ -56,7 +56,7 @@ public class Comm {
     public String toString() {
         return "Comm{" +
                 "id=" + id +
-                ", timestamp=" + timestamp +
+                ", time=" + time +
                 ", sender='" + sender + '\'' +
                 ", recipient='" + recipient + '\'' +
                 '}';

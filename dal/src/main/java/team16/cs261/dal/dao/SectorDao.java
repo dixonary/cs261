@@ -20,13 +20,13 @@ public class SectorDao extends AbstractDao<Integer, Sector> {
     }
 
     public void insert(Sector sector) {
-        jdbcTemplate.update(INSERT, sector.getName());
+        jdbcTemplate.update(INSERT, sector.getSector());
     }
 
     public void insert(final Iterable<Sector> ents) {
         List<Object[]> args = new ArrayList<>();
         for (Sector ent : ents) {
-            args.add(new Object[]{ent.getName()});
+            args.add(new Object[]{ent.getSector()});
         }
 
         jdbcTemplate.batchUpdate(INSERT, args);

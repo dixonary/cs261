@@ -9,18 +9,18 @@ SELECT * FROM Trader WHERE domain="?";
 UPDATE Trader SET avg1="?", avg2="?", avg3="?" WHERE domain="?";
 
 #SYMBOL TABLE#
-INSERT INTO Symbol VALUES(?name,?totalTrades,?avg1,?avg2,?avg3);
+INSERT INTO Symbol VALUES(?symbol,?totalTrades,?avg1,?avg2,?avg3);
 
-SELECT * FROM Symbol WHERE name="?";
+SELECT * FROM Symbol WHERE symbol="?";
 
-UPDATE Symbol SET avg1="?", avg2="?", avg3="?" WHERE name="?";
+UPDATE Symbol SET avg1="?", avg2="?", avg3="?" WHERE symbol="?";
 
 #SECTOR TABLE#
-INSERT INTO Sector VALUES(?name,?totalTrades,?avg1,?avg2,?avg3);
+INSERT INTO Sector VALUES(?symbol,?totalTrades,?avg1,?avg2,?avg3);
 
-SELECT * FROM Sector WHERE name="?";
+SELECT * FROM Sector WHERE symbol="?";
 
-UPDATE Sector SET avg1="?", avg2="?", avg3="?" WHERE name="?";
+UPDATE Sector SET avg1="?", avg2="?", avg3="?" WHERE symbol="?";
 
 #TRADE TABLE#
 INSERT INTO Trade VALUES(?id,?time,?buyer,?seller,?price,?currency,?size,?symbol,?sector,?bid,?ask);

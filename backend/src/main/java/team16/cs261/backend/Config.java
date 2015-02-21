@@ -22,7 +22,41 @@ public class Config {
     @Value("${stream.comm.port}")
     private int commsPort;
 
+    @Value("${analysis.time.interval}")
+    private int timeInterval;
+
+    @Value("${analysis.time.short}")
+    private int timeShort;
+
+    @Value("${analysis.time.long}")
+    private int timeLong;
+
+    public int getTimeInterval() {
+        return timeInterval;
+    }
+
+    public void setTimeInterval(int timeInterval) {
+        this.timeInterval = timeInterval;
+    }
+
+    public int getTimeShort() {
+        return timeShort;
+    }
+
+    public void setTimeShort(int timeShort) {
+        this.timeShort = timeShort;
+    }
+
+    public int getTimeLong() {
+        return timeLong;
+    }
+
+    public void setTimeLong(int timeLong) {
+        this.timeLong = timeLong;
+    }
+
     public Config() {
+
 
     }
 

@@ -37,18 +37,20 @@ public class Application {
     public static Navigation getMenu() {
         MenuItem dashboard = new MenuItem("fa-dashboard", "Dashboard", controllers.routes.Application.index());
 
-        MenuItem clusters = new MenuItem("fa-cubes", "Clusters", controllers.routes.Clusters.collection());
-        MenuItem factors = new MenuItem("fa-cube", "Factors", controllers.routes.Factors.collection());
+        MenuItem clusters = new MenuItem("fa-gears", "Clusters", controllers.routes.Clusters.collection());
+        MenuItem factors = new MenuItem("fa-gear", "Factors", controllers.routes.Factors.collection());
 
         Menu rawData = new Menu("fa-database", "Raw Data");
         rawData.addItem(new MenuItem("fa-exchange", "Trades", controllers.routes.Trades.collection()));
         rawData.addItem(new MenuItem("fa-envelope", "Communications", controllers.routes.Comms.collection()));
         rawData.addItem(new MenuItem("fa-user", "Traders",
-                controllers.routes.Traders.collection(),
+                controllers.routes.Traders.collection()/*,
                 new Call[]{
                         controllers.routes.Traders.element("test")
-                }
+                }*/
         ));
+        rawData.addItem(new MenuItem("fa-cube", "Symbols", controllers.routes.Symbols.collection()));
+        rawData.addItem(new MenuItem("fa-cubes", "Sectors", controllers.routes.Sectors.collection()));
 
 
         Navigation navigation = new Navigation("Navigation");

@@ -3,19 +3,51 @@
 
 DELIMITER //
 DROP PROCEDURE IF EXISTS InsertTrader;
-CREATE PROCEDURE InsertTrader(inEmail TEXT, inDomain TEXT)
+CREATE PROCEDURE InsertTrader(newTrader TEXT, inDomain TEXT)
   BEGIN
-    #DECLARE inDomain TEXT;
-    #inDomain =
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE otherEmail VARCHAR(50);
+    DECLARE tradersCursor CURSOR FOR SELECT email FROM Trader;
 
-    IF NOT EXISTS(SELECT
-                    *
-                  FROM Trader
-                  WHERE email = inEmail)
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    IF NOT EXISTS(SELECT * FROM Trader WHERE email = newTrader)
     THEN
       INSERT INTO Counter VALUES ();
       INSERT INTO Trader (email, domain, tradeCnt)
-      VALUES (inEmail, inDomain, LAST_INSERT_ID());
+          VALUES (newTrader, inDomain, LAST_INSERT_ID());
+
+      OPEN tradersCursor;
+
+      traderLoop: LOOP
+        FETCH tradersCursor INTO otherEmail;
+
+        IF done THEN
+          LEAVE traderLoop;
+        END IF;
+
+        INSERT INTO Counter VALUES (), (), ();
+
+        IF newTrader < otherEmail THEN
+          INSERT INTO TraderPair(trader1, trader2, stockCnt, tradeCnt, commCnt)
+            VALUES (newTrader, otherEmail, LAST_INSERT_ID(), LAST_INSERT_ID()+1, LAST_INSERT_ID()+2);
+        ELSEIF otherEmail < newTrader THEN
+          INSERT INTO TraderPair(trader1, trader2, stockCnt, tradeCnt, commCnt)
+            VALUES (otherEmail, newTrader, LAST_INSERT_ID(), LAST_INSERT_ID()+1, LAST_INSERT_ID()+2);
+        END IF;
+
+      END LOOP;
+
+      CLOSE tradersCursor;
+
+
+
+      #INSERT INTO TraderPair (trader1, trader2)
+        #(SELECT inEmail, email FROM Trader WHERE email > inEmail);
+
+      #INSERT INTO TraderPair (trader1, trader2)
+        #(SELECT email, inEmail FROM Trader WHERE email < inEmail);
+
     END IF;
   END //
 DELIMITER ;
@@ -42,7 +74,6 @@ DELIMITER ;
 
 
 DELIMITER //
-
 DROP PROCEDURE IF EXISTS InsertTrade;
 CREATE PROCEDURE InsertTrade(
   time     LONG,
@@ -60,55 +91,43 @@ CREATE PROCEDURE InsertTrade(
 
     #CALL InsertTrader
 
-    IF NOT EXISTS(SELECT
-                    *
-                  FROM Sector
-                  WHERE name = inName)
-    THEN
-      INSERT INTO Counter VALUES (), ();
-      INSERT INTO Symbol (name, sector, tradeCnt, priceCnt)
-      VALUES (inName, inSector, LAST_INSERT_ID(), LAST_INSERT_ID() + 1);
-    END IF;
+    CALL InsertSector(sector);
+    CALL InsertSymbol(symbol, sector);
+
+    INSERT INTO Trade (time, buyer, seller, price, currency, size, symbol, sector, bid, ask)
+    VALUES (time, buyer, seller, price,currency, size, symbol, sector, bid, ask);
   END //
 DELIMITER ;
 
 DELIMITER //
 DROP PROCEDURE IF EXISTS InsertSector;
-CREATE PROCEDURE InsertSector(inName TEXT)
+CREATE PROCEDURE InsertSector(inSector VARCHAR(40))
   BEGIN
     IF NOT EXISTS(SELECT
                     *
                   FROM Sector
-                  WHERE name = inName)
+                  WHERE sector = inSector)
     THEN
       INSERT INTO Counter VALUES (), ();
-      INSERT INTO Sector (name, tradeCnt)
-      VALUES (inName, LAST_INSERT_ID());
+      INSERT INTO Sector (sector, tradeCnt)
+      VALUES (inSector, LAST_INSERT_ID());
     END IF;
   END //
 DELIMITER ;
 
 DELIMITER //
 DROP PROCEDURE IF EXISTS InsertSymbol;
-CREATE PROCEDURE InsertSymbol(inName TEXT, inSector VARCHAR(40))
+CREATE PROCEDURE InsertSymbol(inSymbol VARCHAR(10), inSEctor VARCHAR(40))
   BEGIN
     IF NOT EXISTS(SELECT
                     *
                   FROM Symbol
-                  WHERE name = inName)
+                  WHERE symbol = inSymbol)
     THEN
       INSERT INTO Counter VALUES (), ();
-      INSERT INTO Symbol (name, sector, tradeCnt, priceCnt)
-      VALUES (inName, inSector, LAST_INSERT_ID(), LAST_INSERT_ID() + 1);
+      INSERT INTO Symbol (symbol, sector, tradeCnt, priceCnt)
+      VALUES (inSymbol, inSEctor, LAST_INSERT_ID(), LAST_INSERT_ID() + 1);
     END IF;
   END //
 DELIMITER ;
 
-
-#INSERT INTO Symbol (name, sector, tradeCnt, priceCnt)
-#    SELECT 'a', 'b', 'c', 'd' FROM Symbol WHERE NOT EXISTS (
-#      INSERT INTO Counter VALUES (), ()
-#)
-
-#"INSERT INTO Counter VALUES (), ()" +
-#            "INSERT IGNORE INTO Symbol (name, sector, tradeCnt, priceCnt) VALUES (?, ?, LAST_INSERT_ID(), LAST_INSERT_ID()+1);";

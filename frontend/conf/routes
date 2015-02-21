@@ -16,10 +16,19 @@ GET        /trades/query        @controllers.Trades.query()
 GET        /trades/query/:email        @controllers.Trades.queryByTraderId(email: String)
 
 GET        /comms        @controllers.Comms.collection()
+GET        /comms/query        @controllers.Comms.query()
 
 GET        /traders        @controllers.Traders.collection()
 GET        /traders/query        @controllers.Traders.query()
 GET        /traders/:email        @controllers.Traders.element(email: String)
+
+GET        /symbols        @controllers.Symbols.collection()
+GET        /symbols/query        @controllers.Symbols.query()
+GET        /symbols/:symbol        @controllers.Symbols.element(symbol: String)
+
+GET        /sectors        @controllers.Sectors.collection()
+GET        /sectors/query        @controllers.Sectors.query()
+GET        /sectors/:sector        @controllers.Sectors.element(sector: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET        /assets/*file        controllers.Assets.at(path="/public", file)

@@ -15,13 +15,8 @@ import java.util.List;
 @Component
 public class TraderDao extends AbstractDao<String, Trader> {
 
-
-    private static final String CREATE_TABLE = "CREATE TABLE Trader " +
-            "(email varchar(50) NOT NULL, domain varchar(30) NOT NULL" + ");";
-    //"avg_1 integer NOT NULL,Avg_2 integer NOT NULL,Avg_3 integer NOT NULL,PRIMARY KEY(Email));";
-
-    private static final String INSERT = "INSERT IGNORE INTO Trader (email, domain)  VALUES (?, ?)";
-    //private static final String INSERT = "CALL InsertTrader(?, ?)";
+    //private static final String INSERT = "INSERT IGNORE INTO Trader (email, domain)  VALUES (?, ?)";
+    private static final String INSERT = "CALL InsertTrader(?, ?)";
 
     private static final String SELECT = "SELECT * FROM Trader";
     private static final String SELECT_BY_ID = "SELECT * FROM Trader WHERE email = ?";

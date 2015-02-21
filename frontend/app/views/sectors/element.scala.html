@@ -1,0 +1,99 @@
+@(entity: team16.cs261.dal.entity.Trader, tradeEnts: List[team16.cs261.dal.entity.Trade])
+
+@main("Trader", "View trader in detail..."){
+    <!-- DATA TABLES -->
+    <link href="//cdn.datatables.net/plug-ins/f2c75b7247b/integration/bootstrap/3/dataTables.bootstrap.css" rel="stylesheet"  type="text/css" />
+}{
+
+    @Html("")
+
+    <div id="trader-email" data-trader-email="@entity.getEmail"></div>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">Listing trades of <b>@entity.getEmail</b></h3>
+                </div><!-- /.box-header -->
+                <div class="box-body table-responsive">
+
+
+                    <table id="trades-table" class="table table-bordered table-striped">
+                        <thead>
+                            @*<tr>
+                            <th></th>
+                            <th>
+                            <input data-bind="value: filters.email" type="text" />
+                            </th>
+                            <th>
+                            <input data-bind="value: filters.buyer" type="text" />
+                            </th>
+                            <th>
+                            <input data-bind="value: filters.seller" type="text" />
+                            </th>
+                            <th>
+                            <select data-bind="options: accountLevel,
+                            optionsText: 'label',
+                            optionsValue: 'value',
+                            value: filters.level"></select>
+                            </th>
+                            <th>
+                            <input data-bind="value: filters.firstName" type="text" />
+                            </th>
+                            <th></th>
+                            <th>
+                            <input data-bind="value: filters.lastName" type="text" />
+                            </th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            </tr>*@
+                            <tr>
+                                <th>Id</th>
+                                <th>Time</th>
+                                <th>Buyer</th>
+                                <th>Seller</th>
+                                <th>Price</th>
+                                <th>Size</th>
+                                <th>Currency</th>
+                                <th>Symbol</th>
+                                <th>Sector</th>
+                                <th>Bid</th>
+                                <th>Ask</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>Id</th>
+                                <th>Time</th>
+                                <th>Buyer</th>
+                                <th>Seller</th>
+                                <th>Price</th>
+                                <th>Size</th>
+                                <th>Currency</th>
+                                <th>Symbol</th>
+                                <th>Sector</th>
+                                <th>Bid</th>
+                                <th>Ask</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @Html("")
+
+} {
+    <!-- dataTables -->
+    <script src="//cdn.datatables.net/1.10.5/js/jquery.dataTables.js"></script>
+    <script src="//cdn.datatables.net/plug-ins/f2c75b7247b/integration/bootstrap/3/dataTables.bootstrap.js"></script>
+
+    <!-- page script -->
+    <script src="@routes.Assets.at("javascripts/traders/element.js")"></script>
+
+    @Html("")
+}

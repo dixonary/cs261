@@ -8,10 +8,19 @@ DROP TABLE IF EXISTS Counter CASCADE;
 CREATE TABLE Counter (#RAWTRADE TABLE#
   id   INTEGER NOT NULL AUTO_INCREMENT, #Contains the full representation of a Trade as received from the Trades feed
   val  INTEGER NOT NULL DEFAULT 0,
-  avg1 DOUBLE NOT NULL DEFAULT 0,
-  avg2 DOUBLE NOT NULL DEFAULT 0,
+  avg1 FLOAT   NOT NULL DEFAULT 0,
+  avg2 FLOAT   NOT NULL DEFAULT 0,
   PRIMARY KEY (id)
 );
+
+DROP TABLE IF EXISTS TimeInterval CASCADE;
+CREATE TABLE TimeInterval (#RAWTRADE TABLE#
+  id       INTEGER NOT NULL AUTO_INCREMENT, #Contains the full representation of a Trade as received from the Trades feed
+  time     BIGINT  NOT NULL,
+  analysed BOOLEAN NOT NULL DEFAULT FALSE,
+  PRIMARY KEY (id)
+);
+
 
 # raw data tables
 DROP TABLE IF EXISTS RawTrade CASCADE;
@@ -52,7 +61,7 @@ CREATE TABLE Symbol (#SYMBOL TABLE#
 
 DROP TABLE IF EXISTS Sector CASCADE;
 CREATE TABLE Sector (#SECTOR TABLE#
-  sector     VARCHAR(40) NOT NULL, #Contains entities which represent individual sectors and averages for Trading volume
+  sector   VARCHAR(40) NOT NULL, #Contains entities which represent individual sectors and averages for Trading volume
   tradeCnt INTEGER     NOT NULL, #Each sector is unique on it's name
   PRIMARY KEY (sector),
   FOREIGN KEY (tradeCnt) REFERENCES Counter (id)
@@ -61,7 +70,7 @@ CREATE TABLE Sector (#SECTOR TABLE#
 DROP TABLE IF EXISTS Trade CASCADE;
 CREATE TABLE Trade (#TRADE TABLE#
   id       INTEGER     NOT NULL AUTO_INCREMENT, #Contains the full representation of a Trade as received from the Trades feed
-  time     BIGINT        NOT NULL, #Also has an id as primary key as the timestamp cannot be guranteed to be unique
+  time     BIGINT      NOT NULL, #Also has an id as primary key as the timestamp cannot be guranteed to be unique
   buyer    VARCHAR(50) NOT NULL,
   seller   VARCHAR(50) NOT NULL,
   price    FLOAT       NOT NULL,
@@ -81,7 +90,7 @@ CREATE TABLE Trade (#TRADE TABLE#
 DROP TABLE IF EXISTS Comm CASCADE;
 CREATE TABLE Comm (#COMM TABLE#
   id        INTEGER     NOT NULL AUTO_INCREMENT, #Contains individual Communcations between Traders
-  time      BIGINT        NOT NULL, #Has an id field as the timestamp cannot be guaranteed to be unique
+  time      BIGINT      NOT NULL, #Has an id field as the timestamp cannot be guaranteed to be unique
   sender    VARCHAR(50) NOT NULL,
   recipient VARCHAR(50) NOT NULL,
   PRIMARY KEY (id),
@@ -95,7 +104,7 @@ CREATE TABLE TraderStock (#TRADERSTOCK TABLE#
   email      VARCHAR(50) NOT NULL, #Represents the volume of each stock that a Trader owns (can go negative!)
   symbol     VARCHAR(10) NOT NULL,
   volume     INTEGER     NOT NULL DEFAULT 0,
-  lastUpdate BIGINT        NOT NULL,
+  lastUpdate BIGINT      NOT NULL,
   PRIMARY KEY (id),
   UNIQUE KEY (email, symbol),
   FOREIGN KEY (email) REFERENCES Trader (email),
@@ -115,25 +124,25 @@ CREATE TABLE TraderPair (#TRADERPAIR TABLE#
   PRIMARY KEY (id),
   UNIQUE KEY (trader1, trader2),
   FOREIGN KEY (trader1) REFERENCES Trader (email),
-  FOREIGN KEY (trader2) REFERENCES Trader (email),
-  FOREIGN KEY (stockCnt) REFERENCES Counter (id),
-  FOREIGN KEY (tradeCnt) REFERENCES Counter (id),
-  FOREIGN KEY (commCnt) REFERENCES Counter (id)
+  FOREIGN KEY (trader2) REFERENCES Trader (email)#,
+#FOREIGN KEY (stockCnt) REFERENCES Counter (id),
+#FOREIGN KEY (tradeCnt) REFERENCES Counter (id),
+#FOREIGN KEY (commCnt) REFERENCES Counter (id)
 );
 
 DROP TABLE IF EXISTS Cluster CASCADE;
 CREATE TABLE Cluster (#CLUSTER TABLE#
   clusterId INTEGER NOT NULL AUTO_INCREMENT, #Links together a group of related factors
-  time      BIGINT    NOT NULL,
-  day       BIGINT    NOT NULL,
+  time      BIGINT  NOT NULL,
+  day       BIGINT  NOT NULL,
   PRIMARY KEY (clusterId)          #Each entity is unique for each clusterId
 );
 
 DROP TABLE IF EXISTS Factor CASCADE;
 CREATE TABLE Factor (#FACTOR TABLE#
   factorId INTEGER NOT NULL AUTO_INCREMENT, #Exists to provide a unique value for each individual factor to refer to
-  timeFrom BIGINT    NOT NULL,
-  timeTo   BIGINT    NOT NULL,
+  timeFrom BIGINT  NOT NULL,
+  timeTo   BIGINT  NOT NULL,
   PRIMARY KEY (factorId)          #Each factorId is unique
 );
 

@@ -5,7 +5,7 @@ package team16.cs261.dal.entity;
  */
 public class Sector {
 
-    private String name;
+    private String sector;
     private int totalTrades;
 
     private int avg1, avg2, avg3;
@@ -14,16 +14,16 @@ public class Sector {
     public Sector() {
     }
 
-    public Sector(String name) {
-        this.name = name;
+    public Sector(String sector) {
+        this.sector = sector;
     }
 
-    public String getName() {
-        return name;
+    public String getSector() {
+        return sector;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setSector(String sector) {
+        this.sector = sector;
     }
 
     public int getTotalTrades() {
