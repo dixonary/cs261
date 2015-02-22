@@ -11,7 +11,7 @@ libraryDependencies ++= Seq(
   javaEbean,
   cache,
   javaWs,
-  "team16.cs261" % "dal" % "1.0-SNAPSHOT"
+  "team16.cs261" % "common" % "1.0-SNAPSHOT"
 )
 
 resolvers += Resolver.mavenLocal

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import play.libs.Json;
 import play.mvc.Result;
-import team16.cs261.dal.dao.SectorDao;
+import team16.cs261.common.dao.SectorDao;
 import util.JsonNodeRowMapper;
 
 import java.util.List;

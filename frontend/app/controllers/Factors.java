@@ -4,10 +4,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import play.libs.Json;
 import play.mvc.Result;
-import team16.cs261.dal.dao.ClusterDao;
-import team16.cs261.dal.dao.FactorDao;
-import team16.cs261.dal.dao.TradeDao;
-import team16.cs261.dal.entity.factor.Factor;
+import team16.cs261.common.dao.ClusterDao;
+import team16.cs261.common.dao.FactorDao;
+import team16.cs261.common.dao.TradeDao;
+import team16.cs261.common.entity.factor.Factor;
 
 import java.util.List;
 

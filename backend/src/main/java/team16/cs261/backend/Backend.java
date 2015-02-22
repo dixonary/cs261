@@ -2,17 +2,11 @@ package team16.cs261.backend;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import team16.cs261.dal.dao.TraderDao;
-import team16.cs261.dal.entity.Trader;
 import team16.cs261.backend.module.Module;
-import team16.cs261.backend.module.ListenerModule;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Created by martin on 22/01/15.

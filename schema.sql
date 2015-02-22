@@ -13,6 +13,15 @@ CREATE TABLE Counter (#RAWTRADE TABLE#
   PRIMARY KEY (id)
 );
 
+DROP TABLE IF EXISTS TraderSymbol CASCADE;
+CREATE TABLE TraderSymbol (#RAWTRADE TABLE#
+  id     INTEGER NOT NULL,
+  time   BIGINT  NOT NULL,
+  weight INT     NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (id) REFERENCES Edge (id)
+);
+
 DROP TABLE IF EXISTS TimeInterval CASCADE;
 CREATE TABLE TimeInterval (#RAWTRADE TABLE#
   id       INTEGER NOT NULL AUTO_INCREMENT, #Contains the full representation of a Trade as received from the Trades feed
@@ -141,6 +150,8 @@ CREATE TABLE Cluster (#CLUSTER TABLE#
 DROP TABLE IF EXISTS Factor CASCADE;
 CREATE TABLE Factor (#FACTOR TABLE#
   factorId INTEGER NOT NULL AUTO_INCREMENT, #Exists to provide a unique value for each individual factor to refer to
+  #time   BIGINT  NOT NULL,
+  #weight INT     NOT NULL,
   timeFrom BIGINT  NOT NULL,
   timeTo   BIGINT  NOT NULL,
   PRIMARY KEY (factorId)          #Each factorId is unique

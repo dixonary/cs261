@@ -7,9 +7,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import play.libs.Json;
 import play.mvc.Result;
-import team16.cs261.dal.dao.CommDao;
-import team16.cs261.dal.dao.TraderDao;
-import team16.cs261.dal.entity.Comm;
+import team16.cs261.common.dao.CommDao;
+import team16.cs261.common.dao.TraderDao;
+import team16.cs261.common.entity.Comm;
 import util.JsonNodeRowMapper;
 
 import java.util.List;

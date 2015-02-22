@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import play.libs.Json;
 import play.mvc.Result;
-import team16.cs261.dal.dao.SymbolDao;
+import team16.cs261.common.dao.SymbolDao;
 import util.JsonNodeRowMapper;
 
 import java.util.List;

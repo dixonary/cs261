@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import team16.cs261.backend.Config;
 import team16.cs261.backend.module.ListenerModule;
-import team16.cs261.dal.dao.RawCommDao;
-import team16.cs261.dal.entity.RawComm;
+import team16.cs261.common.dao.RawCommDao;
+import team16.cs261.common.entity.RawComm;
 
 import java.io.IOException;
 

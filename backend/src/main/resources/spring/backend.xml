@@ -11,11 +11,14 @@
       http://www.springframework.org/schema/util
       http://www.springframework.org/schema/util/spring-util.xsd">
 
-    <context:property-placeholder location="classpath:properties/config.properties"/>
+    <!--<context:property-placeholder location="classpath:properties/dev.properties"/>-->
 
-    <context:component-scan base-package="team16.cs261"/>
+    <import resource="common.xml"/>
 
-    <import resource="datasource.xml"/>
+    <!--<context:property-placeholder location="classpath:properties/dev.properties"/>-->
+    <context:component-scan base-package="team16.cs261.backend"/>
+
+
 
 
     <bean id="backend" class="team16.cs261.backend.Backend"

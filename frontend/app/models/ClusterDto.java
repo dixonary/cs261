@@ -1,7 +1,7 @@
 package models;
 
-import team16.cs261.dal.entity.Cluster;
-import team16.cs261.dal.entity.factor.Factor;
+import team16.cs261.common.entity.Cluster;
+import team16.cs261.common.entity.factor.Factor;
 
 import java.util.List;
 

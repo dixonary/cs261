@@ -3,11 +3,10 @@ package team16.cs261.backend.module.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import team16.cs261.backend.Config;
 import team16.cs261.backend.module.AnalyserModule;
-import team16.cs261.dal.dao.*;
-import team16.cs261.dal.entity.*;
+import team16.cs261.common.dao.*;
+import team16.cs261.common.entity.*;
 
 import java.io.IOException;
 import java.text.ParseException;

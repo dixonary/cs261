@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 //@EnableTransactionManagement
-@ImportResource("classpath:spring/datasource.xml")
+@ImportResource("classpath:spring/common.xml")
 @ComponentScan(basePackages = "team16.cs261.dal")
 public class DalConfig {
 
