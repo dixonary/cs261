@@ -17,17 +17,8 @@ public class Trader {
         this.domain = domain;
     }
 
-    public static  int maxLength = 0;
-    public static Trader parseRaw(String raw) {
-        String domain = raw.split("@")[1];
-
-
-        if(raw.length() > maxLength) {
-            maxLength = raw.length();
-            System.out.println("length: " + raw.length());
-        }
-
-        return new Trader(raw, domain);
+   public static Trader parseRaw(String raw) {
+        return new Trader(raw, raw.split("@")[1]);
     }
 
     public String getEmail() {

@@ -51,6 +51,8 @@ CREATE PROCEDURE UpdateSymbols( from1 BIGINT, from2 BIGINT, end BIGINT)
     DECLARE tpCursor CURSOR FOR SELECT symbol, tradeCnt FROM Symbol;
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
 
+
+
     OPEN tpCursor;
 
     tpLoop: LOOP

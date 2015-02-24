@@ -10,18 +10,28 @@
       http://www.springframework.org/schema/tx
       http://www.springframework.org/schema/tx/spring-tx.xsd">
 
-    <context:property-placeholder location="classpath:properties/dev.properties"/>
+    <!--<context:property-placeholder location="classpath:properties/dev.properties"/>-->
+    <!--<context:property-placeholder location="classpath:dev.properties"/>-->
 
     <context:component-scan base-package="team16.cs261.common"/>
-    <context:annotation-config/>
+    <!--<context:annotation-config/>-->
+
+    <bean id="placeholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:dev.properties</value>
+                <value>file:${user.home}/fraud/config</value>
+            </list>
+        </property>
+        <!--<property name="ignoreResourceNotFound" value="true"/>-->
+    </bean>
+
+    <!--<context:property-placeholder location="classpath:dev.properties"/>
+    <context:property-placeholder location="file:./fraud.config" local-override="true"/>-->
 
     <tx:annotation-driven transaction-manager="transactionManager"  proxy-target-class="true"/>
 
-
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-    <!--<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource" >-->
-    <!--<bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">-->
-
         <property name="driverClassName" value="${jdbc.driver}"/>
         <property name="url" value="${jdbc.url}"/>
         <property name="username" value="${jdbc.username}"/>

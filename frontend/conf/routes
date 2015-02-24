@@ -15,6 +15,11 @@ GET        /trades        @controllers.Trades.collection()
 GET        /trades/query        @controllers.Trades.query()
 GET        /trades/query/:email        @controllers.Trades.queryByTraderId(email: String)
 
+GET        /graph        @controllers.Graph.index()
+GET        /graph/data        @controllers.Graph.graph()
+GET        /graph/mcl        @controllers.Graph.mcl()
+GET        /graph/matlab        @controllers.Graph.matlab()
+
 GET        /comms        @controllers.Comms.collection()
 GET        /comms/query        @controllers.Comms.query()
 

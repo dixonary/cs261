@@ -14,7 +14,7 @@
             <Appender-Ref ref="Console" />
         </Logger>-->
         <!--<Logger name="org.springframework.jdbc" level="TRACE" additivity="false">
-            <Appender-Ref ref="db" />
+            <Appender-Ref ref="Console" />
         </Logger>-->
     </Loggers>
 </Configuration>

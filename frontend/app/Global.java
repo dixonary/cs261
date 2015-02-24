@@ -1,10 +1,8 @@
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.ApplicationContext;
-import play.GlobalSettings;
-import play.Application;
-
 import config.AppConfig;
-import config.DalConfig;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import play.Application;
+import play.GlobalSettings;
 
 public class Global extends GlobalSettings {
 
@@ -12,7 +10,7 @@ public class Global extends GlobalSettings {
 
     @Override
     public void onStart(Application app) {
-        ctx = new AnnotationConfigApplicationContext(AppConfig.class, DalConfig.class);
+        ctx = new AnnotationConfigApplicationContext(AppConfig.class);
     }
 
     @Override

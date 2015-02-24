@@ -6,12 +6,9 @@ stream.comm.port=1720
 aging=20
 
 # Database Properties
-# Database Properties
 jdbc.driver=com.mysql.jdbc.Driver
-#jdbc.url=jdbc:mysql://178.62.32.54/cs261
 jdbc.url=jdbc:mysql://localhost/cs261
 jdbc.username=cs261
-#jdbc.password=lZqk5GLcymZf
 jdbc.password=pass
 
 # analysis

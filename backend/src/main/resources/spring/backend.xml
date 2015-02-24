@@ -11,29 +11,67 @@
       http://www.springframework.org/schema/util
       http://www.springframework.org/schema/util/spring-util.xsd">
 
-    <!--<context:property-placeholder location="classpath:properties/dev.properties"/>-->
+    <!--<context:property-placeholder location="classpath:dev.properties"/>-->
+
 
     <import resource="common.xml"/>
 
+    <!--<bean id="commonConfig" class="team16.cs261.common.CommonConfig" />-->
+
+    <!--<bean name-->
+
     <!--<context:property-placeholder location="classpath:properties/dev.properties"/>-->
+    <bean id="appConfig" class="team16.cs261.backend.config.AppConfig" />
     <context:component-scan base-package="team16.cs261.backend"/>
 
 
 
+    <!--    <bean id="args" class="java.lang.String">
+            <util:constant static-field="team16.cs261.backend.Main.args"/>
+        </bean>-->
 
-    <bean id="backend" class="team16.cs261.backend.Backend"
+    <!--<bean id="cliArgs">
+        <util:constant static-field="team16.cs261.backend.Main.args"/>
+    </bean>-->
+
+    <bean id="options" class="team16.cs261.backend.Options">
+        <constructor-arg>
+            <util:constant static-field="team16.cs261.backend.Main.args"/>
+        </constructor-arg>
+    </bean>
+
+
+    <!--<bean id="commandLine" class="com.foo.bar.myClass">
+        <property name="environment">
+            <value>#{systemProperties.environment}</value>
+        </property>
+    </bean>-->
+
+
+    <!--<bean id="backend" class="team16.cs261.backend.Backend"
           init-method="init">
 
         <property name="modules">
             <util:list>
                 <ref bean="tradeListener"/>
                 <ref bean="commListener"/>
-                <!--<ref bean="tradeAnalyser"/>-->
-                <!--<ref bean="commAnalyser"/>-->
+                &lt;!&ndash;<ref bean="tradeAnalyser"/>&ndash;&gt;
+                &lt;!&ndash;<ref bean="commAnalyser"/>&ndash;&gt;
                 <ref bean="processorService"/>
                 <ref bean="analyserService"/>
             </util:list>
         </property>
 
-    </bean>
+    </bean>-->
+
+    <util:list id="modules">
+        <ref bean="tradeListener"/>
+        <ref bean="commListener"/>
+        <ref bean="tradeReader"/>
+        <ref bean="commReader"/>
+        <!--<ref bean="tradeAnalyser"/>-->
+        <!--<ref bean="commAnalyser"/>-->
+        <ref bean="parserModule"/>
+        <ref bean="analyserModule"/>
+    </util:list>
 </beans>

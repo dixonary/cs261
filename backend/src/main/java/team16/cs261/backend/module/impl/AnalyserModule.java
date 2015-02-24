@@ -1,11 +1,12 @@
 package team16.cs261.backend.module.impl;
 
+import net.sf.javaml.clustering.mcl.SparseMatrix;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import team16.cs261.backend.Config;
-import team16.cs261.backend.module.AnalyserModule;
+import team16.cs261.backend.module.Module;
 import team16.cs261.common.dao.*;
 import team16.cs261.common.entity.Trade;
 
@@ -21,11 +22,10 @@ import java.util.List;
 // 2015-02-14 08:43:55.480228,w.hastings@bridgewater.com,a.clare@sorrel.com,925.50,27714,GBX,ARM.L,Technology,932.19,933.05
 
 @Component
-public class AnalyserService extends AnalyserModule {
+public class AnalyserModule extends Module {
 
     @Autowired
     JdbcTemplate jdbcTemplate;
-
 
     @Autowired
     CommDao commDao;
@@ -45,7 +45,7 @@ public class AnalyserService extends AnalyserModule {
     private Config config;
 
     @Autowired
-    public AnalyserService(Config config) throws IOException {
+    public AnalyserModule(Config config) throws IOException {
         super(config, "ANALYSER");
     }
 
@@ -63,12 +63,17 @@ public class AnalyserService extends AnalyserModule {
     public static final String UPDATE_SYMBOLS = "CALL UpdateSymbols(?,?,?)";
     public static final String UPDATE_TRADER_PAIRS = "CALL UpdateTraderPairs(?,?,?)";
 
+    public static final String UPDATE_WEIGHTS = "CALL UpdateWeights(?, ?)";
+    public static final String UPDATE_COMM_WEIGHTS = "CALL UpdateCommWeights(?, ?)";
+    public static final String UPDATE_TRADE_WEIGHTS = "CALL UpdateTradeWeights(?, ?)";
+
     @Transactional
     public void process() {
-//System.out.println("process()");
 
-        Long time = jdbcTemplate.queryForObject("SELECT max(time) FROM TimeInterval WHERE analysed = FALSE", Long.class);
-        if (time == null) {
+        //if(true)return;
+
+        Long tick = jdbcTemplate.queryForObject("SELECT min(tick) FROM Tick WHERE analysed = FALSE", Long.class);
+        if (tick == null) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
@@ -77,18 +82,41 @@ public class AnalyserService extends AnalyserModule {
             return;
         }
 
-        long fromA = time - config.getTimeShort();
+        System.out.println("process()");
+
+
+        long a = System.currentTimeMillis();
+
+        long start = tick * 60 * 1000;
+        long end = (tick+1) * 60 * 1000;
+
+        jdbcTemplate.update(UPDATE_WEIGHTS, start, end);
+        //jdbcTemplate.update(UPDATE_COMM_WEIGHTS, start, end);
+        //jdbcTemplate.update(UPDATE_TRADE_WEIGHTS, start, end);
+
+
+/*        long fromA = time - config.getTimeShort();
         long fromB = time - config.getTimeLong();
 
-
+long a = System.currentTimeMillis();
         jdbcTemplate.update(UPDATE_SYMBOLS, fromA, fromB, time);
+        System.out.println("Symbols time: " + (System.currentTimeMillis() - a));
+        a= System.currentTimeMillis();
         jdbcTemplate.update(UPDATE_TRADER_PAIRS, fromA, fromB, time);
+        System.out.println("Trader pairs time: " + (System.currentTimeMillis() - a));*/
 
         //jdbcTemplate.update(UPDATE_TRADER_PAIR_COMM_RATES,
         //      fromA, to, fromB, to);
 
 
-        jdbcTemplate.update("UPDATE TimeInterval SET analysed = TRUE WHERE time = ?", time);
+        long analysisTime = System.currentTimeMillis() - a;
+        System.out.println("Analysis time: " + analysisTime);
+
+
+        SparseMatrix sm = new SparseMatrix();
+
+
+        jdbcTemplate.update("UPDATE Tick SET analysed = TRUE, analysisTime = ? WHERE tick = ?", analysisTime, tick );
     }
 
 
