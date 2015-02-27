@@ -23,7 +23,7 @@
                 <value>file:${user.home}/fraud/config</value>
             </list>
         </property>
-        <!--<property name="ignoreResourceNotFound" value="true"/>-->
+        <property name="ignoreResourceNotFound" value="true"/>
     </bean>
 
     <!--<context:property-placeholder location="classpath:dev.properties"/>
