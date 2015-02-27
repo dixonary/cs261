@@ -1,8 +1,10 @@
 package team16.cs261.backend.module.impl;
 
+import net.sf.javaml.clustering.mcl.MarkovClustering;
 import net.sf.javaml.clustering.mcl.SparseMatrix;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import team16.cs261.backend.Config;
@@ -111,10 +113,31 @@ long a = System.currentTimeMillis();
 
         long analysisTime = System.currentTimeMillis() - a;
         System.out.println("Analysis time: " + analysisTime);
+a = System.currentTimeMillis();
+
 
 
         SparseMatrix sm = new SparseMatrix();
 
+        SqlRowSet trEdges = jdbcTemplate.queryForRowSet(
+                "SELECT source, target, commWgt FROM TraderTraderEdge TTE JOIN Edge E WHERE TTE.id = E.id AND commWgt > 0"
+        );
+        while (trEdges.next()) {
+            int n1 = trEdges.getInt(1);
+            int n2 = trEdges.getInt(2);
+            float v = trEdges.getFloat(3);
+
+            sm.set(n1, n2, v);
+            sm.set(n2, n1, v);
+        }
+
+        MarkovClustering mcl = new MarkovClustering();
+
+        mcl.run(sm, 0.001D, 2D, 0D, 0D);
+         System.out.println("Mcl: "+ sm);
+
+        long clusteringTime = System.currentTimeMillis() - a;
+        System.out.println("Analysis time: " + clusteringTime);
 
         jdbcTemplate.update("UPDATE Tick SET analysed = TRUE, analysisTime = ? WHERE tick = ?", analysisTime, tick );
     }

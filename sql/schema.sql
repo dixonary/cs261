@@ -42,20 +42,6 @@ CREATE TABLE RawEvent (#RAWTRADE TABLE#
   PRIMARY KEY (id)
 );
 
-DROP TABLE IF EXISTS RawTrade CASCADE;
-CREATE TABLE RawTrade (#RAWTRADE TABLE#
-  id  INTEGER NOT NULL AUTO_INCREMENT, #Contains the full representation of a Trade as received from the Trades feed
-  raw TEXT    NOT NULL,
-  PRIMARY KEY (id)
-);
-
-DROP TABLE IF EXISTS RawComm CASCADE;
-CREATE TABLE RawComm (#RAWCOMM TABLE#
-  id  INTEGER NOT NULL AUTO_INCREMENT, #Contains the full representation of a Communcation as received from the Communcations feed
-  raw TEXT    NOT NULL,
-  PRIMARY KEY (id)
-);
-
 
 # nodes
 DROP TABLE IF EXISTS Node CASCADE;
@@ -149,7 +135,6 @@ CREATE TABLE TraderStock (#TRADERSTOCK TABLE#
 );
 
 # edges
-
 DROP TABLE IF EXISTS Edge CASCADE;
 CREATE TABLE Edge (#FACTOR TABLE#
   id     INTEGER NOT NULL AUTO_INCREMENT, #Exists to provide a unique value for each individual factor to refer to
@@ -172,7 +157,6 @@ CREATE TABLE TraderTraderEdge (#TRADERPAIR TABLE#
   stocks   INTEGER     NOT NULL, #common stocks traded
 #  stockWgt INTEGER     NOT NULL,
 
-
   stockWgt FLOAT       NOT NULL,
   tradeWgt FLOAT       NOT NULL,
   commWgt  FLOAT       NOT NULL,
@@ -180,6 +164,7 @@ CREATE TABLE TraderTraderEdge (#TRADERPAIR TABLE#
   stockCnt INTEGER     NOT NULL, #number of stocks in common
   tradeCnt INTEGER     NOT NULL, #number of trades between them
   commCnt  INTEGER     NOT NULL, #number of communications between them
+
   PRIMARY KEY (id),
   UNIQUE KEY (trader1, trader2),
   FOREIGN KEY (trader1) REFERENCES Trader (email),
