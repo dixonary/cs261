@@ -1,15 +1,8 @@
 package team16.cs261.common.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import sun.org.mozilla.javascript.internal.json.JsonParser;
-import team16.cs261.common.entity.RawTrade;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by martin on 13/02/15.

@@ -4,12 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.FileReader;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Properties;
 
 /**
  * Created by martin on 22/01/15.
@@ -36,12 +32,7 @@ public class Config {
     @Value("${analysis.time.long}")
     private int timeLong;
 
-    enum Mode {
-        LIVE,
-        HISTORIC
-    }
-
-    private Mode mode = Mode.LIVE;
+    private Input input = Input.SOCKET;
     private Path tradesFile;
     private Path commsFile;
 
@@ -50,7 +41,7 @@ public class Config {
         this.options=options;
 
         if(options.tradesFile != null && options.commsFile != null) {
-            mode = Mode.HISTORIC;
+            input = Input.FILE;
             tradesFile = Paths.get(options.tradesFile);
             commsFile = Paths.get(options.commsFile);
 
@@ -59,12 +50,14 @@ public class Config {
         }
     }
 
-    public Mode getMode() {
-        return mode;
+
+
+    public Input getInput() {
+        return input;
     }
 
-    public void setMode(Mode mode) {
-        this.mode = mode;
+    public void setInput(Input input) {
+        this.input = input;
     }
 
     public Path getTradesFile() {
@@ -131,5 +124,13 @@ public class Config {
 
     public void setCommsPort(int commsPort) {
         this.commsPort = commsPort;
+    }
+
+    /**
+    * Created by martin on 26/02/15.
+    */
+    public static enum Input {
+        SOCKET,
+        FILE
     }
 }

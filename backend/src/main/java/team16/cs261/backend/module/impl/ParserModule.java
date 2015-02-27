@@ -28,10 +28,6 @@ public class ParserModule extends Module {
     JdbcTemplate jdbcTemplate;
 
 
-    @Autowired
-    RawCommDao rawCommDao;
-    @Autowired
-    RawTradeDao rawTradeDao;
 
     @Autowired
     RawEventDao rawEventDao;

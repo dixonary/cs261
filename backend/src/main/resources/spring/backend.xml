@@ -21,7 +21,7 @@
     <!--<bean name-->
 
     <!--<context:property-placeholder location="classpath:properties/dev.properties"/>-->
-    <bean id="appConfig" class="team16.cs261.backend.config.AppConfig" />
+    <!--<bean id="appConfig" class="team16.cs261.backend.config.AppConfig" />-->
     <context:component-scan base-package="team16.cs261.backend"/>
 
 
@@ -65,12 +65,8 @@
     </bean>-->
 
     <util:list id="modules">
-        <ref bean="tradeListener"/>
-        <ref bean="commListener"/>
         <ref bean="tradeReader"/>
         <ref bean="commReader"/>
-        <!--<ref bean="tradeAnalyser"/>-->
-        <!--<ref bean="commAnalyser"/>-->
         <ref bean="parserModule"/>
         <ref bean="analyserModule"/>
     </util:list>

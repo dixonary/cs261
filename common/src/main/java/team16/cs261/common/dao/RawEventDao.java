@@ -3,7 +3,6 @@ package team16.cs261.common.dao;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.stereotype.Component;
 import team16.cs261.common.entity.RawEvent;
-import team16.cs261.common.entity.RawTrade;
 
 import java.util.List;
 
@@ -31,6 +30,7 @@ public class RawEventDao extends AbstractDao<Integer, RawEvent> {
     public static final String VALUES = "(?, ?, ?)";
 
     public void insert(List<RawEvent> ents) {
+        if(ents.size()==0)return;
         StringBuilder sql = new StringBuilder("INSERT INTO RawEvent (type, time, raw) VALUES ");
 
         Object[] args = new Object[ents.size() * 3];
