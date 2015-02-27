@@ -126,7 +126,6 @@ long a = System.currentTimeMillis();
 
     public void onTrade(List<Trade> tradeEnts) {
 
-
         List<Object[]> args1 = new ArrayList<>();
         List<Object[]> args2 = new ArrayList<>();
         List<Object[]> args3 = new ArrayList<>();
@@ -151,4 +150,17 @@ long a = System.currentTimeMillis();
         traderStockDao.updateTraderStock(tradeEnts);
 
     }
+
+    //Affinity is used to determine each trader's stock preferences
+    //This function should be run on every new trade, for buyer AND seller
+    public void updateAffinity(/*Arguments*/) {
+
+        float decayFactor = 0.9; //Estimation, time decay per hour
+
+        //1. Get the current affinity from the TraderStock table (if none then 0)
+        //2. Get the time difference between last update and now
+        //3. Divide by decayFactor to the power of time difference (in hours)
+        //4. Store new affinity in the TraderStock table
+    }
+
 }

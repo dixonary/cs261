@@ -12,14 +12,15 @@ CREATE TABLE Prop (
 
 # statistics
 DROP TABLE IF EXISTS Counter CASCADE;
-CREATE TABLE Counter (#RAWTRADE TABLE#
-  id   INTEGER NOT NULL AUTO_INCREMENT, #Contains the full representation of a Trade as received from the Trades feed
+CREATE TABLE Counter (#COUNTER TABLE#
+  id   INTEGER NOT NULL AUTO_INCREMENT, #Counters for all other tables are stored here
   val  INTEGER NOT NULL DEFAULT 0,
   avg1 FLOAT   NOT NULL DEFAULT 0,
   avg2 FLOAT   NOT NULL DEFAULT 0,
   PRIMARY KEY (id)
 );
 
+<<<<<<< HEAD:sql/schema.sql
 DROP TABLE IF EXISTS Tick CASCADE;
 CREATE TABLE Tick (#RAWTRADE TABLE#
   tick         INTEGER NOT NULL, #Contains the full representation of a Trade as received from the Trades feed
@@ -28,6 +29,14 @@ CREATE TABLE Tick (#RAWTRADE TABLE#
   analysed     BOOLEAN NOT NULL DEFAULT FALSE,
   analysisTime INT     NOT NULL DEFAULT 0,
   PRIMARY KEY (tick)
+=======
+DROP TABLE IF EXISTS TimeInterval CASCADE;
+CREATE TABLE TimeInterval (#TIMEINTERVAL TABLE#
+  id       INTEGER NOT NULL AUTO_INCREMENT, #Contains a reference to tuples in Trade and Comm tables
+  time     BIGINT  NOT NULL, #represents what has been analysed
+  analysed BOOLEAN NOT NULL DEFAULT FALSE,
+  PRIMARY KEY (id)
+>>>>>>> 0e56a9398ce3ce5d84e5afab6973216674703938:schema.sql
 );
 
 
@@ -50,7 +59,7 @@ CREATE TABLE RawTrade (#RAWTRADE TABLE#
 
 DROP TABLE IF EXISTS RawComm CASCADE;
 CREATE TABLE RawComm (#RAWCOMM TABLE#
-  id  INTEGER NOT NULL AUTO_INCREMENT, #Contains individual Communcations between Traders
+  id  INTEGER NOT NULL AUTO_INCREMENT, #Contains the full representation of a Communcation as received from the Communcations feed
   raw TEXT    NOT NULL,
   PRIMARY KEY (id)
 );
@@ -104,7 +113,7 @@ CREATE TABLE Sector (#SECTOR TABLE#
 
 DROP TABLE IF EXISTS Trade CASCADE;
 CREATE TABLE Trade (#TRADE TABLE#
-  id       INTEGER     NOT NULL AUTO_INCREMENT, #Contains the full representation of a Trade as received from the Trades feed
+  id       INTEGER     NOT NULL AUTO_INCREMENT, #Contains the full representation of a Trade with each field separated out
   time     BIGINT      NOT NULL, #Also has an id as primary key as the timestamp cannot be guranteed to be unique
   buyer    VARCHAR(50) NOT NULL,
   seller   VARCHAR(50) NOT NULL,
@@ -139,6 +148,7 @@ CREATE TABLE TraderStock (#TRADERSTOCK TABLE#
   email      VARCHAR(50) NOT NULL, #Represents the volume of each stock that a Trader owns (can go negative!)
   symbol     VARCHAR(10) NOT NULL,
   volume     INTEGER     NOT NULL DEFAULT 0,
+  affinity   INTEGER     NOT NULL DEFAULT 0,
   lastUpdate BIGINT      NOT NULL,
   PRIMARY KEY (id),
   UNIQUE KEY (email, symbol),
@@ -223,19 +233,23 @@ CREATE TABLE TraderSectorEdge (#TRADERPAIR TABLE#
 DROP TABLE IF EXISTS Cluster CASCADE;
 CREATE TABLE Cluster (#CLUSTER TABLE#
   clusterId INTEGER NOT NULL AUTO_INCREMENT, #Links together a group of related factors
-  time      BIGINT  NOT NULL,
+  time      BIGINT  NOT NULL, #Each entity is unique for each clusterId
   day       BIGINT  NOT NULL,
-  PRIMARY KEY (clusterId)          #Each entity is unique for each clusterId
+  PRIMARY KEY (clusterId)
 );
 
 DROP TABLE IF EXISTS Factor CASCADE;
 CREATE TABLE Factor (#FACTOR TABLE#
   factorId INTEGER NOT NULL AUTO_INCREMENT, #Exists to provide a unique value for each individual factor to refer to
+<<<<<<< HEAD:sql/schema.sql
   #time   BIGINT  NOT NULL,
   #weight INT     NOT NULL,
   timeFrom BIGINT  NOT NULL,
+=======
+  timeFrom BIGINT  NOT NULL, #Each factorId is unique
+>>>>>>> 0e56a9398ce3ce5d84e5afab6973216674703938:schema.sql
   timeTo   BIGINT  NOT NULL,
-  PRIMARY KEY (factorId)          #Each factorId is unique
+  PRIMARY KEY (factorId)
 );
 
 DROP TABLE IF EXISTS ClusterFactor CASCADE;
