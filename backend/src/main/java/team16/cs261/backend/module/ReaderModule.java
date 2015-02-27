@@ -77,7 +77,7 @@ public abstract class ReaderModule extends Module {
     public void onLine(String in) throws IOException {
         //logger.info(in);
         //log(in);
-        if (true) return;
+        //if (true) return;
 
         long time = parseTimestamp(in.split(",")[0]);
         rawEvents.add(new RawEvent(type, time, in));
