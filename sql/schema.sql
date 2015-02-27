@@ -20,7 +20,6 @@ CREATE TABLE Counter (#COUNTER TABLE#
   PRIMARY KEY (id)
 );
 
-<<<<<<< HEAD:sql/schema.sql
 DROP TABLE IF EXISTS Tick CASCADE;
 CREATE TABLE Tick (#RAWTRADE TABLE#
   tick         INTEGER NOT NULL, #Contains the full representation of a Trade as received from the Trades feed
@@ -29,15 +28,8 @@ CREATE TABLE Tick (#RAWTRADE TABLE#
   analysed     BOOLEAN NOT NULL DEFAULT FALSE,
   analysisTime INT     NOT NULL DEFAULT 0,
   PRIMARY KEY (tick)
-=======
-DROP TABLE IF EXISTS TimeInterval CASCADE;
-CREATE TABLE TimeInterval (#TIMEINTERVAL TABLE#
-  id       INTEGER NOT NULL AUTO_INCREMENT, #Contains a reference to tuples in Trade and Comm tables
-  time     BIGINT  NOT NULL, #represents what has been analysed
-  analysed BOOLEAN NOT NULL DEFAULT FALSE,
-  PRIMARY KEY (id)
->>>>>>> 0e56a9398ce3ce5d84e5afab6973216674703938:schema.sql
 );
+
 
 
 # raw data tables
@@ -241,13 +233,9 @@ CREATE TABLE Cluster (#CLUSTER TABLE#
 DROP TABLE IF EXISTS Factor CASCADE;
 CREATE TABLE Factor (#FACTOR TABLE#
   factorId INTEGER NOT NULL AUTO_INCREMENT, #Exists to provide a unique value for each individual factor to refer to
-<<<<<<< HEAD:sql/schema.sql
-  #time   BIGINT  NOT NULL,
-  #weight INT     NOT NULL,
+  time   BIGINT  NOT NULL,
+  weight INT     NOT NULL,
   timeFrom BIGINT  NOT NULL,
-=======
-  timeFrom BIGINT  NOT NULL, #Each factorId is unique
->>>>>>> 0e56a9398ce3ce5d84e5afab6973216674703938:schema.sql
   timeTo   BIGINT  NOT NULL,
   PRIMARY KEY (factorId)
 );

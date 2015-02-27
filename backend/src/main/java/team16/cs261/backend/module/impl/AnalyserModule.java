@@ -155,7 +155,7 @@ long a = System.currentTimeMillis();
     //This function should be run on every new trade, for buyer AND seller
     public void updateAffinity(/*Arguments*/) {
 
-        float decayFactor = 0.9; //Estimation, time decay per hour
+        float decayFactor = 0.9f; //Estimation, time decay per hour
 
         //1. Get the current affinity from the TraderStock table (if none then 0)
         //2. Get the time difference between last update and now
