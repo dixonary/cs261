@@ -67,7 +67,7 @@ public class Graph {
     }
 
     public static final String SELECT_TT_EDGES = "SELECT source, target, (commWgt) AS wgt " +
-            "FROM TraderTraderEdge TTE JOIN Edge E ON TTE.id = E.id";
+            "FROM TraderTraderEdge TTE JOIN Edge E ON TTE.id = E.id WHERE commWgt > 0";
 
     public Result mcl() {
 
@@ -80,6 +80,7 @@ public class Graph {
             float v = trEdges.getFloat(3);
 
             sb.append(n1).append("\t").append(n2).append("\t").append(v).append("\n");
+            //sb.append(n2).append("\t").append(n1).append("\t").append(v).append("\n");
         }
 
         return ok(sb.toString());

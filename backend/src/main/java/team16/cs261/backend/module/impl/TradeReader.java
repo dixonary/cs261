@@ -30,6 +30,34 @@ public class TradeReader extends ReaderModule {
         super(config, "TRADE-READER", RawEvent.Type.TRADE, "trades");
     }
 
+    public boolean flipside = false;
+
+    @Override
+    public void onHeaders(String headers) {
+        String[] parts = headers.split(",");
+
+        flipside = parts[4].equals("currency");
+
+        System.out.println("flipside: "+ flipside);
+    }
+
+    @Override
+    public void onLine(String in) throws IOException {
+        if (flipside) {
+            String[] parts = in.split(",");
+
+            String temp = parts[4];
+            parts[4] = parts[5];
+            parts[5] = temp;
+
+            in = join(parts, ",");
+        }
+
+        super.onLine(in);
+    }
+
+
+
     @Override
     public BufferedReader getReader() {
         if (config.getInput() == Config.Input.SOCKET) {

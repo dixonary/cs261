@@ -181,8 +181,8 @@ public class ParserModule extends Module {
 
             jdbcTemplate.update("CALL InsertTick (?, ?, ?)",
                     tick,
-                    tick * 60 * 1000,
-                    (tick + 1) * 60 * 1000);
+                    tick * config.getTimeInterval(),
+                    (tick + 1) * config.getTimeInterval());
             return;
         }
 
@@ -191,16 +191,14 @@ public class ParserModule extends Module {
             //jdbcTemplate.update("INSERT INTO Tick (tick) VALUES (?)", i);
             jdbcTemplate.update("CALL InsertTick (?, ?, ?)",
                     tick,
-                    tick * 60 * 1000,
-                    (tick + 1) * 60 * 1000);
+                    tick * config.getTimeInterval(),
+                    (tick + 1) * config.getTimeInterval());
         }
     }
 
-    public static final int TIME_INTERVAL = 60 * 1000;
-
     public int toTick(long time) {
-        long over = time % TIME_INTERVAL;
-        return (int) ((time - over) / TIME_INTERVAL);
+        long over = time % config.getTimeInterval();
+        return (int) ((time - over) / config.getTimeInterval());
     }
 
 

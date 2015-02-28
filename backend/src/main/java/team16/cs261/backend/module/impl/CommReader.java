@@ -53,4 +53,9 @@ public class CommReader extends ReaderModule {
 
         return null;
     }
+
+    @Override
+    public void onHeaders(String headers) {
+
+    }
 }

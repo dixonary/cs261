@@ -157,9 +157,10 @@ CREATE TABLE TraderTraderEdge (#TRADERPAIR TABLE#
   stocks   INTEGER     NOT NULL, #common stocks traded
 #  stockWgt INTEGER     NOT NULL,
 
+  commWgt  FLOAT       NOT NULL,
+
   stockWgt FLOAT       NOT NULL,
   tradeWgt FLOAT       NOT NULL,
-  commWgt  FLOAT       NOT NULL,
 
   stockCnt INTEGER     NOT NULL, #number of stocks in common
   tradeCnt INTEGER     NOT NULL, #number of trades between them

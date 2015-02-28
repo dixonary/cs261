@@ -59,6 +59,7 @@ public abstract class ReaderModule extends Module {
             while ((in = reader.readLine()) != null) {
 
                 if (!seenHeaders) {
+                    onHeaders(in);
                     seenHeaders = true;
                     continue;
                 }
@@ -73,6 +74,8 @@ public abstract class ReaderModule extends Module {
 
         onClose();
     }
+
+    public abstract void onHeaders(String headers) ;
 
     public void onLine(String in) throws IOException {
         //logger.info(in);
@@ -98,6 +101,24 @@ public abstract class ReaderModule extends Module {
     public void persist() {
         rawEventDao.insert(rawEvents);
         rawEvents.clear();
+    }
+
+
+
+
+    public static String join(String[] parts, String delim) {
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < parts.length; i++) {
+            String str = parts[i];
+            sb.append(str);
+
+            if (i < parts.length - 1) {
+                sb.append(delim);
+            }
+        }
+
+        return sb.toString();
     }
 }
 

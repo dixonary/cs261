@@ -14,7 +14,9 @@ CREATE PROCEDURE UpdateWeights(time1 BIGINT, time2 BIGINT)
     FROM TraderTraderEdge;
 
     UPDATE TraderTraderEdge
-    SET commWgt = (comms - @avg) / @std;
+      SET commWgt = 0.3 * commWgt + 0.7 * ((comms - @avg) / @std);
+     #SET commWgt = (comms - @avg) / @std;
+     #SET commWgt = /*0.3 * commWgt +*/ 1 * ((comms - @avg) / @std);
 
     UPDATE TraderSectorEdge
     SET tradeWgt = tradeWgt * 0.9;
@@ -26,65 +28,43 @@ CREATE PROCEDURE UpdateWeights(time1 BIGINT, time2 BIGINT)
   END //
 DELIMITER ;
 
-
-DELIMITER //
-DROP PROCEDURE IF EXISTS AgeWeights;
-CREATE PROCEDURE AgeWeights()
-  BEGIN
-
-    UPDATE TraderTraderEdge
-    SET commWgt = commWgt * 0.9,
-      tradeWgt  = tradeWgt * 0.9,
-      stockWgt  = stockWgt * 0.9;
-
-    UPDATE TraderSectorEdge
-    SET tradeWgt = tradeWgt * 0.9;
-
-    UPDATE TraderSymbolEdge
-    SET tradeWgt = tradeWgt * 0.9;
-
-  END //
-DELIMITER ;
 
 
 DELIMITER //
 DROP PROCEDURE IF EXISTS UpdateCommCounts;
 CREATE PROCEDURE UpdateCommCounts(time1 BIGINT, time2 BIGINT)
   BEGIN
-    DECLARE tSender VARCHAR(50);
-    DECLARE tRecipient VARCHAR(50);
+    DECLARE cSender VARCHAR(50);
+    DECLARE cRecipient VARCHAR(50);
+    DECLARE cCount INT;
     DECLARE done INT DEFAULT FALSE;
-    DECLARE tpCursor CURSOR FOR SELECT
-                                  sender,
-                                  recipient
-                                FROM Comm
-                                WHERE time1 <= time AND time < time2;
+    DECLARE tpCursor CURSOR FOR
+      #SELECT sender, recipient FROM Comm WHERE time1 <= time AND time < time2;
+      SELECT sender, recipient, count(*) FROM Comm WHERE time1 <= time AND time < time2 GROUP BY sender, recipient;
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
 
     OPEN tpCursor;
 
     tpLoop: LOOP
       FETCH tpCursor
-      INTO tSender, tRecipient;
+      INTO cSender, cRecipient, cCount;
 
       IF done
       THEN
         LEAVE tpLoop;
       END IF;
 
-      IF tSender < tRecipient
+      IF cSender < cRecipient
       THEN
         UPDATE TraderTraderEdge
-        SET comms = comms + 1,
-          commWgt = commWgt * 1.1
-        WHERE trader1 = tSender AND trader2 = tRecipient;
+        SET comms = cCount
+        WHERE trader1 = cSender AND trader2 = cRecipient;
 
-      ELSEIF tRecipient < tSender
+      ELSEIF cRecipient < cSender
         THEN
           UPDATE TraderTraderEdge
-          SET comms = comms + 1,
-            commWgt = commWgt * 1.1
-          WHERE trader1 = tRecipient AND trader2 = tSender;
+          SET comms = cCount
+          WHERE trader1 = cRecipient AND trader2 = cSender;
       END IF;
 
     END LOOP;

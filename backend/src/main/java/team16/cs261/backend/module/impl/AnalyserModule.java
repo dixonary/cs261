@@ -1,7 +1,12 @@
 package team16.cs261.backend.module.impl;
 
+import net.sf.javaml.clustering.mcl.MCL;
 import net.sf.javaml.clustering.mcl.MarkovClustering;
 import net.sf.javaml.clustering.mcl.SparseMatrix;
+import net.sf.javaml.core.*;
+import net.sf.javaml.distance.AbstractSimilarity;
+import net.sf.javaml.distance.DistanceMeasure;
+import net.sf.javaml.distance.EuclideanDistance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -9,12 +14,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import team16.cs261.backend.Config;
 import team16.cs261.backend.module.Module;
+import team16.cs261.backend.util.Clusters;
 import team16.cs261.common.dao.*;
 import team16.cs261.common.entity.Trade;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by martin on 22/01/15.
@@ -89,8 +94,8 @@ public class AnalyserModule extends Module {
 
         long a = System.currentTimeMillis();
 
-        long start = tick * 60 * 1000;
-        long end = (tick+1) * 60 * 1000;
+        long start = tick * config.getTimeInterval();
+        long end = (tick+1) * config.getTimeInterval();
 
         jdbcTemplate.update(UPDATE_WEIGHTS, start, end);
         //jdbcTemplate.update(UPDATE_COMM_WEIGHTS, start, end);
@@ -122,22 +127,60 @@ a = System.currentTimeMillis();
         SqlRowSet trEdges = jdbcTemplate.queryForRowSet(
                 "SELECT source, target, commWgt FROM TraderTraderEdge TTE JOIN Edge E WHERE TTE.id = E.id AND commWgt > 0"
         );
+
+
+        //Dataset ds = new DefaultDataset();
+        //Set<Integer> nodeSet = new TreeSet<>();
+
         while (trEdges.next()) {
             int n1 = trEdges.getInt(1);
             int n2 = trEdges.getInt(2);
             float v = trEdges.getFloat(3);
 
+//            nodeSet.add(n1);
+//            nodeSet.add(n2);
+
+            //ds.add(n1, new SparseInstance(n1));
+            //ds.add(n2, new SparseInstance(n2));
+
+
             sm.set(n1, n2, v);
             sm.set(n2, n1, v);
         }
 
-        MarkovClustering mcl = new MarkovClustering();
 
-        mcl.run(sm, 0.001D, 2D, 0D, 0D);
-         System.out.println("Mcl: "+ sm);
+
+        //System.out.println("nodes: " + nodeSet);
+        //System.out.println("nodes: " + ds);
+
+//System.out.println("before: " + sm);
+
+        /*AbstractSimilarity am = new AbstractSimilarity() {
+            @Override
+            public double measure(Instance x, Instance y) {
+                return sm.get(x,y);
+            }
+        };*/
+        Clusters cl = new Clusters();
+
+        Dataset[] clusters = cl.cluster(sm);
+
+        System.out.println("after: ");
+        for(Dataset ds : clusters) {
+            System.out.println(ds);
+            for(int i = 0; i < ds.size(); i++) {
+                //ds.get(i).getID()
+            }
+        }
+
+
+   /*     */
+
+        //mcl.run(sm, 0.001D, 2D, 0D, 0.001D);
+         //System.out.println("Mcl: "+ sm);
 
         long clusteringTime = System.currentTimeMillis() - a;
-        System.out.println("Analysis time: " + clusteringTime);
+        System.out.println("Clustering time: " + clusteringTime);
 
         jdbcTemplate.update("UPDATE Tick SET analysed = TRUE, analysisTime = ? WHERE tick = ?", analysisTime, tick );
     }
