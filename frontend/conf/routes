@@ -5,6 +5,8 @@
 # Home page
 GET        /        @controllers.Application.index()
 
+GET        /stats        @controllers.Stats.index()
+
 GET        /clusters        @controllers.Clusters.collection()
 GET        /clusters/query        @controllers.Clusters.query()
 GET        /clusters/:id        @controllers.Clusters.element(id: Integer)

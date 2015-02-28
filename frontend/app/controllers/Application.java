@@ -40,6 +40,8 @@ public class Application {
         MenuItem clusters = new MenuItem("fa-gears", "Clusters", controllers.routes.Clusters.collection());
         MenuItem factors = new MenuItem("fa-gear", "Factors", controllers.routes.Factors.collection());
 
+        MenuItem car = new MenuItem("fa-car", "Stats", controllers.routes.Stats.index());
+
         Menu rawData = new Menu("fa-database", "Raw Data");
         rawData.addItem(new MenuItem("fa-exchange", "Trades", controllers.routes.Trades.collection()));
         rawData.addItem(new MenuItem("fa-envelope", "Communications", controllers.routes.Comms.collection()));

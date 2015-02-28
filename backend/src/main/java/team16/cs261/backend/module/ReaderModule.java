@@ -84,6 +84,7 @@ public abstract class ReaderModule extends Module {
 
         long time = parseTimestamp(in.split(",")[0]);
         rawEvents.add(new RawEvent(type, time, in));
+        //if (rawEvents.size() >= 1000){
         if (type== RawEvent.Type.COMM && rawEvents.size() >= 10 ||
                 type == RawEvent.Type.TRADE && rawEvents.size() >= 100) {
             persist();
