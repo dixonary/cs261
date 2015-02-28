@@ -53,8 +53,8 @@ public class Graph {
     public static final String SELECT_NODES =
             "SELECT T.id, T.email AS label FROM Node N JOIN Trader T ON N.id = T.id";
     public static final String SELECT_EDGES =
-            "SELECT `source` AS `from`, target AS `to`, tradeWgt AS value " +
-                    "FROM Edge E JOIN TraderTraderEdge TTE ON E.id = TTE.id AND TTE.commWgt > 0";
+            "SELECT `source` AS `from`, target AS `to`, commWgt AS value " +
+                    "FROM Edge E JOIN TraderTraderEdge TTE ON E.id = TTE.id AND TTE.commWgt > 0.99";
 
     public Result graph() {
         List<JsonNode> nodes = jdbcTemplate.query(SELECT_NODES, new Object[0], new JsonNodeRowMapper());

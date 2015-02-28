@@ -10,13 +10,26 @@ CREATE PROCEDURE UpdateWeights(time1 BIGINT, time2 BIGINT)
 
     SELECT
       @avg := AVG(comms),
-      @std := STD(comms)
+      @std := STD(comms),
+      @min := MIN(comms),
+      @max := MAX(comms)
     FROM TraderTraderEdge;
 
-    UPDATE TraderTraderEdge
-      SET commWgt = 0.3 * commWgt + 0.7 * ((comms - @avg) / @std);
+    #UPDATE TraderTraderEdge
+      #SET commWgt = 0.75 * commWgt + 0.25 / POW(2, comms);
+      #SET commWgt = 0.5 * commWgt + 0.5 * (comms/(@max-@min));
+      #SET commWgt = 0.3 * commWgt + 0.7 * ((comms - @avg) / @std);
      #SET commWgt = (comms - @avg) / @std;
      #SET commWgt = /*0.3 * commWgt +*/ 1 * ((comms - @avg) / @std);
+
+    UPDATE TraderTraderEdge
+      SET commWgt = 0.75 * commWgt;
+
+    UPDATE TraderTraderEdge
+      SET commWgt = 1 - ((1-commWgt) * POW(0.5, comms));
+
+
+
 
     UPDATE TraderSectorEdge
     SET tradeWgt = tradeWgt * 0.9;
