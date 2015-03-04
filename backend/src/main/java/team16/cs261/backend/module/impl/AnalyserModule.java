@@ -54,8 +54,6 @@ public class AnalyserModule extends Module {
     @Autowired
     TraderStockDao traderStockDao;
 
-    @Autowired
-    GraphDao graphDao;
 
     @Autowired
     private Config config;
