@@ -41,6 +41,20 @@ CREATE PROCEDURE Prop(inTick INT)
 
 #propagate aggregate data to graph tables
 
+    UPDATE TraderPair TP, AggrTraderCommon AC
+    SET
+      TP.common = AC.common,
+      TP.commonBuys = AC.commonBuys,
+      TP.commonSells = AC.commonSells
+    WHERE
+      TP.id = AC.edgeId;
+
+    UPDATE TraderPair TP, AggrTraderComm ATC
+    SET
+      TP.comms = ATC.comms
+    WHERE
+      TP.id = ATC.edgeId;
+
     UPDATE Symbol S, AggrSymbol A
     SET
       S.trades = A.trades,
@@ -48,38 +62,17 @@ CREATE PROCEDURE Prop(inTick INT)
       S.sells = A.sells,
       S.tradesPerTrader = A.trades / @traders,
       S.buysPerTrader = A.buys / @traders,
-      S.sellsPerTrader = A.trades / @traders;
+      S.sellsPerTrader = A.trades / @traders
+      WHERE S.id = A.symbolId;
 
 
-
-
-    UPDATE TraderPair TTE, AggrTraderCommon AC SET
-      TTE.common = AC.common, TTE.commonBuys = AC.commonBuys, TTE.commonSells = AC.commonSells
-    WHERE TTE.id = AC.edgeId;
-
-
-    UPDATE TraderPair
-    SET comms = (SELECT comms FROM AggrTraderComm WHERE id = edgeId);
-
-
-/*    UPDATE TraderSymbol TTE SET
-      trades = (SELECT trades FROM AggrTrade AC WHERE AC.edgeId = TTE.id),
-      buys = (SELECT buys FROM AggrTrade AC WHERE AC.edgeId = TTE.id),
-      sells = (SELECT trades FROM AggrTrade AC WHERE AC.edgeId = TTE.id);*/
-
-    UPDATE
-        TraderSymbol TS,
-        AggrTrade AT
+    UPDATE TraderSymbol TS, AggrTrade AT
     SET
       TS.trades = AT.trades,
       TS.buys = AT.buys,
       TS.sells = AT.sells
     WHERE
       TS.id = AT.edgeId;
-
-
-
-
 
 
 

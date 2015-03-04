@@ -57,8 +57,6 @@ public class Factors {
     };
 
     public Result query() {
-
-
         int draw = Integer.parseInt(request().getQueryString("draw"));
         int start = Integer.parseInt(request().getQueryString("start"));
         int length = Integer.parseInt(request().getQueryString("length"));
@@ -70,25 +68,20 @@ public class Factors {
 
         //filtering
         BooleanExpression fbt = Filters.timerangeFilter(t.start, request().getQueryString("columns[1][search][value]"));
-        //if (fbt == null) return ok("null");
-
 
         //int recordsTotal = factorDao.selectCountAll();
         //List<Factor> data = factorDao.selectAllLimit(start, length);
 
-
-        SQLQuery selectFactors = template.newSqlQuery().from(f).join(t).on(f.tick.eq(t.tick))
+        SQLQuery query = template.newSqlQuery().from(f).join(t).on(f.tick.eq(t.tick))
                 .where(fbt)
                 .orderBy(order).offset(start).limit(length);
 
         long recordsTotal = template.count(template.newSqlQuery().from(f));
-        long recordsFiltered = template.count(selectFactors);
+        long recordsFiltered = template.count(query);
 
-
-        List<FactorDto> data =
-                template.query(selectFactors, Projections.constructor(
-                        FactorDto.class, f.id, f.tick, t.start, f.factor, f.value, f.centile, f.sig
-                ));
+        List<FactorDto> data = template.query(query, Projections.constructor(
+                FactorDto.class, f.id, f.tick, t.start, f.factor, f.value, f.centile, f.sig
+        ));
 
         ObjectNode response = Json.newObject();
         response.put("draw", draw);

@@ -120,26 +120,8 @@ function ViewModel() {
         //catalog.fnFilter(self.emailFilter(), 0);
 
 
+            catalog.column(1).search( self.filters.daterange()).draw()
 
-        i = 0
-        for (var f in self.filters) {
-            console.log("Filter: " + f)
-
-            //catalog.fnFilter(self.filters[f](), i);
-            // Apply the search
-            catalog.column( i).search( self.filters[f]()).draw()
-
-            /*table.columns().eq( 0 ).each( function ( colIdx ) {
-                $( 'input', table.column( colIdx ).footer() ).on( 'keyup change', function () {
-                    table
-                        .column( colIdx )
-                        .search( this.value )
-                        .draw();
-                } );
-            } );*/
-
-            i++
-        }
 
         console.log('filters called');
     };
@@ -204,7 +186,7 @@ function ViewModel() {
             "dom": "<'row'<'col-xs-6'l><'col-xs-6'>r>t<'row'<'col-xs-6'i><'col-xs-6'p>>",
             //"dom": "t",
             //"dom": "lrtip",
-            "ordering": false,
+            "ordering": true,
             //"autoWidth": false,
             //"bPaginate": true,
             //"bProcessing": true,
@@ -219,13 +201,13 @@ function ViewModel() {
                     "defaultContent": ''
                 },
                 {
-                    "data": "cluster.clusterId",
+                    "data": "id",
                     "render": function (data) {
                         return '<a href="/clusters/'+data+'">'+data+'</a>'
                     }
                 },
                 {
-                    "data": "cluster.time",
+                    "data": "time",
                     "render": function (data) {
                         return moment(data).format(timeFormat)
                     }

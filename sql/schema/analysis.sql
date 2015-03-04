@@ -16,6 +16,8 @@ CREATE TABLE Poisson (#COUNTER TABLE#
 );
 
 
+
+
 DROP TABLE IF EXISTS TickFactor CASCADE;
 CREATE TABLE TickFactor (
   id      INTEGER        NOT NULL AUTO_INCREMENT,
@@ -74,6 +76,8 @@ CREATE TABLE FactorFreq (
   UNIQUE KEY (tick, factor, x)
 #FOREIGN KEY (tradeCnt) REFERENCES Counter (id)
 );
+
+
 
 
 DROP TABLE IF EXISTS Cluster CASCADE;
