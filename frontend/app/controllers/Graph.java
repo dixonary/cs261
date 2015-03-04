@@ -2,29 +2,21 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import models.ClusterDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import play.libs.Json;
 import play.mvc.Result;
-import play.mvc.Results;
 import team16.cs261.common.dao.ClusterDao;
 import team16.cs261.common.dao.FactorDao;
-import team16.cs261.common.dao.GraphDao;
 import team16.cs261.common.dao.TradeDao;
-import team16.cs261.common.entity.Cluster;
-import team16.cs261.common.entity.factor.Factor;
 import util.JsonNodeRowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import static play.mvc.Controller.request;
 import static play.mvc.Results.ok;
 
 @org.springframework.stereotype.Controller
@@ -42,9 +34,6 @@ public class Graph {
     @Autowired
     TradeDao tradeDao;
 
-    @Autowired
-        GraphDao graphDao;
-
     public Result index() {
         return ok(views.html.graph.render());
     }
@@ -61,7 +50,7 @@ public class Graph {
             "SELECT T.id, T.email AS label FROM Node N JOIN Trader T ON N.id = T.id";
     public static final String SELECT_EDGES =
             "SELECT `source` AS `from`, target AS `to`, weight AS value " +
-                    "FROM Edge E NATURAL JOIN TraderPair TTE ORDER BY weight desc LIMIT 12";
+                    "FROM Edge E NATURAL JOIN TraderPair TTE ORDER BY weight DESC LIMIT 12";
 
     public Result graph() {
         List<JsonNode> nodes = jdbcTemplate.query(SELECT_NODES, new Object[0], new JsonNodeRowMapper());
@@ -122,14 +111,6 @@ public class Graph {
     }
 
 
-
-
-
-
-
-
-
-
     public static final String SELECT_TTE_COUNT = "SELECT count(*) FROM TraderPair";
     public static final String SELECT_TTE_LIMIT =
             "SELECT id, source, target, trader1, trader2, comms, commWgt " +
@@ -156,7 +137,7 @@ public class Graph {
 
                 System.out.println(n1 + "\t" + n2 + "\t" + commWgt);
 
-                if(n1 < n2) {
+                if (n1 < n2) {
                     matrix[n1][n2] = commWgt;
                 } else {
                     matrix[n2][n1] = commWgt;
