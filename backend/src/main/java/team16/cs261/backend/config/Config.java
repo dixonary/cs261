@@ -1,4 +1,4 @@
-package team16.cs261.backend;
+package team16.cs261.backend.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,24 +23,18 @@ public class Config {
     @Value("${stream.comm.port}")
     private int commsPort;
 
-    @Value("${analysis.time.interval}")
-    private int timeInterval;
-
-    @Value("${analysis.time.short}")
-    private int timeShort;
-
-    @Value("${analysis.time.long}")
-    private int timeLong;
-
     private Input input = Input.SOCKET;
     private Path tradesFile;
     private Path commsFile;
 
-    @Autowired
-    public Config(Options options) {
-        this.options=options;
+    public final Analysis analysis;
 
-        if(options.tradesFile != null && options.commsFile != null) {
+    @Autowired
+    public Config(Options options, Analysis analysis) {
+        this.options = options;
+        this.analysis = analysis;
+
+        if (options.tradesFile != null && options.commsFile != null) {
             input = Input.FILE;
             tradesFile = Paths.get(options.tradesFile);
             commsFile = Paths.get(options.commsFile);
@@ -49,7 +43,6 @@ public class Config {
             System.out.println("Trades: " + tradesFile.toUri());
         }
     }
-
 
 
     public Input getInput() {
@@ -74,30 +67,6 @@ public class Config {
 
     public void setCommsFile(Path commsFile) {
         this.commsFile = commsFile;
-    }
-
-    public int getTimeInterval() {
-        return timeInterval;
-    }
-
-    public void setTimeInterval(int timeInterval) {
-        this.timeInterval = timeInterval;
-    }
-
-    public int getTimeShort() {
-        return timeShort;
-    }
-
-    public void setTimeShort(int timeShort) {
-        this.timeShort = timeShort;
-    }
-
-    public int getTimeLong() {
-        return timeLong;
-    }
-
-    public void setTimeLong(int timeLong) {
-        this.timeLong = timeLong;
     }
 
 
@@ -126,11 +95,56 @@ public class Config {
         this.commsPort = commsPort;
     }
 
+
     /**
-    * Created by martin on 26/02/15.
-    */
+     * Created by martin on 26/02/15.
+     */
     public static enum Input {
         SOCKET,
         FILE
+    }
+
+    /**
+     * Created by martin on 02/03/15.
+     */
+
+    @Component
+    public static class Analysis {
+
+        public final Interval interval;
+        public final Comms comms;
+
+        @Autowired
+        public Analysis(Interval interval, Comms comms) {
+            this.interval = interval;
+            this.comms = comms;
+        }
+    }
+
+    @Component
+    public static class Interval {
+        public final int length;
+
+        @Autowired
+        public Interval(
+                @Value("${analysis.interval.length}") int length
+        ) {
+            this.length=length;
+        }
+    }
+
+    @Component
+    public static class Comms {
+        public final int intervals;
+        public final float threshold;
+
+        @Autowired
+        public Comms(
+                @Value("${analysis.comms.intervals}") int intervals,
+                @Value("${analysis.comms.threshold}") float threshold
+        ) {
+            this.intervals = intervals;
+            this.threshold = threshold;
+        }
     }
 }

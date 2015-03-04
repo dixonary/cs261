@@ -2,13 +2,15 @@ DELIMITER //
 DROP PROCEDURE IF EXISTS InsertTick;
 CREATE PROCEDURE InsertTick(tick INT, time1 BIGINT, time2 BIGINT)
   BEGIN
-    SELECT @trades := COUNT(*) FROM Trade WHERE time1 <= time AND time < time2;
-    SELECT @comms := COUNT(*) FROM Comm WHERE time1 <= time AND time < time2;
 
-    INSERT INTO Tick (tick, trades, comms)
-      VALUES (tick, @trades, @comms);
+    INSERT INTO Tick (tick, `start`, `end`)
+      VALUES (tick, time1, time2);
+
   END //
 DELIMITER ;
+
+
+
 
 
 
@@ -26,7 +28,7 @@ CREATE PROCEDURE InsertTrader(newTrader TEXT, inDomain TEXT)
 
     IF NOT EXISTS(SELECT * FROM Trader WHERE email = newTrader)
     THEN
-      INSERT INTO Node VALUES ();
+      INSERT INTO Node (label) VALUES (newTrader);
       INSERT INTO Trader (id, email, domain)
           VALUES (@newId := LAST_INSERT_ID(), newTrader, inDomain);
 
@@ -39,14 +41,21 @@ CREATE PROCEDURE InsertTrader(newTrader TEXT, inDomain TEXT)
           LEAVE traderLoop;
         END IF;
 
+
+
         IF newTrader < tEmail THEN
           INSERT INTO Edge (source, target) VALUES (@newId, tId);
-          INSERT INTO TraderTraderEdge(id, trader1, trader2)
-            VALUES (LAST_INSERT_ID(), newTrader, tEmail);
+          INSERT INTO TraderPair
+            (id, trader1Id, trader2Id, trader1, trader2)
+          VALUES
+            (LAST_INSERT_ID(), @newId, tId, newTrader, tEmail);
+
         ELSEIF tEmail < newTrader THEN
           INSERT INTO Edge (source, target) VALUES (tId, @newId);
-          INSERT INTO TraderTraderEdge(id, trader1, trader2)
-          VALUES (LAST_INSERT_ID(), tEmail, newTrader);
+          INSERT INTO TraderPair
+            (id, trader1Id, trader2Id, trader1, trader2)
+          VALUES
+            (LAST_INSERT_ID(), tId, @newId, tEmail, newTrader);
         END IF;
 
       END LOOP;
@@ -80,14 +89,15 @@ DELIMITER ;
 DELIMITER //
 DROP PROCEDURE IF EXISTS InsertTrade;
 CREATE PROCEDURE InsertTrade(
-  time     LONG,
+  time     BIGINT,
+    tick INT,
   buyer    VARCHAR(50),
   seller   VARCHAR(50),
   price    FLOAT,
   size     INTEGER,
   currency VARCHAR(3),
-  symbol   VARCHAR(10),
-  sector   VARCHAR(40),
+  inSymbol   VARCHAR(10),
+  inSector   VARCHAR(40),
   bid      FLOAT,
   ask      FLOAT
 )
@@ -95,11 +105,20 @@ CREATE PROCEDURE InsertTrade(
 
     #CALL InsertTrader
 
-    CALL InsertSector(sector);
-    CALL InsertSymbol(symbol, sector);
+    CALL InsertSector(inSector);
+    CALL InsertSymbol(inSymbol, inSector);
 
-    INSERT INTO Trade (time, buyer, seller, price, currency, size, symbol, sector, bid, ask)
-    VALUES (time, buyer, seller, price,currency, size, symbol, sector, bid, ask);
+    SELECT @buyerId := id FROM Trader WHERE `email` = buyer;
+    SELECT @sellerId := id FROM Trader WHERE `email` = seller;
+    SELECT @symbolId := id FROM Symbol WHERE `symbol` = inSymbol;
+    SELECT @sectorId := id FROM Sector WHERE `sector` = inSector;
+
+
+
+    INSERT INTO Trade
+      (time, tick, buyer, seller, price, currency, size, symbol, sector, bid, ask, buyerId, sellerId, symbolId, sectorId)
+    VALUES
+      (time, tick, buyer, seller, price,currency, size, inSymbol, inSector, bid, ask, @buyerId, @sellerId, @symbolId, @sectorId);
   END //
 DELIMITER ;
 
@@ -119,7 +138,7 @@ CREATE PROCEDURE InsertSector(inSector VARCHAR(40))
       #INSERT INTO Counter VALUES (), ();
       #INSERT INTO Sector (sector, tradeCnt)
       #VALUES (inSector, LAST_INSERT_ID());
-      INSERT INTO Node VALUES ();
+      INSERT INTO Node (label) VALUES (inSector);
       INSERT INTO Sector (id, sector)
       VALUES (@sectorId := LAST_INSERT_ID(), inSector);
 
@@ -134,7 +153,7 @@ CREATE PROCEDURE InsertSector(inSector VARCHAR(40))
         END IF;
 
         INSERT INTO Edge (source, target) VALUES (tId, @sectorId);
-        INSERT INTO TraderSectorEdge (id, email, sector)
+        INSERT INTO TraderSector (id, email, sector)
         VALUES (LAST_INSERT_ID(), tEmail, inSector);
 
       END LOOP;
@@ -163,7 +182,7 @@ CREATE PROCEDURE InsertSymbol(inSymbol VARCHAR(10), inSector VARCHAR(40))
       #INSERT INTO Counter VALUES (), ();
       #INSERT INTO Symbol (symbol, sector, tradeCnt, priceCnt)
       #VALUES (inSymbol, inSEctor, LAST_INSERT_ID(), LAST_INSERT_ID() + 1);
-      INSERT INTO Node VALUES ();
+      INSERT INTO Node (label) VALUES (inSymbol);
       INSERT INTO Symbol (id, symbol, sector)
       VALUES (@symbolId := LAST_INSERT_ID(), inSymbol, inSector);
 
@@ -179,8 +198,8 @@ CREATE PROCEDURE InsertSymbol(inSymbol VARCHAR(10), inSector VARCHAR(40))
         END IF;
 
         INSERT INTO Edge (source, target) VALUES (tId, @symbolId);
-        INSERT INTO TraderSymbolEdge (id, email, symbol)
-        VALUES (LAST_INSERT_ID(), tEmail, inSymbol);
+        INSERT INTO TraderSymbol (id, traderId, symbolId, email, symbol)
+        VALUES (LAST_INSERT_ID(), tId, @symbolId, tEmail, inSymbol);
 
       END LOOP;
 

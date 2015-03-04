@@ -1,4 +1,4 @@
-package team16.cs261.backend;
+package team16.cs261.backend.config;
 
 import org.apache.commons.cli.*;
 import org.springframework.stereotype.Component;
@@ -9,11 +9,11 @@ import java.util.Arrays;
  * Created by martin on 22/02/15.
  */
 
-@Component
+//@Component
 public class Options {
 
-    String tradesFile;
-    String commsFile;
+    public String tradesFile;
+    public String commsFile;
 
     //@Autowired
     public Options(String[] cliArgs) {

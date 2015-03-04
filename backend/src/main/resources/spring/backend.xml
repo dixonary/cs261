@@ -34,7 +34,7 @@
         <util:constant static-field="team16.cs261.backend.Main.args"/>
     </bean>-->
 
-    <bean id="options" class="team16.cs261.backend.Options">
+    <bean id="options" class="team16.cs261.backend.config.Options">
         <constructor-arg>
             <util:constant static-field="team16.cs261.backend.Main.args"/>
         </constructor-arg>

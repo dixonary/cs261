@@ -8,6 +8,7 @@ public class Trade {
     private int id;
 
     private long time;
+    private int tick;
     private String buyer;
     private String seller;
 
@@ -24,8 +25,18 @@ public class Trade {
     public Trade() {
     }
 
-    public Trade(long time, String buyer, String seller, float price, int size, String currency, String symbol, String sector, float bid, float ask) {
+    public int getTick() {
+        return tick;
+    }
+
+    public void setTick(int tick) {
+        this.tick = tick;
+    }
+
+    public Trade(long time, int tick, String buyer, String seller, float price, int size, String currency, String symbol, String sector, float bid, float ask) {
         this.time = time;
+        this.tick=tick;
+
         this.buyer = buyer;
         this.seller = seller;
         this.price = price;

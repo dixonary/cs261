@@ -23,15 +23,17 @@ public abstract class AbstractDao<ID, E> {
     private final Class<E> entityClass;
     private final String tableName;
 
-    private final String idColumn;
-
-    private final String selectAll, selectAllLimit, selectCount, selectById, deleteFromIdIn;
+    private String selectAll, selectAllLimit, selectCount, selectById, deleteFromIdIn;
 
     protected AbstractDao(Class<E> entityClass) {
         this.entityClass = entityClass;
         tableName = entityClass.getSimpleName();
 
-        idColumn = entityClass.getDeclaredFields()[0].getName();
+        generateQueries();
+    }
+
+    public void generateQueries() {
+        String idColumn = entityClass.getDeclaredFields()[0].getName();
 
         selectAll = "SELECT * FROM " + tableName;
         selectAllLimit = "SELECT * FROM " + tableName + " LIMIT ?, ?";

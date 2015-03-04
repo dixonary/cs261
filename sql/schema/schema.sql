@@ -20,16 +20,67 @@ CREATE TABLE Counter (#COUNTER TABLE#
   PRIMARY KEY (id)
 );
 
+
+
 DROP TABLE IF EXISTS Tick CASCADE;
 CREATE TABLE Tick (#RAWTRADE TABLE#
-  tick         INTEGER NOT NULL, #Contains the full representation of a Trade as received from the Trades feed
-  trades       INTEGER NOT NULL,
-  comms        INTEGER NOT NULL,
-  analysed     BOOLEAN NOT NULL DEFAULT FALSE,
-  analysisTime INT     NOT NULL DEFAULT 0,
+  tick               INTEGER NOT NULL, #Contains the full representation of a Trade as received from the Trades feed
+  start              BIGINT  NOT NULL,
+  end                BIGINT  NOT NULL,
+  status             ENUM
+                     ('UNPARSED',
+                      'PARSED',
+                      'ANALYSING',
+                      'ANALYSED')
+                             NOT NULL DEFAULT 'UNPARSED',
+
+# counts
+  trades             INTEGER NOT NULL DEFAULT 0,
+  comms              INTEGER NOT NULL DEFAULT 0, # comms for the interval
+
+#
+
+
+  common             INTEGER NOT NULL,
+  commonBuys         INTEGER NOT NULL,
+  commonSells        INTEGER NOT NULL,
+
+# frequencies
+tradesPerTrader DOUBLE NOT NULL,
+
+  commonPerPair      DOUBLE  NOT NULL,
+  commonBuysPerPair  DOUBLE  NOT NULL,
+  commonSellsPerPair DOUBLE  NOT NULL,
+
+
+  commsPerTrader     DOUBLE  NOT NULL DEFAULT 0, # average trader comm frequency
+  commsPerPair       DOUBLE  NOT NULL DEFAULT 0, # average pair-wise comm frequency
+
+
+
+# means
+  commsMa            FLOAT   NOT NULL DEFAULT 0, # comms moving average
+  tradesMa           FLOAT   NOT NULL DEFAULT 0,
+
+
+  aggrTime           INT,
+  analysisTime       INT     NOT NULL DEFAULT 0,
+  commsGraph         BLOB,
+  traderSymbolGraph  BLOB,
+  clusters           BLOB,
   PRIMARY KEY (tick)
 );
 
+DROP TABLE IF EXISTS TickEdge CASCADE;
+CREATE TABLE TickEdge (#TRADER TABLE#
+  tick   INTEGER NOT NULL,
+  edge   INTEGER NOT NULL, #Contains entities which represent individual Traders and averages for Trading volume and Profit
+  weight FLOAT   NOT NULL,
+  PRIMARY KEY (tick, edge),
+  FOREIGN KEY (tick) REFERENCES Tick (tick),
+  FOREIGN KEY (edge) REFERENCES Edge (id)#,
+  #FOREIGN KEY (tradeCnt) REFERENCES Counter (id)
+);
 
 
 # raw data tables
@@ -43,56 +94,11 @@ CREATE TABLE RawEvent (#RAWTRADE TABLE#
 );
 
 
-# nodes
-DROP TABLE IF EXISTS Node CASCADE;
-CREATE TABLE Node (
-  id INTEGER NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (id)
-);
-
-DROP TABLE IF EXISTS Trader CASCADE;
-CREATE TABLE Trader (#TRADER TABLE#
-  id       INTEGER     NOT NULL,
-  email    VARCHAR(50) NOT NULL, #Contains entities which represent individual Traders and averages for Trading volume and Profit
-  domain   VARCHAR(30) NOT NULL, #There email addresses are unique and so are used as our primary key
-  tradeCnt INTEGER     NOT NULL,
-  PRIMARY KEY (id),
-  UNIQUE KEY (email),
-  FOREIGN KEY (id) REFERENCES Node (id)#,
-  #FOREIGN KEY (tradeCnt) REFERENCES Counter (id)
-);
-
-DROP TABLE IF EXISTS Symbol CASCADE;
-CREATE TABLE Symbol (#SYMBOL TABLE#
-  id       INTEGER     NOT NULL,
-  symbol   VARCHAR(10) NOT NULL, #Contains entities which represent individual Stocks and averages for Trading volume and Profit
-  sector   VARCHAR(40) NOT NULL, #Each Stock is unique on it's name/symbol
-  price    FLOAT       NOT NULL DEFAULT 0,
-  tradeCnt INTEGER     NOT NULL,
-  priceCnt INTEGER     NOT NULL,
-  PRIMARY KEY (id),
-  FOREIGN KEY (id) REFERENCES Node (id),
-  UNIQUE KEY (symbol),
-  FOREIGN KEY (sector) REFERENCES Sector (sector)
-#FOREIGN KEY (tradeCnt) REFERENCES Counter (id),
-#FOREIGN KEY (priceCnt) REFERENCES Counter (id)
-);
-
-DROP TABLE IF EXISTS Sector CASCADE;
-CREATE TABLE Sector (#SECTOR TABLE#
-  id       INTEGER     NOT NULL,
-  sector   VARCHAR(40) NOT NULL, #Contains entities which represent individual sectors and averages for Trading volume
-  tradeCnt INTEGER     NOT NULL, #Each sector is unique on it's name
-  PRIMARY KEY (id),
-  FOREIGN KEY (id) REFERENCES Node (id),
-  UNIQUE KEY (sector)#,
-  #FOREIGN KEY (tradeCnt) REFERENCES Counter (id)
-);
-
 DROP TABLE IF EXISTS Trade CASCADE;
 CREATE TABLE Trade (#TRADE TABLE#
   id       INTEGER     NOT NULL AUTO_INCREMENT, #Contains the full representation of a Trade with each field separated out
   time     BIGINT      NOT NULL, #Also has an id as primary key as the timestamp cannot be guranteed to be unique
+  tick     INTEGER     NOT NULL,
   buyer    VARCHAR(50) NOT NULL,
   seller   VARCHAR(50) NOT NULL,
   price    FLOAT       NOT NULL,
@@ -102,20 +108,35 @@ CREATE TABLE Trade (#TRADE TABLE#
   sector   VARCHAR(40) NOT NULL,
   bid      FLOAT       NOT NULL,
   ask      FLOAT       NOT NULL,
+
   PRIMARY KEY (id),
+  FOREIGN KEY (tick) REFERENCES Tick (tick),
   FOREIGN KEY (buyer) REFERENCES Trader (email),
   FOREIGN KEY (seller) REFERENCES Trader (email),
   FOREIGN KEY (symbol) REFERENCES Symbol (symbol),
-  FOREIGN KEY (sector) REFERENCES Sector (sector)
+  FOREIGN KEY (sector) REFERENCES Sector (sector),
+
+#references
+  buyerId  INT         NOT NULL,
+  sellerId INT         NOT NULL,
+  symbolId INT         NOT NULL,
+  sectorId INT         NOT NULL,
+
+  FOREIGN KEY (buyerId) REFERENCES Trader (id),
+  FOREIGN KEY (sellerId) REFERENCES Trader (id),
+  FOREIGN KEY (symbolId) REFERENCES Symbol (id),
+  FOREIGN KEY (sectorId) REFERENCES Sector (id)
 );
 
 DROP TABLE IF EXISTS Comm CASCADE;
 CREATE TABLE Comm (#COMM TABLE#
   id        INTEGER     NOT NULL AUTO_INCREMENT, #Contains individual Communcations between Traders
   time      BIGINT      NOT NULL, #Has an id field as the timestamp cannot be guaranteed to be unique
+  tick      INTEGER     NOT NULL,
   sender    VARCHAR(50) NOT NULL,
   recipient VARCHAR(50) NOT NULL,
   PRIMARY KEY (id),
+  FOREIGN KEY (tick) REFERENCES Tick (tick),
   FOREIGN KEY (sender) REFERENCES Trader (email),
   FOREIGN KEY (recipient) REFERENCES Trader (email)
 );
@@ -134,93 +155,40 @@ CREATE TABLE TraderStock (#TRADERSTOCK TABLE#
   FOREIGN KEY (symbol) REFERENCES Symbol (symbol)
 );
 
-# edges
-DROP TABLE IF EXISTS Edge CASCADE;
-CREATE TABLE Edge (#FACTOR TABLE#
-  id     INTEGER NOT NULL AUTO_INCREMENT, #Exists to provide a unique value for each individual factor to refer to
-  source INTEGER,
-  target INTEGER,
-  weight FLOAT,
-  PRIMARY KEY (id),
-  UNIQUE KEY (source, target),
-  FOREIGN KEY (source) REFERENCES Node (id),
-  FOREIGN KEY (target) REFERENCES Node (id)
-);
-
-DROP TABLE IF EXISTS TraderTraderEdge CASCADE;
-CREATE TABLE TraderTraderEdge (#TRADERPAIR TABLE#
-  id       INTEGER     NOT NULL AUTO_INCREMENT,
-  trader1  VARCHAR(50) NOT NULL, #Each entity is unique for a Trader pair
-  trader2  VARCHAR(50) NOT NULL, #Represents the stocks in common, Trades and Communications between Trader pairs
-  # counts for last time interval
-  comms    INTEGER     NOT NULL, #comms exchanged
-  stocks   INTEGER     NOT NULL, #common stocks traded
-#  stockWgt INTEGER     NOT NULL,
-
-  commWgt  FLOAT       NOT NULL,
-
-  stockWgt FLOAT       NOT NULL,
-  tradeWgt FLOAT       NOT NULL,
-
-  stockCnt INTEGER     NOT NULL, #number of stocks in common
-  tradeCnt INTEGER     NOT NULL, #number of trades between them
-  commCnt  INTEGER     NOT NULL, #number of communications between them
-
-  PRIMARY KEY (id),
-  UNIQUE KEY (trader1, trader2),
-  FOREIGN KEY (trader1) REFERENCES Trader (email),
-  FOREIGN KEY (trader2) REFERENCES Trader (email),
-  FOREIGN KEY (id) REFERENCES Edge (id)
-#,
-#FOREIGN KEY (stockCnt) REFERENCES Counter (id),
-#FOREIGN KEY (tradeCnt) REFERENCES Counter (id),
-#FOREIGN KEY (commCnt) REFERENCES Counter (id)
-);
-
-DROP TABLE IF EXISTS TraderSymbolEdge CASCADE;
-CREATE TABLE TraderSymbolEdge (#TRADERPAIR TABLE#
-  id       INTEGER     NOT NULL AUTO_INCREMENT,
-  email    VARCHAR(50) NOT NULL, #Each entity is unique for a Trader pair
-  symbol   VARCHAR(10) NOT NULL, #Represents the stocks in common, Trades and Communications between Trader pairs
-  # edge weights
-  tradeWgt FLOAT       NOT NULL,
-  PRIMARY KEY (id),
-  UNIQUE KEY (email, symbol),
-  FOREIGN KEY (email) REFERENCES Trader (email),
-  FOREIGN KEY (symbol) REFERENCES Symbol (symbol),
-  FOREIGN KEY (id) REFERENCES Edge (id)
-);
-
-DROP TABLE IF EXISTS TraderSectorEdge CASCADE;
-CREATE TABLE TraderSectorEdge (#TRADERPAIR TABLE#
-  id       INTEGER     NOT NULL AUTO_INCREMENT,
-  email    VARCHAR(50) NOT NULL, #Each entity is unique for a Trader pair
-  sector   VARCHAR(40) NOT NULL, #Represents the stocks in common, Trades and Communications between Trader pairs
-  # edge weights
-  tradeWgt FLOAT       NOT NULL, # represents strength of trader activity in sector
-  PRIMARY KEY (id),
-  UNIQUE KEY (email, sector),
-  FOREIGN KEY (email) REFERENCES Trader (email),
-  FOREIGN KEY (sector) REFERENCES Sector (sector),
-  FOREIGN KEY (id) REFERENCES Edge (id)
-);
-
 
 # clustering
-
+/*
 DROP TABLE IF EXISTS Cluster CASCADE;
 CREATE TABLE Cluster (#CLUSTER TABLE#
-  clusterId INTEGER NOT NULL AUTO_INCREMENT, #Links together a group of related factors
-  time      BIGINT  NOT NULL, #Each entity is unique for each clusterId
-  day       BIGINT  NOT NULL,
-  PRIMARY KEY (clusterId)
+  id   INTEGER NOT NULL AUTO_INCREMENT, #Links together a group of related factors
+  time BIGINT  NOT NULL, #Each entity is unique for each clusterId
+  day  BIGINT  NOT NULL,
+  PRIMARY KEY (id)
+);
+
+DROP TABLE IF EXISTS ClusterNode CASCADE;
+CREATE TABLE ClusterNode (#FACTORCLUSTER TABLE#
+  id   INTEGER NOT NULL, #Linking table to associate multiple factors with one cluster
+  node INTEGER NOT NULL, #Entities are unique for each clusterId, factorId pair
+  PRIMARY KEY (id, node),
+  FOREIGN KEY (id) REFERENCES Cluster (id),
+  FOREIGN KEY (node) REFERENCES Node (id)
+);
+
+DROP TABLE IF EXISTS ClusterEdge CASCADE;
+CREATE TABLE ClusterEdge (#FACTORCLUSTER TABLE#
+  id   INTEGER NOT NULL, #Linking table to associate multiple factors with one cluster
+  edge INTEGER NOT NULL, #Entities are unique for each clusterId, factorId pair
+  PRIMARY KEY (id, edge),
+  FOREIGN KEY (id) REFERENCES Cluster (id),
+  FOREIGN KEY (edge) REFERENCES Edge (id)
 );
 
 DROP TABLE IF EXISTS Factor CASCADE;
 CREATE TABLE Factor (#FACTOR TABLE#
   factorId INTEGER NOT NULL AUTO_INCREMENT, #Exists to provide a unique value for each individual factor to refer to
-  time   BIGINT  NOT NULL,
-  weight INT     NOT NULL,
+  time     BIGINT  NOT NULL,
+  weight   INT     NOT NULL,
   timeFrom BIGINT  NOT NULL,
   timeTo   BIGINT  NOT NULL,
   PRIMARY KEY (factorId)
@@ -231,7 +199,7 @@ CREATE TABLE ClusterFactor (#FACTORCLUSTER TABLE#
   clusterId INTEGER NOT NULL, #Linking table to associate multiple factors with one cluster
   factorId  INTEGER NOT NULL, #Entities are unique for each clusterId, factorId pair
   PRIMARY KEY (clusterId, factorId),
-  FOREIGN KEY (clusterId) REFERENCES Cluster (clusterId),
+  FOREIGN KEY (clusterId) REFERENCES Cluster (id),
   FOREIGN KEY (factorId) REFERENCES Factor (factorId)
 );
 
@@ -325,6 +293,6 @@ CREATE TABLE PricesFactor (#PRICESFACTOR TABLE#
   PRIMARY KEY (factorId),
   FOREIGN KEY (factorId) REFERENCES Factor (factorId)
 );
-
+*/
 
 SET FOREIGN_KEY_CHECKS = 1;

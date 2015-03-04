@@ -1,92 +1,97 @@
 @()
+@import team16.cs261.common.meta.FactorClass
 
-    @main("Factors", "Factor listing") {
-        <!-- DATA TABLES -->
-        <link href=\"//cdn.datatables.net/plug-ins/f2c75b7247b/integration/bootstrap/3/dataTables.bootstrap.css\" rel=\"stylesheet\"  type=\"text/css\" />
-        <!-- daterange picker -->
-        <link href="@routes.Assets.at("AdminLTE/plugins/daterangepicker/daterangepicker-bs3.css")" rel="stylesheet" type="text/css" />
-    }{
+@main("Factors", "FactorClass listing") {
+    <!-- DATA TABLES -->
+    <link href="//cdn.datatables.net/plug-ins/f2c75b7247b/integration/bootstrap/3/dataTables.bootstrap.css" rel="stylesheet" type="text/css" />
+    <!-- daterange picker -->
+    <link href="@routes.Assets.at("AdminLTE/plugins/daterangepicker/daterangepicker-bs3.css")" rel="stylesheet" type="text/css" />
+} {
 
-        <div class="row">
-            <div class="col-xs-12">
-                <div class="box">
-                    <div class="box-header">
-                        <h3 class="box-title">Listing</h3>
-                    </div>
-                    <div class="box-body table-responsive">
-                        <table id="factors-table" class="table table-bordered table-hover">
-                            <thead>
-                                <tr>
-                                    <th>
-                                    </th>
-                                    <th>
-                                    </th>
-                                    <th>
-@*                                        <div class="input-group">
+
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">Listing</h3>
+                </div>
+                <div class="box-body table-responsive">
+                    <table id="factors-table" class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>
+
+                                        <div class="input-group">
                                             <div class="input-group-addon">
-                                                <i class="fa fa-clock-o"></i>
+                                                <i class="fa fa-calendar"></i>
                                             </div>
-                                            <input type="text" class="form-control pull-left" id="reservationtime"  style="width: 320px" >
-                                        </div>*@
-
-                                        @*<div class="input-group">
-                                            <div class="input-group-addon">
-                                                <i class="fa fa-clock-o"></i>
-                                            </div>
-                                            <input type="text" class="form-control pull-left"  id="clusters-daterange" style="width: 320px" >
-                                        </div>*@
-
-                                        <div class="form-group"  style="width: 320px">
-                                            <div class="input-group">
-                                                <div class="input-group-addon">
-                                                    <i class="fa fa-calendar"></i>
-                                                </div>
-                                                <button class="form-control pull-left" id="clusters-daterange">
-                                                    <span>-</span>
+                                            <button class="form-control pull-left" id="clusters-daterange">
+                                                <span>-</span>
                                                     &nbsp;
-                                                    <i class="fa fa-caret-down"></i>
-                                                </button>
-                                            </div>
+                                                <i class="fa fa-caret-down"></i>
+                                            </button>
                                         </div>
-                                    </th>
-                                </tr>
-                                <tr>
-                                    <th></th>
-                                    <th>Id</th>
-                                    <th>Time</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <th></th>
-                                    <th>Id</th>
-                                    <th>Time</th>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
+
+                                </th>
+                                <th>
+                                    @factors.factorClassSelect()
+                                </th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <th>Id</th>
+                                <th>Time</th>
+                                <th>Class</th>
+                                <th>Subject</th>
+                                <th>Value, x</th>
+                                <th>%ile, P(X <= x)</th>
+                                <th>Sig, P(X >= x)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>Id</th>
+                                <th>Time</th>
+                                <th>Class</th>
+                                <th>Subject</th>
+                                <th>Value, x</th>
+                                <th>%ile, P(X <= x)</th>
+                                <th>Sig, P(X >= x)</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+
                 </div>
             </div>
         </div>
+    </div>
 
-        @Html("")
-    } {
-        @Html("")
 
-        <!-- dataTables -->
-        <script src="//cdn.datatables.net/1.10.5/js/jquery.dataTables.js"></script>
-        <script src="//cdn.datatables.net/plug-ins/f2c75b7247b/integration/bootstrap/3/dataTables.bootstrap.js"></script>
 
-        <!-- knockoutjs -->
-        <script src='//cdnjs.cloudflare.com/ajax/libs/knockout/3.2.0/knockout-min.js'></script>
+    @Html("")
+} {
+    @Html("")
 
-        <!-- date-range-picker -->
-        <script src="@routes.Assets.at("AdminLTE/plugins/daterangepicker/daterangepicker.js")" type="text/javascript"></script>
+    <!-- dataTables -->
+    <script src="//cdn.datatables.net/1.10.5/js/jquery.dataTables.js"></script>
+    <script src="//cdn.datatables.net/plug-ins/f2c75b7247b/integration/bootstrap/3/dataTables.bootstrap.js"></script>
 
-        <!-- page script -->
-        <script src="@routes.Assets.at("javascripts/factors/collection.js")"></script>
+    <!-- knockoutjs -->
+    <script src='//cdnjs.cloudflare.com/ajax/libs/knockout/3.2.0/knockout-min.js'></script>
 
-        @Html("")
-    }
+    <!-- date-range-picker -->
+    <script src="@routes.Assets.at("AdminLTE/plugins/daterangepicker/daterangepicker.js")" type="text/javascript"></script>
+
+    <!-- page script -->
+    <script src="@routes.Assets.at("javascripts/factors/collection.js")"></script>
+
+    @Html("")
+}

@@ -1,7 +1,8 @@
 package team16.cs261.backend.module;
 
-import team16.cs261.backend.Config;
+import team16.cs261.backend.config.Config;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -25,7 +26,7 @@ public abstract class Module implements Runnable {
     }
 
     public void log(String line) {
-        System.out.println("[\t" + name + "\t] " + line);
+        System.out.println("[\t\t" + name + "\t] " + line);
     }
 
 
@@ -41,14 +42,14 @@ public abstract class Module implements Runnable {
      * @throws java.text.ParseException
      */
 
-    public long parseTimestamp(String raw) {
-        try {
-            Date date = formatter.parse(raw.substring(0, 23));
-            return date.getTime();
-        } catch (Exception e) {
-            System.out.println("Failed parsing: '" +  raw +"'");
-            e.printStackTrace();
-            return -1;
+    public long parseTimestamp(String raw) throws ParseException {
+        if (raw.length() < 23) {
+            raw = raw + ".000";
+        } else {
+            raw = raw.substring(0, 23);
         }
+
+        Date date = formatter.parse(raw);
+        return date.getTime();
     }
 }

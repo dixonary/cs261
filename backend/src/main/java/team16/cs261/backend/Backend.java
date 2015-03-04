@@ -2,6 +2,7 @@ package team16.cs261.backend;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import team16.cs261.backend.config.Config;
 import team16.cs261.backend.module.Module;
 
 import javax.annotation.PostConstruct;
@@ -31,6 +32,8 @@ public class Backend {
         System.out.println("Initializing...");
 
         System.out.println("Cfg: " + config.getHostname() + ", " + config.getCommsPort());
+
+        System.out.println("Ivals: " + config.analysis.comms.threshold);
 
         for (Module m : modules) {
             Thread t = new Thread(m);

@@ -4,16 +4,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import team16.cs261.backend.Config;
+import team16.cs261.backend.config.Config;
 import team16.cs261.backend.module.ReaderModule;
 import team16.cs261.common.entity.RawEvent;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.Socket;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * Created by martin on 22/01/15.
@@ -30,32 +27,13 @@ public class CommReader extends ReaderModule {
     }
 
 
-
     @Override
-    public BufferedReader getReader() {
-        if (config.getInput() == Config.Input.SOCKET) {
-            Socket socket;
-            try {
-                socket = new Socket(config.getHostname(), config.getCommsPort());
-                return new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            try {
-                BufferedReader reader = Files.newBufferedReader(config.getCommsFile(), Charset.defaultCharset());
-                return reader;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
-
-        return null;
+    public Socket getSocket() throws IOException {
+        return new Socket(config.getHostname(), config.getCommsPort());
     }
 
     @Override
-    public void onHeaders(String headers) {
-
+    public Path getFile() {
+        return config.getCommsFile();
     }
 }

@@ -47,7 +47,6 @@ public class RawEventDao extends AbstractDao<Integer, RawEvent> {
         }
 
         jdbcTemplate.update(sql.toString(), args);
-
     }
 
 }

@@ -7,11 +7,15 @@ GET        /        @controllers.Application.index()
 
 GET        /stats        @controllers.Stats.index()
 
+GET        /ticks/:id        @controllers.Ticks.element(id: Integer)
+GET        /ticks/:id/graph       @controllers.Ticks.graph(id: Integer)
+
 GET        /clusters        @controllers.Clusters.collection()
 GET        /clusters/query        @controllers.Clusters.query()
 GET        /clusters/:id        @controllers.Clusters.element(id: Integer)
 
 GET        /factors        @controllers.Factors.collection()
+GET        /factors/query        @controllers.Factors.query()
 
 GET        /trades        @controllers.Trades.collection()
 GET        /trades/query        @controllers.Trades.query()
@@ -21,6 +25,7 @@ GET        /graph        @controllers.Graph.index()
 GET        /graph/data        @controllers.Graph.graph()
 GET        /graph/mcl        @controllers.Graph.mcl()
 GET        /graph/matlab        @controllers.Graph.matlab()
+GET        /graph/comms        @controllers.Graph.comms()
 
 GET        /comms        @controllers.Comms.collection()
 GET        /comms/query        @controllers.Comms.query()

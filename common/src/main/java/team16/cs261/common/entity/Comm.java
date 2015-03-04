@@ -6,7 +6,10 @@ package team16.cs261.common.entity;
 public class Comm {
 
     private int id;
+
     private long time;
+    private int tick;
+
     private String sender;
     private String recipient;
 
@@ -14,8 +17,9 @@ public class Comm {
 
     }
 
-    public Comm(long time, String sender, String recipient) {
+    public Comm(long time, int tick, String sender, String recipient) {
         this.time = time;
+        this.tick=tick;
         this.sender = sender;
         this.recipient = recipient;
     }
@@ -34,6 +38,14 @@ public class Comm {
 
     public void setTime(long time) {
         this.time = time;
+    }
+
+    public int getTick() {
+        return tick;
+    }
+
+    public void setTick(int tick) {
+        this.tick = tick;
     }
 
     public String getSender() {

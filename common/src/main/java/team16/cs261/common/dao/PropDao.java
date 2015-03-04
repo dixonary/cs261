@@ -1,6 +1,7 @@
 package team16.cs261.common.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
@@ -31,8 +32,12 @@ public class PropDao {
 
     public static final String GET_PROPERTY = "SELECT `value` FROM Prop WHERE `key` = ?";
 
-    public <E> E getProperty(String key, Class<E> type) {
-        return jdbcTemplate.queryForObject(GET_PROPERTY, new Object[]{key}, type);
+    public <E> E getProperty(String key, Class<E> type, E def) {
+        try {
+            return jdbcTemplate.queryForObject(GET_PROPERTY, new Object[]{key}, type);
+        } catch (EmptyResultDataAccessException e) {
+            return def;
+        }
     }
 
     public static final String GET_PROPERTIES = "SELECT `key`, `value` FROM Prop";

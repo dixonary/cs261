@@ -3,8 +3,8 @@ package team16.cs261.backend.module.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
-import team16.cs261.backend.*;
-import team16.cs261.backend.Counter;
+import team16.cs261.backend.util.Counter;
+import team16.cs261.backend.config.Config;
 import team16.cs261.backend.module.Module;
 import team16.cs261.common.dao.*;
 import team16.cs261.common.entity.*;
@@ -12,7 +12,9 @@ import team16.cs261.common.entity.*;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by martin on 22/01/15.
@@ -26,7 +28,6 @@ public class ParserModule extends Module {
 
     @Autowired
     JdbcTemplate jdbcTemplate;
-
 
 
     @Autowired
@@ -45,6 +46,9 @@ public class ParserModule extends Module {
 
     @Autowired
     TraderStockDao traderStockDao;
+
+    @Autowired
+    TickDao tickDao;
 
     @Autowired
     PropDao props;
@@ -79,7 +83,7 @@ public class ParserModule extends Module {
             return;
         }
 
-        System.out.println("Parsing...");
+        //System.out.println("Parsing...");
 
 
         //outputs
@@ -88,11 +92,22 @@ public class ParserModule extends Module {
         List<Trade> tradeEnts = new ArrayList<>();
         List<Comm> commEnts = new ArrayList<>();
 
-
         long maxTime = -1;
+
+        Set<Integer> ticks = new HashSet<>();
+        int maxTick = -1;
+
+
         for (RawEvent rawEvent : rawEvents) {
             rawEventIds.add(rawEvent.getId());
 
+            long time = rawEvent.getTime();
+            int tick = toTick(time);
+
+            ticks.add(tick);
+            if (maxTick < tick) {
+                maxTick = tick;
+            }
 
             switch (rawEvent.getType()) {
                 case COMM:
@@ -100,8 +115,6 @@ public class ParserModule extends Module {
 
 
                     String[] parts = rawEvent.getRaw().split(",");
-
-                    long time = parseTimestamp(parts[0]);
                     String[] recipients = parts[2].split(";");
 
                     traderEnts.add(Trader.parseRaw(parts[1]));
@@ -113,7 +126,7 @@ public class ParserModule extends Module {
                     }
 
                     for (String rec : recipients) {
-                        commEnts.add(new Comm(time, parts[1], rec));
+                        commEnts.add(new Comm(time, tick, parts[1], rec));
                     }
 
                     break;
@@ -123,7 +136,7 @@ public class ParserModule extends Module {
                     Trade trade;
 
                     try {
-                        trade = parseTrade(rawEvent.getRaw());
+                        trade = parseTrade(time, rawEvent.getRaw());
                     } catch (ParseException e) {
                         return;
                     }
@@ -144,35 +157,23 @@ public class ParserModule extends Module {
 
                     break;
             }
-
-            if (maxTime < rawEvent.getTime()) {
-                maxTime = rawEvent.getTime();
-            }
         }
 
 
-        //persist entities
-        traderDao.insert(traderEnts);
-        //traderDao.insert(traderEnts.values());
-        commDao.insert(commEnts);
-        //sectorDao.insert(sectorEnts);
-        //symbolDao.insert(symbolEnts);
-        tradeDao.insert(tradeEnts);
+        List<Tick> tickEnts = new ArrayList<>();
 
-        //System.out.println("Ids: " + AbstractDao.toList(rawTradeIds));
-        rawEventDao.delete(rawEventIds);
+        for (Integer t : ticks) {
+            Tick tickEnt = new Tick(t, config.analysis.interval.length);
+            tickEnts.add(tickEnt);
+
+            //System.out.println("Tick: " + tickEnt);
+        }
+
+        tickDao.insert(tickEnts);
 
 
-        // statistics
 
-        System.out.println("Rate: " + tradesCounter.getRate(60) + ", " + commsCounter.getRate(60));
-
-        props.setProperty("parsed.trades.count", tradesCounter.getCount());
-        props.setProperty("parsed.trades.rate", tradesCounter.getRate(60));
-        props.setProperty("parsed.comms.count", commsCounter.getCount());
-        props.setProperty("parsed.comms.rate", commsCounter.getRate(60));
-
-        long currentTick = toTick(maxTime);
+/*        long currentTick = toTick(maxTime);
 
         Integer maxTick = jdbcTemplate.queryForObject("SELECT max(tick) FROM Tick", Integer.class);
         if (maxTick == null) {
@@ -187,18 +188,45 @@ public class ParserModule extends Module {
         }
 
         for (int tick = maxTick + 1; tick < currentTick; tick++) {
-            System.out.println("i: " + tick);
+            //System.out.println("i: " + tick);
             //jdbcTemplate.update("INSERT INTO Tick (tick) VALUES (?)", i);
             jdbcTemplate.update("CALL InsertTick (?, ?, ?)",
                     tick,
                     tick * config.getTimeInterval(),
                     (tick + 1) * config.getTimeInterval());
-        }
+        }*/
+
+
+        //persist entities
+        traderDao.insert(traderEnts);
+        //traderDao.insert(traderEnts.values());
+        commDao.insert(commEnts);
+        //sectorDao.insert(sectorEnts);
+        //symbolDao.insert(symbolEnts);
+        tradeDao.insert(tradeEnts);
+
+        //System.out.println("Ids: " + AbstractDao.toList(rawTradeIds));
+        rawEventDao.delete(rawEventIds);
+
+
+        jdbcTemplate.update("UPDATE Tick SET status = 'PARSED' WHERE status = 'UNPARSED' AND tick < ?", maxTick);
+
+
+        // statistics
+
+        //System.out.println("Rate: " + tradesCounter.getRate(60) + ", " + commsCounter.getRate(60));
+
+        props.setProperty("parsed.trades.count", tradesCounter.getCount());
+        props.setProperty("parsed.trades.rate", tradesCounter.getRate(60));
+        props.setProperty("parsed.comms.count", commsCounter.getCount());
+        props.setProperty("parsed.comms.rate", commsCounter.getRate(60));
+
+
     }
 
     public int toTick(long time) {
-        long over = time % config.getTimeInterval();
-        return (int) ((time - over) / config.getTimeInterval());
+        long over = time % config.analysis.interval.length;
+        return (int) ((time - over) / config.analysis.interval.length);
     }
 
 
@@ -211,11 +239,12 @@ public class ParserModule extends Module {
      * @return
      * @throws java.text.ParseException
      */
-    public Trade parseTrade(String raw) throws ParseException {
+    public Trade parseTrade(long time, String raw) throws ParseException {
         String[] parts = raw.split(",");
 
         return new Trade(
-                parseTimestamp(parts[0]),
+                time,
+                toTick(time),
                 parts[1],
                 parts[2],
                 Float.parseFloat(parts[3]),

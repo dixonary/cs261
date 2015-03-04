@@ -16,6 +16,7 @@
 
     <properties>
         <org.springframework.version>4.1.4.RELEASE</org.springframework.version>
+
     </properties>
 
     <build>

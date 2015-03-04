@@ -1,22 +1,24 @@
 package team16.cs261.backend.module.impl;
 
-import net.sf.javaml.clustering.mcl.MCL;
 import net.sf.javaml.clustering.mcl.MarkovClustering;
 import net.sf.javaml.clustering.mcl.SparseMatrix;
-import net.sf.javaml.core.*;
-import net.sf.javaml.distance.AbstractSimilarity;
-import net.sf.javaml.distance.DistanceMeasure;
-import net.sf.javaml.distance.EuclideanDistance;
+import net.sf.javaml.core.Dataset;
+import org.apache.commons.math3.distribution.PoissonDistribution;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import team16.cs261.backend.Config;
+import team16.cs261.backend.config.Config;
 import team16.cs261.backend.module.Module;
-import team16.cs261.backend.util.Clusters;
+import team16.cs261.backend.util.*;
+import team16.cs261.backend.util.Timer;
 import team16.cs261.common.dao.*;
+import team16.cs261.common.entity.Tick;
 import team16.cs261.common.entity.Trade;
+import team16.cs261.common.entity.graph.Edge;
 
 import java.io.IOException;
 import java.util.*;
@@ -46,7 +48,16 @@ public class AnalyserModule extends Module {
     SectorDao sectorDao;
 
     @Autowired
+    TickDao tickDao;
+
+    @Autowired
+    FactorDao factorDao;
+
+    @Autowired
     TraderStockDao traderStockDao;
+
+    @Autowired
+    GraphDao graphDao;
 
     @Autowired
     private Config config;
@@ -67,19 +78,20 @@ public class AnalyserModule extends Module {
     long timeTaken = 0;
 
 
-    public static final String UPDATE_SYMBOLS = "CALL UpdateSymbols(?,?,?)";
-    public static final String UPDATE_TRADER_PAIRS = "CALL UpdateTraderPairs(?,?,?)";
+    public static final String CALL_AGGR = "CALL Aggr(?)";
+    //public static final String UPDATE_COUNTS = "CALL UpdateCounts(?, ?)";
+    //public static final String CALL_OUTPUT = "CALL Output(?, ?, ?, ?, ?)";
 
-    public static final String UPDATE_WEIGHTS = "CALL UpdateWeights(?, ?)";
-    public static final String UPDATE_COMM_WEIGHTS = "CALL UpdateCommWeights(?, ?)";
-    public static final String UPDATE_TRADE_WEIGHTS = "CALL UpdateTradeWeights(?, ?)";
+    Timer timer;
 
     @Transactional
     public void process() {
 
+
         //if(true)return;
 
-        Long tick = jdbcTemplate.queryForObject("SELECT min(tick) FROM Tick WHERE analysed = FALSE", Long.class);
+        Long tick = jdbcTemplate.queryForObject("SELECT min(tick) FROM Tick WHERE status = 'PARSED'", Long.class);
+        //Tick tick = jdbcTemplate.queryForObject("SELECT min(tick) FROM Tick WHERE status = 'PARSED'", Long.class);
         if (tick == null) {
             try {
                 Thread.sleep(100);
@@ -90,64 +102,234 @@ public class AnalyserModule extends Module {
         }
 
         System.out.println("process()");
+        final Timer analysisTime = new Timer("Analysis time");
 
 
-        long a = System.currentTimeMillis();
-
-        long start = tick * config.getTimeInterval();
-        long end = (tick+1) * config.getTimeInterval();
-
-        jdbcTemplate.update(UPDATE_WEIGHTS, start, end);
-        //jdbcTemplate.update(UPDATE_COMM_WEIGHTS, start, end);
-        //jdbcTemplate.update(UPDATE_TRADE_WEIGHTS, start, end);
+        final Timer aggrTime = new Timer(CALL_AGGR);
+        jdbcTemplate.update(CALL_AGGR, tick);
+        aggrTime.stop();
+        //System.out.println(timer);
 
 
-/*        long fromA = time - config.getTimeShort();
-        long fromB = time - config.getTimeLong();
+        Object[] args = new Object[]{tick, config.analysis.comms.intervals};
 
-long a = System.currentTimeMillis();
-        jdbcTemplate.update(UPDATE_SYMBOLS, fromA, fromB, time);
-        System.out.println("Symbols time: " + (System.currentTimeMillis() - a));
-        a= System.currentTimeMillis();
-        jdbcTemplate.update(UPDATE_TRADER_PAIRS, fromA, fromB, time);
-        System.out.println("Trader pairs time: " + (System.currentTimeMillis() - a));*/
-
-        //jdbcTemplate.update(UPDATE_TRADER_PAIR_COMM_RATES,
-        //      fromA, to, fromB, to);
+        /*final Timer updateCountsTime = new Timer(UPDATE_COUNTS);
+        jdbcTemplate.update(UPDATE_COUNTS, args);
+        updateCountsTime.stop();*/
 
 
-        long analysisTime = System.currentTimeMillis() - a;
-        System.out.println("Analysis time: " + analysisTime);
-a = System.currentTimeMillis();
+        Double lambda = jdbcTemplate.queryForObject(
+                "SELECT commsMa / (SELECT count(*) FROM TraderPair) FROM Tick WHERE tick = ?",
+                new Object[]{tick}, Double.class);
+        Integer maxComms = jdbcTemplate.queryForObject("SELECT max(comms) FROM TraderPair", Integer.class);
+        //System.out.println("Comms: " + lambda);
+
+
+        //SqlRowSet rows = jdbcTemplate.queryForRowSet("SELECT trader1, trader2, common")
+
+
+        //outputs
+        //final Timer outputTime = new Timer(CALL_OUTPUT);
+
+        int window = 8;
+
+        Tick avgTick = tickDao.selectAvgWhereId(tick, window);
+
+        System.out.println("Averaged: " + avgTick);
+
+        /*Double meanCommSym = jdbcTemplate.queryForObject(
+                "SELECT avg(meanCommSym) FROM Tick WHERE tick <= ?",
+                *//*"SELECT avg(meanCommSym) FROM Tick WHERE tick = ?",*//*
+                new Object[]{tick}, Double.class
+        );*/
+
+        double sig = 0.05D;
+
+        updateFactors(tick, "COMMON", "TraderPair", "common", avgTick.getCommonPerPair(), sig);
+        updateFactors(tick, "COMMON_BUYS", "TraderPair", "commonBuys", avgTick.getCommonBuysPerPair(), sig);
+        updateFactors(tick, "COMMON_SELLS", "TraderPair", "commonSells", avgTick.getCommonSellsPerPair(), sig);
+        updateFactors(tick, "COMMS", "TraderPair", "comms", avgTick.getCommsPerPair(), sig);
 
 
 
-        SparseMatrix sm = new SparseMatrix();
-
-        SqlRowSet trEdges = jdbcTemplate.queryForRowSet(
-                "SELECT source, target, commWgt FROM TraderTraderEdge TTE JOIN Edge E WHERE TTE.id = E.id AND commWgt > 0"
-        );
+        //outputTime.stop();
 
 
-        //Dataset ds = new DefaultDataset();
-        //Set<Integer> nodeSet = new TreeSet<>();
+        //timer = new Timer(UPDATE_WEIGHTS);
+        //jdbcTemplate.update(UPDATE_WEIGHTS, tick);
+        //System.out.println(timer);
 
-        while (trEdges.next()) {
-            int n1 = trEdges.getInt(1);
-            int n2 = trEdges.getInt(2);
-            float v = trEdges.getFloat(3);
-
-//            nodeSet.add(n1);
-//            nodeSet.add(n2);
-
-            //ds.add(n1, new SparseInstance(n1));
-            //ds.add(n2, new SparseInstance(n2));
+        findClusters(tick);
 
 
-            sm.set(n1, n2, v);
-            sm.set(n2, n1, v);
+
+   /*     */
+
+        //mcl.run(sm, 0.001D, 2D, 0D, 0.001D);
+        //System.out.println("Mcl: "+ sm);
+
+        //long clusteringTime = System.currentTimeMillis() - a;
+        //System.out.println("Clustering time: " + clusteringTime);
+
+        //jdbcTemplate.update("UPDATE Tick SET analysed = TRUE, analysisTime = ? WHERE tick = ?", analysisTime, tick);
+        jdbcTemplate.update(
+                "UPDATE Tick SET status = 'ANALYSED', aggrTime = ?, analysisTime = ?, commsGraph = ? WHERE tick = ?",
+                aggrTime.getElapsed(), analysisTime.getElapsed(), "", tick);
+
+
+
+/*
+        try {
+            Thread.sleep(100000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+*/
+
+    }
+
+
+    public static final String UPDATE_FACTORS =
+            "INSERT INTO Factor (tick, edge, factor, value, centile, sig) " +
+                    "SELECT ?, id, ?, #fld, (select cdf from Poisson where x = #fld), (select sig from Poisson where x = #fld) " +
+                    "FROM #tbl " +
+                    "WHERE #fld >= ?";
+
+    public static final String UPDATE_FACTOR_FREQS =
+            "INSERT INTO FactorFreq (tick, factor, x, fx) " +
+                    "SELECT ?, ?, #fld, count(*) " +
+                    "FROM #tbl group by #fld;";
+
+    public void updateFactors(long tick, String f, String table, String field, double lambda, double sig) {
+        PoissonDistribution dist = new PoissonDistribution(lambda);
+        int threshold = dist.inverseCumulativeProbability(1 - sig) + 1;
+
+
+        // insert poisson numbers
+        String maxQtyQuery = "SELECT max(" + field + ") FROM " + table;
+        Integer maxComms = jdbcTemplate.queryForObject(maxQtyQuery, Integer.class);
+
+        jdbcTemplate.execute("DELETE FROM Poisson;");
+        List<Object[]> poissonArgs = new ArrayList<>();
+
+        for (int x = 0; x <= maxComms; x++) {
+            //poissonArgs.add(new Object[]{lambda, x, p.pdf[x], p.cdf[x]});
+            double sigLevel = 1;
+            if (x > 0) {
+                sigLevel = 1 - dist.cumulativeProbability(x - 1);
+            }
+
+            poissonArgs.add(new Object[]{lambda, x, dist.probability(x), dist.cumulativeProbability(x), sigLevel});
+        }
+        jdbcTemplate.batchUpdate("INSERT INTO Poisson VALUES (?, ?, ?, ?, ?)", poissonArgs);
+
+
+        //
+        String sql = UPDATE_FACTORS.replaceAll("#fld", field).replace("#tbl", table);
+        System.out.println("sql: " + sql);
+        jdbcTemplate.update(sql, tick, f, threshold);
+
+
+        String updateFactorFreqs = UPDATE_FACTOR_FREQS.replaceAll("#fld", field).replace("#tbl", table);
+        System.out.println("sql: " + updateFactorFreqs);
+        jdbcTemplate.update(updateFactorFreqs, tick, f);
+
+
+        // save frequency table
+
+
+        // update centiles
+
+
+    }
+
+
+    public static final String SELECT_FACTOR_EDGES =
+            "SELECT E.id AS id, E.source AS source, E.target AS target, sum(centile) AS weight FROM Edge E JOIN Factor F ON E.id = F.edge WHERE tick = ? GROUP BY edge";
+
+    // Maximum difference between row elements and row square sum (measure of
+    // idempotence)
+    private double maxResidual = 0.001;
+
+    // inflation exponent for Gamma operator
+    private double pGamma = 2.0;
+
+    // loopGain values for cycles
+    private double loopGain = 1.0;
+
+    // maximum value considered zero for pruning operations
+    private double maxZero = 0.001;
+
+    public void findClusters(long tick) {
+        Integer maxIndex = jdbcTemplate.queryForObject("SELECT max(id) FROM Node", Integer.class);
+        List<Edge> edges = jdbcTemplate.query(SELECT_FACTOR_EDGES, new Object[]{tick}, new BeanPropertyRowMapper<>(Edge.class));
+
+        double[][] weights = new double[maxIndex + 1][maxIndex + 1];
+
+        for (Edge e : edges) {
+
+            System.out.println("Edge: " + e);
+
+            int s = e.getSource();
+            int t = e.getTarget();
+            double w = e.getWeight();
+
+            weights[s][t] = w;
+            weights[t][s] = w;
         }
 
+        SparseMatrix sm = new SparseMatrix(weights);
+
+        System.out.println("Size: " + Arrays.toString(sm.getSize()));
+
+        //MarkovClustering mcl = new MarkovClustering();
+        //SparseMatrix sm2 = mcl.run(sm, maxResidual, pGamma, 0., maxZero);
+
+        Clusters cl = new Clusters();
+        SparseMatrix sm2 = cl.cluster2(sm);
+
+        //System.out.println("SM1: \n" + sm.toStringDense());
+        //System.out.println("SM2: \n" + sm2.toStringDense());
+
+
+        String insertEdges = "INSERT INTO ClusterEdge (tick, edge, weight) VALUES (?, ?, ?)";
+        List<Object[]> args = new ArrayList<>();
+
+        System.out.println("SM2: " + Arrays.toString(sm2.getSize()));
+        sm2.adjustMaxIndex(maxIndex, maxIndex);
+        double[][] clusters = sm2.getDense();
+        System.out.println("clusters[][]: " + clusters.length + ", " + clusters[0].length);
+
+        for (Edge e : edges) {
+            int src = e.getSource();
+            int trg = e.getTarget();
+
+            double weight;
+            weight = src > trg ? sm2.get(src, trg) : sm2.get(trg, src);
+
+            if(weight > 0.98) {
+            //if (sm2.get(src, trg) > 0 || sm2.get(trg, src) > 0) {
+                //System.out.println("s: " + s + ", t: " + t);
+
+                //System.out.println(String.format("%s : %s, %s", weight, sm2.get(s,t), sm2.get(t,s)));
+
+                args.add(new Object[]{tick, e.getId(), weight});
+            }
+
+            /*            //double newWeightA = clusters[e.getSource()][e.getTarget()];
+            //double newWeightB = clusters[e.getTarget()][e.getSource()];
+
+            //System.out.println(newWeightA + " : " + newWeightB);
+
+            if(newWeightA > 0) {
+                System.out.println("Edge: " + e);
+
+                args.add(new Object[]{tick, e.getId(), newWeightA});
+            }*/
+
+
+        }
+        jdbcTemplate.batchUpdate(insertEdges, args);
 
 
         //System.out.println("nodes: " + nodeSet);
@@ -161,28 +343,46 @@ a = System.currentTimeMillis();
                 return sm.get(x,y);
             }
         };*/
-        Clusters cl = new Clusters();
+
+
+
+
+
+
+        /*System.out.println("after: ");
+        for (Dataset ds : clusters) {
+            System.out.println(ds);
+            for (int i = 0; i < ds.size(); i++) {
+                //ds.get(i).getID()
+            }
+        }*/
+
+
+  /*      Map<Integer, Set<Integer>> l = graphDao.getComms().map;
+
+
+        ObjectMapper mapper = new ObjectMapper();
+        String commsGraph = null;
+        try {
+            commsGraph = mapper.writeValueAsString(l);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+*/
+
+/*        Clusters cl = new Clusters();
 
         Dataset[] clusters = cl.cluster(sm);
 
         System.out.println("after: ");
-        for(Dataset ds : clusters) {
+        for (Dataset ds : clusters) {
             System.out.println(ds);
-            for(int i = 0; i < ds.size(); i++) {
+            for (int i = 0; i < ds.size(); i++) {
                 //ds.get(i).getID()
             }
-        }
+        }*/
 
 
-   /*     */
-
-        //mcl.run(sm, 0.001D, 2D, 0D, 0.001D);
-         //System.out.println("Mcl: "+ sm);
-
-        long clusteringTime = System.currentTimeMillis() - a;
-        System.out.println("Clustering time: " + clusteringTime);
-
-        jdbcTemplate.update("UPDATE Tick SET analysed = TRUE, analysisTime = ? WHERE tick = ?", analysisTime, tick );
     }
 
 

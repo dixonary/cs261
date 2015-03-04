@@ -3,6 +3,7 @@ package team16.cs261.common.dao;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.stereotype.Component;
 import team16.cs261.common.entity.factor.Factor;
+import team16.cs261.common.meta.FactorClass;
 
 import java.util.List;
 
@@ -42,4 +43,24 @@ public class FactorDao extends AbstractDao<Integer, Factor> {
                 SELECT_BY_CLUSTER_ID, new Object[]{clusterId},
                 new BeanPropertyRowMapper<>(Factor.class));
     }
+
+
+    public static final String INSERT_FACTORS =
+            "INSERT INTO Factor (tick, edge, factor, value) " +
+                    "SELECT ?, id, ?, #fld " +
+                    "FROM #tbl " +
+                    "WHERE #fld >= ?";
+
+    public void insertFactors(long tick, String f, String table, String field, int threshold) {
+        String sql = INSERT_FACTORS.replaceAll("#fld", field).replace("#tbl", table);
+
+        System.out.println("sql: " + sql);
+
+        jdbcTemplate.update(sql, tick, f, threshold);
+
+
+    }
+
+
+
 }

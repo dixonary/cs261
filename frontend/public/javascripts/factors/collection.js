@@ -110,18 +110,21 @@ function ViewModel() {
             return "glyphicon glyphicon-chevron-down";
         }
     });
+
     self.toggleFilterOptions = function () {
         self.showFilterOptions(!self.showFilterOptions());
     };
+
     self.applyFilters = function () {
         console.log("Applying filters")
 
-        var catalog = $('#clusters-table').DataTable();
+        var catalog = $('#factors-table').DataTable();
         //catalog.fnFilter(self.emailFilter(), 0);
 
+        catalog.column(1).search( self.filters.daterange()).draw()
 
 
-        i = 0
+     /*   i = 0
         for (var f in self.filters) {
             console.log("Filter: " + f)
 
@@ -129,18 +132,18 @@ function ViewModel() {
             // Apply the search
             catalog.column( i).search( self.filters[f]()).draw()
 
-            /*table.columns().eq( 0 ).each( function ( colIdx ) {
+            *//*table.columns().eq( 0 ).each( function ( colIdx ) {
                 $( 'input', table.column( colIdx ).footer() ).on( 'keyup change', function () {
                     table
                         .column( colIdx )
                         .search( this.value )
                         .draw();
                 } );
-            } );*/
+            } );*//*
 
             i++
         }
-
+*/
         console.log('filters called');
     };
 
@@ -198,43 +201,90 @@ function ViewModel() {
     self.filters.daterange.subscribe(self.applyFilters);
 
     self.loadRows = function () {
-        var table = $('#clusters-table').DataTable({
+        var table = $('#factors-table').DataTable({
             //"sDom": "<'row'<'col-xs-6'l><'col-xs-6'>r>t<'row'<'col-xs-6'i><'col-xs-6'p>>",
             //"dom": "<'row'<'col-xs-6'l><'col-xs-6'>r>t<'row'<'col-xs-6'i><'col-xs-6'p>>",
             "dom": "<'row'<'col-xs-6'l><'col-xs-6'>r>t<'row'<'col-xs-6'i><'col-xs-6'p>>",
             //"dom": "t",
             //"dom": "lrtip",
-            "ordering": false,
+            "ordering": true,
+
             //"autoWidth": false,
             //"bPaginate": true,
             //"bProcessing": true,
-            "lengthMenu": [ 10, 25, 50, 100 ],
+            "lengthMenu": [ 20, 50, 100 ],
             serverSide: true,
             ajax: '/factors/query',
             "columns": [
-                {
+/*                {
                     "className": 'details-control',
                     "orderable": false,
                     "data": null,
                     "defaultContent": ''
-                },
+                },*/
                 {
-                    "data": "cluster.clusterId",
+                    "data": "id",
                     "render": function (data) {
                         return '<a href="/factors/'+data+'">'+data+'</a>'
                     }
                 },
                 {
-                    "data": "cluster.time",
+                    "data": "time",
+                    "render": function (data, type, row) {
+                        //return moment(data).format(timeFormat)
+                        return '<a href="/ticks/'+row.tick+'">'+moment(data).format(timeFormat)+'</a>'
+                    }
+                },
+                {
+                    "data": "factor",
                     "render": function (data) {
-                        return moment(data).format(timeFormat)
+                        return data;
+                    }
+                },
+                {
+                    "width": "25%",
+                    "data": "factor",
+                    "render": function (data) {
+                        //return moment(data).format(timeFormat)
+                        return "";
+                    },
+                    "orderable": false
+                },
+                {
+                    "data": "value",
+                    "render": function (data) {
+                        return data;
+                    }
+                },
+                {
+                    "data": "centile",
+                    "render": function (data) {
+                        return parseFloat(data * 100).toFixed(2)+"%";
+                    }
+                },
+                {
+                    "data": "sig",
+                    "render": function (data) {
+                        //return data;
+                        return parseFloat(data * 100).toFixed(2)+"%";
                     }
                 }
+
+
+/*                {
+                    "data": "cluster.clusterId",
+                    "render": function (data) {
+                        return '<a href="/factors/'+data+'">'+data+'</a>'
+                    }
+                },*/
+
             ]
         });
 
+
+
         // Add event listener for opening and closing details
-        $('#clusters-table tbody').on('click', 'td.details-control', function () {
+        $('#factors-table tbody').on('click', 'td.details-control', function () {
             var tr = $(this).closest('tr');
             var row = table.row(tr);
 
@@ -250,7 +300,7 @@ function ViewModel() {
             }
         });
 
-        $("#clusters-table_length").find("> label > select").removeClass("input-sm")
+        $("#factors-table_length").find("> label > select").removeClass("input-sm")
     };
 
 
