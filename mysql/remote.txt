@@ -1,5 +1,5 @@
 [client]
 host="178.62.32.54"
 user="cs261"
-password="pass"
+password="cs261"
 database="cs261"

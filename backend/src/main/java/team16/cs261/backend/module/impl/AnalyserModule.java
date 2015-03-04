@@ -1,19 +1,15 @@
 package team16.cs261.backend.module.impl;
 
-import net.sf.javaml.clustering.mcl.MarkovClustering;
 import net.sf.javaml.clustering.mcl.SparseMatrix;
-import net.sf.javaml.core.Dataset;
 import org.apache.commons.math3.distribution.PoissonDistribution;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import team16.cs261.backend.config.Config;
 import team16.cs261.backend.module.Module;
-import team16.cs261.backend.util.*;
+import team16.cs261.backend.util.Clusters;
 import team16.cs261.backend.util.Timer;
 import team16.cs261.common.dao.*;
 import team16.cs261.common.entity.Tick;
@@ -21,7 +17,9 @@ import team16.cs261.common.entity.Trade;
 import team16.cs261.common.entity.graph.Edge;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by martin on 22/01/15.
