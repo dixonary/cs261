@@ -1,31 +1,28 @@
 package controllers;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mysema.query.sql.SQLQuery;
-import com.mysema.query.support.Expressions;
 import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.Path;
 import com.mysema.query.types.Projections;
 import com.mysema.query.types.expr.BooleanExpression;
 import com.mysema.query.types.expr.ComparableExpressionBase;
-import com.mysema.query.types.path.NumberPath;
 import models.FactorDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jdbc.query.QueryDslJdbcTemplate;
-import org.springframework.jdbc.core.JdbcTemplate;
 import play.libs.Json;
 import play.mvc.Result;
 import team16.cs261.common.dao.ClusterDao;
 import team16.cs261.common.dao.FactorDao;
 import team16.cs261.common.dao.TradeDao;
 import team16.cs261.common.entity.factor.Factor;
+import team16.cs261.common.meta.FactorClass;
+import team16.cs261.common.meta.FactorGroup;
 import team16.cs261.common.querydsl.entity.QFactor;
 import team16.cs261.common.querydsl.entity.QTick;
+import util.FactorClassUtil;
 import util.Filters;
-import util.JsonNodeRowMapper;
 
-import java.util.List;
+import java.util.*;
 
 import static play.mvc.Controller.request;
 import static play.mvc.Results.ok;
@@ -68,12 +65,14 @@ public class Factors {
 
         //filtering
         BooleanExpression fbt = Filters.timerangeFilter(t.start, request().getQueryString("columns[1][search][value]"));
+        BooleanExpression fcf = factorClassFilter(request().getQueryString("columns[2][search][value]"));
+
 
         //int recordsTotal = factorDao.selectCountAll();
         //List<Factor> data = factorDao.selectAllLimit(start, length);
 
         SQLQuery query = template.newSqlQuery().from(f).join(t).on(f.tick.eq(t.tick))
-                .where(fbt)
+                .where(fbt, fcf)
                 .orderBy(order).offset(start).limit(length);
 
         long recordsTotal = template.count(template.newSqlQuery().from(f));
@@ -89,6 +88,26 @@ public class Factors {
         response.put("recordsFiltered", recordsFiltered);
         response.put("data", Json.toJson(data));
         return play.mvc.Controller.ok(response);
+    }
+
+    public BooleanExpression factorClassFilter(String filterString) {
+        EnumSet<FactorClass> classes = FactorClassUtil.getClasses(filterString);
+
+        if (classes == null) return null;
+
+        List<String> names = new ArrayList<>();
+        for (FactorClass fc : classes) {
+            names.add(fc.name());
+        }
+
+        return f.factor.in(names);
+    }
+
+
+    public Result classes() {
+
+        return ok(Json.toJson(FactorClassUtil.getFactorTree()));
+
     }
 
 

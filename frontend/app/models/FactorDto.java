@@ -13,6 +13,7 @@ public class FactorDto {
     private long time;
 
     private FactorClass factor;
+    private String factorLabel;
 
     //private int edge;
     private int value;
@@ -25,6 +26,7 @@ public class FactorDto {
         this.tick = tick;
         this.time = time;
         this.factor = FactorClass.valueOf(factor);
+        this.factorLabel = this.factor.getLabel();
         this.value = value;
         this.sig = sig;
         this.centile = centile;
@@ -62,6 +64,13 @@ public class FactorDto {
         this.id = id;
     }
 
+    public String getFactorLabel() {
+        return factorLabel;
+    }
+
+    public void setFactorLabel(String factorLabel) {
+        this.factorLabel = factorLabel;
+    }
 
     public double getCentile() {
         return centile;

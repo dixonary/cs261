@@ -1,55 +1,44 @@
 package team16.cs261.common.meta;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.List;
 
 /**
  * Created by martin on 03/03/15.
  */
 public enum FactorGroup {
-    NODE(null, "Node"),
-        TRADER(NODE, "Trader"),
-        SYMBOL(NODE, "Symbol"),
-        SECTOR(NODE, "Sector"),
-    EDGE(null, "Edge"),
-        TRADER_TRADER(EDGE, "Trader -> Trader"),
-            COMMON(TRADER_TRADER, "Common symbols"),
-            COMMON_BUYS(TRADER_TRADER, "Common buys"),
-            COMMON_SELLS(TRADER_TRADER, "Common sells"),
-        TRADER_SYMBOL(EDGE, "Trader -> Symbol"),
-        TRADER_SECTOR(EDGE, "Trader -> Sector");
+    TRADER(FactorArity.NODE, "Trader -> Trader"),
+    SYMBOL(FactorArity.NODE, "Symbol -> Symbol"),
+    SECTOR(FactorArity.NODE, "Sector -> Sector"),
+    TRADER_TRADER(FactorArity.EDGE, "Trader A -> Trader B"),
+    TRADER_SYMBOL(FactorArity.EDGE, "Trader -> Symbol"),
+    TRADER_SECTOR(FactorArity.EDGE, "Trader -> Sector");
 
-    FactorGroup parent;
+    FactorArity arity;
     String label;
 
-    FactorGroup(FactorGroup parent, String label) {
+    FactorGroup(FactorArity arity, String label) {
+        this.arity = arity;
         this.label = label;
-        this.parent = parent;
     }
 
-
-    public boolean isRoot() {
-        return parent == null;
+    public FactorArity getArity() {
+        return arity;
     }
 
     public String getLabel() {
         return label;
     }
 
-    public List<FactorGroup> getChildren(FactorGroup parent) {
-        List<FactorGroup> set = new ArrayList<>();
+    public static EnumSet<FactorGroup> getGroups(FactorArity arity) {
+        EnumSet<FactorGroup> set = EnumSet.noneOf(FactorGroup.class);
 
-        for(FactorGroup fc : FactorGroup.values()) {
-            if(fc.parent == parent) {
-                set.add(fc);
+        for (FactorGroup group : FactorGroup.values()) {
+            if (group.getArity() == arity) {
+                set.add(group);
             }
         }
 
         return set;
     }
 
-    public EnumSet<FactorGroup> getClasses(FactorGroup cls) {
-        return null;
-    }
 }

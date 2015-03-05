@@ -8,7 +8,7 @@ GET        /        @controllers.Application.index()
 GET        /stats        @controllers.Stats.index()
 
 GET        /ticks/:id        @controllers.Ticks.element(id: Integer)
-GET        /ticks/:id/graph       @controllers.Ticks.graph(id: Integer)
+GET        /ticks/:id/graph        @controllers.Ticks.graph(id: Integer)
 
 GET        /clusters        @controllers.Clusters.collection()
 GET        /clusters/query        @controllers.Clusters.query()
@@ -16,6 +16,7 @@ GET        /clusters/:id        @controllers.Clusters.element(id: Integer)
 
 GET        /factors        @controllers.Factors.collection()
 GET        /factors/query        @controllers.Factors.query()
+GET        /factors/classes @controllers.Factors.classes()
 
 GET        /trades        @controllers.Trades.collection()
 GET        /trades/query        @controllers.Trades.query()

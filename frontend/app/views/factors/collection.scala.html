@@ -36,9 +36,27 @@
 
                                 </th>
                                 <th>
-                                    @factors.factorClassSelect()
+                                    <div class="form-group">
+           @*                             <select class="form-control"
+                                             data-bind="options: factorSelect,
+                                                        optionsValue: 'value',
+                                                        optionsText: 'label',
+                                                        value: filters.factorSelect">
+
+                                        </select>*@
+                                        <select class="form-control"
+                                        data-bind="foreach: factorSelect, selectedOptions: filters.classes" style="width: 150px">
+                                            <option data-bind="html: label,
+                                                                value: value,
+                                            css: { optionGroup: group == true, optionChild: group == false } "></option>
+                                        </select>
+                                    </div>
                                 </th>
-                                <th></th>
+                                <th>
+                                    <div class="form-group">
+
+                                    </div>
+                                </th>
                                 <th></th>
                                 <th></th>
                                 <th></th>

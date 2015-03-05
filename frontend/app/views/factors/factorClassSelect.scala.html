@@ -1,17 +1,20 @@
 @()
 
+@*
 <div class="form-group">
     <select class="form-control" >
-        @team16.cs261.common.meta.FactorClass.values().filter( _.getLabel == "").map { fc =>
+        @team16.cs261.common.meta.FactorClass.values().map { fc =>
           @renderFc(fc)
         }
+*@
 @*        <option>Node2</option>
         <option>&nbsp;&nbsp;&nbsp;&nbsp;Trader</option>
         <option>Edge</option>
         <option>option 2</option>
         <option>option 3</option>
         <option>option 4</option>
-        <option>option 5</option>*@
+        <option>option 5</option>*@@*
+
     </select>
 </div>
 
@@ -21,4 +24,4 @@
     @fc.getChildren(fc).map { fc =>
         @renderFc(fc, depth+1)
     }
-}
+}*@

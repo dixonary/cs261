@@ -1,8 +1,6 @@
 package team16.cs261.common.meta;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.List;
 
 /**
  * Created by martin on 03/03/15.
@@ -29,45 +27,35 @@ public enum FactorClass {
         this.lambda = lambda;
     }
 
+    public FactorGroup getGroup() {
+        return group;
+    }
 
     public String getLabel() {
         return label;
     }
 
-    public List<FactorClass> getChildren(FactorClass parent) {
-        List<FactorClass> set = new ArrayList<>();
+    public static EnumSet<FactorClass> getClasses(FactorArity arity) {
+        EnumSet<FactorClass> set = EnumSet.noneOf(FactorClass.class);
 
-        for (FactorClass fc : FactorClass.values()) {
-            /*if(fc.parent == parent) {
-                set.add(fc);
-            }*/
+        for (FactorGroup group : FactorGroup.getGroups(arity)) {
+            set.addAll(getClasses(group));
         }
 
         return set;
     }
 
-    public EnumSet<FactorClass> getClasses(FactorClass cls) {
-        return null;
-    }
+    public static EnumSet<FactorClass> getClasses(FactorGroup group) {
+        EnumSet<FactorClass> set = EnumSet.noneOf(FactorClass.class);
 
-    enum Arity {
-        NODE,
-        EDGE
-    }
-
-    enum Relation {
-        TRADER(Arity.NODE),
-        SYMBOL(Arity.NODE),
-        SECTOR(Arity.NODE),
-        TRADER_TRADER(Arity.EDGE),
-        TRADER_SYMBOL(Arity.EDGE),
-        TRADER_SECTOR(Arity.EDGE);
-
-        Arity arity;
-
-        Relation(Arity arity) {
-            this.arity = arity;
+        for (FactorClass cls : FactorClass.values()) {
+            if (cls.getGroup() == group) {
+                set.add(cls);
+            }
         }
+
+        return set;
     }
+
 
 }
