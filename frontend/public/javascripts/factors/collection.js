@@ -92,14 +92,13 @@ function ViewModel() {
 
     self.factorSelect = ko.observableArray();
 
-    $.get("/factors/classes", function (data) {
+    $.get("/factors/meta", function (data) {
         //console.log(JSON.stringify(data));
-        $.each(data, function (index, item) {
+        $.each(data.filters.factors, function (index, item) {
             //console.log(JSON.stringify(item));
             self.factorSelect.push(new Item(item.value, item.label, item.group))
         });
     });
-
 
     self.filters = {
         "daterange": ko.observable(""),
@@ -107,7 +106,7 @@ function ViewModel() {
         "x": ko.observable(0),
         "centile": ko.observable(0),
         "sig": ko.observable(0)
-    }
+    };
 
     self.columnFilters = [
         {
@@ -144,9 +143,6 @@ function ViewModel() {
             console.log(JSON.stringify(filter));
             catalog.column(filter.column).search(filter.observable()).draw()
         });
-
-        //catalog.column(1).search(self.filters.daterange()).draw()
-        //catalog.column(2).search(self.filters.classes()).draw()
 
         console.log('filters called');
     };

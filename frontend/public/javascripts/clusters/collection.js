@@ -99,8 +99,14 @@ function ViewModel() {
 
     self.filters = {
         "daterange" : ko.observable("")
-    }
+    };
 
+    self.columnFilters = [
+        {
+            column: 1,
+            observable: self.filters.daterange
+        }
+    ];
 
     self.showFilterOptions = ko.observable(true);
     self.filterClassName = ko.computed(function () {
@@ -113,17 +119,13 @@ function ViewModel() {
     self.toggleFilterOptions = function () {
         self.showFilterOptions(!self.showFilterOptions());
     };
+
     self.applyFilters = function () {
-        console.log("Applying filters")
-
         var catalog = $('#clusters-table').DataTable();
-        //catalog.fnFilter(self.emailFilter(), 0);
 
-
-            catalog.column(1).search( self.filters.daterange()).draw()
-
-
-        console.log('filters called');
+        $.each(self.columnFilters, function (index, filter) {
+            catalog.column(filter.column).search(filter.observable()).draw()
+        });
     };
 
 
@@ -132,8 +134,10 @@ function ViewModel() {
 
     var drp =$('#clusters-daterange')
 
-    var startDate = moment().startOf('day')
-    var endDate = moment().endOf('day')
+    //var startDate = moment().startOf('day')
+    //var endDate = moment().endOf('day')
+    var startDate = moment().startOf('year')
+    var endDate = moment().startOf('day').add('month', 1)
 
     function onApply(start, end, label) {
         var daterange = start + ',' + end

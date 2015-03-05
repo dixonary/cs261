@@ -104,10 +104,15 @@ public class Factors {
     }
 
 
-    public Result classes() {
+    public Result meta() {
+        ObjectNode meta = Json.newObject();
+        ObjectNode filters = Json.newObject();
 
-        return ok(Json.toJson(FactorClassUtil.getFactorTree()));
+        meta.put("filters", filters);
 
+        filters.put("factors", Json.toJson(FactorClassUtil.getFactorTree()));
+
+        return ok(meta);
     }
 
 

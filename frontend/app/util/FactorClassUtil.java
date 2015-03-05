@@ -11,7 +11,7 @@ import java.util.*;
  */
 public class FactorClassUtil {
 
-    public static final String INDENT = "&nbsp;&nbsp;";
+    public static final String INDENT = "&nbsp;&nbsp;&nbsp;";
 
     public static Map<String, EnumSet<FactorClass>> mapping = new HashMap<>();
 

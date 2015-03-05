@@ -20,10 +20,6 @@ public class Application {
         return ok(index.render("Whoa"));
     }
 
-
-
-
-
     public static Map<Call, String> getNavigation() {
         Map<Call, String> map = new LinkedHashMap<>();
 

@@ -177,4 +177,13 @@ public class Clusters {
         response.put("data", Json.toJson(dtos));
         return play.mvc.Controller.ok(response);
     }*/
+
+
+    public Result meta() {
+        ObjectNode node = Json.newObject();
+
+
+
+        return ok(node);
+    }
 }
