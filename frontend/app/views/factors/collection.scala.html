@@ -52,14 +52,31 @@
                                         </select>
                                     </div>
                                 </th>
+                                <th></th>
                                 <th>
                                     <div class="form-group">
-
+                                        <input type="number" class="form-control"
+                                        step="1" min="0"
+                                        id="exampleInputEmail1" placeholder="x > ?"
+                                        data-bind="numeric: float, value: filters.x">
                                     </div>
                                 </th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
+                                <th>
+                                    <div class="form-group">
+                                        <input type="number" class="form-control"
+                                        step="1" min="0"
+                                        id="exampleInputEmail1" placeholder="x > ?"
+                                        data-bind="numeric: float, value: filters.centile">
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="form-group">
+                                        <input type="number" class="form-control"
+                                        step="0.01" min="0.00" max="5.00"
+                                        id="exampleInputEmail1" placeholder="Enter email"
+                                        data-bind="numeric: float, value: filters.sig">
+                                    </div>
+                                </th>
                             </tr>
                             <tr>
                                 <th>Id</th>

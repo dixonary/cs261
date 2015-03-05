@@ -101,10 +101,12 @@ function ViewModel() {
     });
 
 
-
     self.filters = {
         "daterange": ko.observable(""),
-        "classes": ko.observable("")
+        "classes": ko.observable(""),
+        "x": ko.observable(0),
+        "centile": ko.observable(0),
+        "sig": ko.observable(0)
     }
 
     self.columnFilters = [
@@ -138,7 +140,7 @@ function ViewModel() {
         var catalog = $('#factors-table').DataTable();
         //catalog.fnFilter(self.emailFilter(), 0);
 
-        $.each(self.columnFilters, function(index, filter) {
+        $.each(self.columnFilters, function (index, filter) {
             console.log(JSON.stringify(filter));
             catalog.column(filter.column).search(filter.observable()).draw()
         });
@@ -190,7 +192,7 @@ function ViewModel() {
         onApply
     );
 
-    drp.on('cancel.daterangepicker', function(ev, picker) {
+    drp.on('cancel.daterangepicker', function (ev, picker) {
         console.log("cancel");
         //do something, like clearing an input
         $('#clusters-daterange').val('');
@@ -211,7 +213,7 @@ function ViewModel() {
      self.filters[f].extend({ rateLimit: 1000 }).subscribe(self.applyFilters);
      }*/
 
-    $.each(self.columnFilters, function(index, filter) {
+    $.each(self.columnFilters, function (index, filter) {
         filter.observable.subscribe(self.applyFilters);
     });
     //self.filters.daterange.subscribe(self.applyFilters);
