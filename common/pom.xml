@@ -87,9 +87,9 @@
                 </executions>
                 <configuration>
                     <jdbcDriver>com.mysql.jdbc.Driver</jdbcDriver>
-                    <jdbcUrl>jdbc:mysql://localhost/dirty</jdbcUrl>
+                    <jdbcUrl>jdbc:mysql://localhost/cs261</jdbcUrl>
                     <jdbcUser>cs261</jdbcUser>
-                    <jdbcPassword>pass</jdbcPassword>
+                    <jdbcPassword>cs261</jdbcPassword>
                     <packageName>team16.cs261.common.querydsl.entity</packageName>
                     <targetFolder>${project.basedir}/target/generated-sources/java</targetFolder>
                 </configuration>
