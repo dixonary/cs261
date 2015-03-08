@@ -142,7 +142,7 @@ public class TradeTable extends DataTable<TradeDto> {
     }
 
     @Override
-    public List<StringExpression> getCsvFields() {
+    public List<StringExpression> getCsvColumns() {
         return Arrays.asList(
                 t.time.stringValue(), t.buyer, t.seller,
                 t.price.stringValue(), t.size.stringValue(),

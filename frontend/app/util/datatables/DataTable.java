@@ -2,17 +2,19 @@ package util.datatables;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mysema.query.sql.SQLQuery;
-import com.mysema.query.types.*;
+import com.mysema.query.types.ConstructorExpression;
+import com.mysema.query.types.Expression;
+import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.Predicate;
 import com.mysema.query.types.expr.StringExpression;
-import oracle.jrockit.jfr.events.ContentTypeImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jdbc.query.QueryDslJdbcTemplate;
 import play.libs.Json;
 import play.mvc.Result;
-import team16.cs261.common.querydsl.entity.QTrade;
-import team16.cs261.common.querydsl.entity.Trade;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import static play.mvc.Controller.request;
 import static play.mvc.Controller.response;
@@ -48,12 +50,7 @@ public abstract class DataTable<E> {
         int start = Integer.parseInt(request().getQueryString("start"));
         int length = Integer.parseInt(request().getQueryString("length"));
 
-        //ordering
         OrderSpecifier order = getOrder();
-
-        //filtering
-        //BooleanExpression fbt = Filters.timerangeFilter(t.start, request().getQueryString("columns[1][search][value]"));
-        //BooleanExpression fcf = factorClassFilter(request().getQueryString("columns[2][search][value]"));
         Predicate where = getPredicate();
 
         SQLQuery total = getQuery();
@@ -66,9 +63,6 @@ public abstract class DataTable<E> {
         long recordsFiltered = template.count(filtered);
 
         List<E> data = template.query(filtered, getProjection());
-/*        List<FactorDto> data = template.query(query, Projections.constructor(
-                FactorDto.class, f.id, f.tick, t.start, f.factor, f.value, f.centile, f.sig
-        ));*/
 
         ObjectNode response = Json.newObject();
         response.put("draw", draw);
@@ -79,51 +73,23 @@ public abstract class DataTable<E> {
     }
 
     public Result csv() {
-        //ordering
         OrderSpecifier order = getOrder();
-
-        //filtering
-        //BooleanExpression fbt = Filters.timerangeFilter(t.start, request().getQueryString("columns[1][search][value]"));
-        //BooleanExpression fcf = factorClassFilter(request().getQueryString("columns[2][search][value]"));
         Predicate where = getPredicate();
 
         SQLQuery filtered = getQuery()
                 .where(where)
                 .orderBy(order);
 
-        long recordsFiltered = template.count(filtered);
-
-
-        //List<E> data = template.query(filtered, getProjection());
-
-/*        QTrade t = QTrade.Trade;
-
-        List<Trade> data = template.query(filtered, Projections.bean(
-                Trade.class, t.time, t.buyer, t.seller
-        ));*/
-
-/*        List<FactorDto> data = template.query(query, Projections.constructor(
-                FactorDto.class, f.id, f.tick, t.start, f.factor, f.value, f.centile, f.sig
-        ));*/
-
         List<String> lines = template.query(filtered, getCsvProjection());
 
-        StringBuilder csv = new StringBuilder();
-
-        csv.append(getCsvHeader()).append("\n");
-        /*for(E line : data) {
-            //csv.append(toCsv(line));
-            csv.append("\n");
-        }*/
-
+        StringBuilder csv = new StringBuilder()
+                .append(getCsvHeader()).append("\n");
         for (String line : lines) {
             csv.append(line).append("\n");
         }
 
-        System.out.println("csv: " + csv.toString());
 
         response().setContentType("text/csv");
-
         return ok(csv.toString());
     }
 
@@ -132,7 +98,6 @@ public abstract class DataTable<E> {
         ObjectNode meta = Json.newObject();
 
         meta.put("source", getSource());
-
         meta.put("columns", Json.toJson(getColumnDefs()));
 
         return ok(meta);
@@ -142,12 +107,12 @@ public abstract class DataTable<E> {
         return "headers";
     }
 
-    public List<StringExpression> getCsvFields() {
+    public List<StringExpression> getCsvColumns() {
         return new ArrayList<>();
     }
 
     public Expression<String> getCsvProjection() {
-        Iterator<StringExpression> it = getCsvFields().iterator();
+        Iterator<StringExpression> it = getCsvColumns().iterator();
 
         StringExpression expr = it.next();
 
