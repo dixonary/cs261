@@ -43,6 +43,13 @@ function DTModel(id, options) {
         });
     };
 
+    self.openExportUrl = function() {
+        var url = tradeTable.dt.ajax.url() + ".csv?" + $.param(tradeTable.dt.ajax.params())
+
+        window.open(url, '_blank');
+
+    }
+
     self.loadRows = function () {
         self.dt = $(id).DataTable({
             "dom": "<'row'<'col-xs-6'l><'col-xs-6'>r>t<'row'<'col-xs-6'i><'col-xs-6'p>>",
@@ -164,6 +171,8 @@ function DTModel(id, options) {
 
 
         $(id + '_length').find("> label > select").removeClass("input-sm")
+
+        $(id + '_export').click(self.openExportUrl)
     };
 
 

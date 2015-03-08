@@ -1,19 +1,20 @@
 package controllers.data;
 
 import com.mysema.query.BooleanBuilder;
+import com.mysema.query.sql.SQLExpressions;
 import com.mysema.query.sql.SQLQuery;
-import com.mysema.query.types.ConstructorExpression;
-import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.Predicate;
-import com.mysema.query.types.Projections;
+import com.mysema.query.support.Expressions;
+import com.mysema.query.types.*;
 import com.mysema.query.types.expr.ComparableExpressionBase;
+import com.mysema.query.types.expr.StringExpression;
+import com.mysema.query.types.template.StringTemplate;
 import models.*;
 import org.springframework.stereotype.Controller;
 import team16.cs261.common.querydsl.entity.*;
 import util.datatables.*;
 
 import javax.annotation.PostConstruct;
-import java.util.List;
+import java.util.*;
 
 import static play.mvc.Controller.request;
 import static play.mvc.Results.ok;
@@ -102,7 +103,7 @@ public class TradeTable extends DataTable<TradeDto> {
             Column cd = cds[i];
 
             String queryParam = "columns[" + i + "][search][value]";
-            String queryString =request().getQueryString(queryParam);
+            String queryString = request().getQueryString(queryParam);
 
             Predicate pred = cd.getPredicate(queryString);
 
@@ -123,6 +124,8 @@ public class TradeTable extends DataTable<TradeDto> {
 /*        return Projections.constructor(
                 FactorDto.class, f.id, f.tick, t.start, f.factor, e.id, f.value, f.centile, f.sig
         );*/
+
+
         return Projections.constructor(
                 TradeDto.class,
                 t.id, t.time, t.tick,
@@ -131,6 +134,25 @@ public class TradeTable extends DataTable<TradeDto> {
                 t.symbolId, t.symbol, t.sectorId, t.sector,
                 t.bid, t.ask
         );
+    }
+
+    @Override
+    public String getCsvHeader() {
+        return "time,buyer,seller,price,size,currency,symbol,sector,bid,ask";
+    }
+
+    @Override
+    public List<StringExpression> getCsvFields() {
+        return Arrays.asList(
+                t.time.stringValue(), t.buyer, t.seller,
+                t.price.stringValue(), t.size.stringValue(),
+                t.currency, t.symbol, t.sector,
+                t.bid.stringValue(), t.ask.stringValue()
+        );
+    }
+
+    private Expression<String> concatWs(String s, Object... o) {
+        return Expressions.stringTemplate("CONCAT_WS( 'asd', [{0}] )", o);
     }
 
 

@@ -34,14 +34,16 @@ $(function () {
 
 // Zip the generated y values with the x values
         var res = [];
+        var res2= [];
         for (var i = 0; i < data.length; ++i) {
             res.push([i, data[i]]);
+            res2.push([i, data[i] + Math.random()*5]);
         }
 
-        return res;
+        return [res];
     }
 
-    var interactive_plot = $.plot("#interactive", [getRandomData()], {
+    var interactive_plot = $.plot("#interactive", getRandomData(), {
         grid: {
             borderColor: "#f3f3f3",
             borderWidth: 1,
@@ -69,7 +71,8 @@ $(function () {
     var realtime = "on"; //If == to on then fetch data every x seconds. else stop fetching
     function update() {
 
-        interactive_plot.setData([getRandomData()]);
+        //interactive_plot.setData([getRandomData()]);
+        interactive_plot.setData(getRandomData());
 
         // Since the axes don't change, we don't need to call plot.setupGrid()
         interactive_plot.draw();

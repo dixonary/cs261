@@ -75,6 +75,7 @@ GET        /data/factors        @controllers.data.FactorTable.query()
 GET        /data/factors/meta        @controllers.data.FactorTable.meta()
 
 GET        /data/trades        @controllers.data.TradeTable.query()
+GET        /data/trades.csv        @controllers.data.TradeTable.csv()
 GET        /data/trades/meta        @controllers.data.TradeTable.meta()
 
 GET        /data/graph/factors/:tick        @controllers.data.Graph.factors(tick: Integer)

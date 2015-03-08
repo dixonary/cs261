@@ -21,6 +21,19 @@ CREATE TABLE Counter (#COUNTER TABLE#
 );
 
 
+DROP TABLE IF EXISTS Counts CASCADE;
+CREATE TABLE Counts (
+  minute       INTEGER NOT NULL, # minutes since the epoch
+  time         LONG    NOT NULL, #realtime
+
+  tradesRead   INTEGER NOT NULL DEFAULT 0,
+  commsRead    INTEGER NOT NULL DEFAULT 0, # comms for the interval
+  tradesParsed INTEGER NOT NULL DEFAULT 0,
+  commsParsed  INTEGER NOT NULL DEFAULT 0, # comms for the interval
+  PRIMARY KEY (minute)
+);
+
+
 DROP TABLE IF EXISTS Tick CASCADE;
 CREATE TABLE Tick (#RAWTRADE TABLE#
   tick               INTEGER NOT NULL, #Contains the full representation of a Trade as received from the Trades feed
