@@ -1,31 +1,16 @@
 package team16.cs261.backend.module.impl;
 
-import org.apache.commons.math3.distribution.PoissonDistribution;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import team16.cs261.backend.config.Config;
-import team16.cs261.backend.mcl.Graph;
-import team16.cs261.backend.mcl.Mcl;
 import team16.cs261.backend.module.Module;
 import team16.cs261.backend.service.MclService;
-import team16.cs261.backend.util.Timer;
-import team16.cs261.common.dao.*;
-import team16.cs261.common.entity.Tick;
-import team16.cs261.common.entity.Trade;
-import team16.cs261.common.entity.graph.Edge;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Future;
 
 /**
