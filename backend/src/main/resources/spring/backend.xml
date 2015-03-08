@@ -2,12 +2,15 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:task="http://www.springframework.org/schema/task"
        xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="
       http://www.springframework.org/schema/beans
       http://www.springframework.org/schema/beans/spring-beans.xsd
       http://www.springframework.org/schema/context
       http://www.springframework.org/schema/context/spring-context.xsd
+      http://www.springframework.org/schema/task
+      http://www.springframework.org/schema/task/spring-task.xsd
       http://www.springframework.org/schema/util
       http://www.springframework.org/schema/util/spring-util.xsd">
 
@@ -23,6 +26,9 @@
     <!--<context:property-placeholder location="classpath:properties/dev.properties"/>-->
     <!--<bean id="appConfig" class="team16.cs261.backend.config.AppConfig" />-->
     <context:component-scan base-package="team16.cs261.backend"/>
+
+    <task:executor id="main" pool-size="10"/>
+    <task:annotation-driven executor="main"/>
 
 
 

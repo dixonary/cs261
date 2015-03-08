@@ -1,0 +1,31 @@
+@(header: String, nav: List[util.MenuItem])
+@import util.MenuItem
+
+<li class="header">@header</li>
+
+@nav.filter(_.isRoot).map { dir =>
+    @renderItem(dir)
+}
+
+    @renderItem(item: MenuItem) = {
+
+        <li class="@if(item.hasChildren) {treeview} @if(item.isActive(request.uri)) {active}">
+
+            <a href="@item.getCall">
+                <i class="fa @item.getIcon"></i>
+                <span>@item.getLabel</span>
+                @if(item.hasChildren) {
+                    <i class="fa fa-angle-left pull-right"></i>
+                }
+            </a>
+            @if(item.hasChildren) {
+                <ul class="treeview-menu">
+
+                @item.getChildren.map { child =>
+                    @renderItem(child)
+                }
+
+                </ul>
+            }
+        </li>
+    }

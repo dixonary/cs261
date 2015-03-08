@@ -92,17 +92,9 @@ function ViewModel() {
 
     self.factorSelect = ko.observableArray();
 
-    $.get("/factors/meta", function (data) {
-        //console.log(JSON.stringify(data));
-        $.each(data.filters.factors, function (index, item) {
-            //console.log(JSON.stringify(item));
-            self.factorSelect.push(new Item(item.value, item.label, item.group))
-        });
-    });
-
     self.filters = {
         "daterange": ko.observable(""),
-        "classes": ko.observable(""),
+        "classes": ko.observable("nada"),
         "x": ko.observable(0),
         "centile": ko.observable(0),
         "sig": ko.observable(0)
@@ -111,10 +103,12 @@ function ViewModel() {
     self.columnFilters = [
         {
             column: 1,
+            name: "timerange",
             observable: self.filters.daterange
         },
         {
             column: 2,
+            name: "types",
             observable: self.filters.classes
         }
     ];
@@ -134,17 +128,23 @@ function ViewModel() {
     };
 
     self.applyFilters = function () {
-        console.log("Applying filters")
+        var u = new URI();
+
 
         var catalog = $('#factors-table').DataTable();
         //catalog.fnFilter(self.emailFilter(), 0);
 
+        console.log('filters called');
         $.each(self.columnFilters, function (index, filter) {
+
+            //window.location = u.setSearch(filter.name, filter.observable()).toString()
+
             console.log(JSON.stringify(filter));
+
             catalog.column(filter.column).search(filter.observable()).draw()
         });
 
-        console.log('filters called');
+
     };
 
 
@@ -209,12 +209,11 @@ function ViewModel() {
      self.filters[f].extend({ rateLimit: 1000 }).subscribe(self.applyFilters);
      }*/
 
-    $.each(self.columnFilters, function (index, filter) {
-        filter.observable.subscribe(self.applyFilters);
-    });
+
     //self.filters.daterange.subscribe(self.applyFilters);
     //self.filters.classes.subscribe(self.applyFilters);
 
+    self.state = null;
 
     self.loadRows = function () {
         var table = $('#factors-table').DataTable({
@@ -230,7 +229,84 @@ function ViewModel() {
             //"bProcessing": true,
             "lengthMenu": [ 20, 50, 100 ],
             serverSide: true,
-            ajax: '/factors/query',
+            //ajax: '/factors/query',
+            //ajax: '/data/factors',
+            ajax :  {
+                url: '/data/factors',
+                data: function(data) {
+                    //data.clusterId = 1572;
+                }
+            },
+
+
+            "stateSave": true,
+            "stateLoadParams": function (settings, data) {
+                self.state = settings;
+
+                console.log("stateLoadParams")
+                //console.log("stateLoadParams: " + JSON.stringify(data));
+
+                var query = new URI().search(true);
+                //console.log("query: " + JSON.stringify(query));
+
+                //if('start' in query)
+                //  data.start = query.start
+
+
+                //o.columns = []
+                $.each(self.columnFilters, function (index, filter) {
+                    //console.log("applying " + filter.name + " value: " + query[filter.name])
+                    //filter.observable(filter.parse(query[filter.name]));
+
+                    data.columns[filter.column].search.search = query[filter.name]
+
+                    //console.log("APplying: " + query[filter.name])
+                    //filter.apply(query[filter.name])
+
+
+                    /*o.columns[filter.column] = {
+                     search: {
+                     search:
+                     }
+                     }*/
+                });
+
+                //console.log("o: " + JSON.stringify(data))
+
+                return data;
+            },
+
+            "stateSaveParams": function (settings, data) {
+                console.log("stateSaveParams")
+                //console.log("stateSaveCallback: " + JSON.stringify(data))
+
+                var u = new URI();
+
+                u.setSearch({
+                    start: data.start,
+                    length: data.length
+                });
+
+                $.each(self.columnFilters, function (index, filter) {
+                    var colSearch = data.columns[filter.column].search.search
+
+                    u.setSearch(filter.name, colSearch).toString()
+
+                    //u.setSearch(filter.name, filter.serialize()).toString()
+
+//                    var colSearch = data.columns[filter.column].search.search
+
+
+                    console.log(JSON.stringify(filter));
+
+                    //catalog.column(filter.column).search(filter.observable()).draw()
+
+                });
+
+                history.replaceState(null, null, u.toString())
+            },
+
+
             "columns": [
                 /*                {
                  "className": 'details-control',
@@ -259,10 +335,11 @@ function ViewModel() {
                 },
                 {
                     "width": "25%",
-                    "data": "factor",
-                    "render": function (data) {
+                    "data": "edge",
+                    "render": function (data, index, row) {
                         //return moment(data).format(timeFormat)
-                        return "";
+                        //return JSON.stringify(row)
+                        return row.source.label + " -> " + row.target.label
                     },
                     "orderable": false
                 },
@@ -297,6 +374,36 @@ function ViewModel() {
             ]
         });
 
+        var tabE = $('#factors-table')
+        tabE.on('search.dt', function () {
+            //var api = this.api();
+
+            console.log("searching")
+
+        });
+
+        table.on('stateLoaded.dt', function (e, settings, data) {
+
+            console.log("init.dt")
+            //console.log("init.dt: "+ JSON.stringify(data))
+
+
+            $.each(self.columnFilters, function (index, filter) {
+
+
+                //console.log(JSON.stringify(filter.serialize()));
+
+                //var colSearch = data.columns[filter.column].search.search
+
+                //u.setSearch(filter.name, colSearch).toString()
+
+                //filter.apply(query[filter.name])
+                //catalog.column(filter.column).search(filter.observable()).draw()
+
+            });
+            //$('#myInput').val( data.myCustomValue );
+        });
+
 
         // Add event listener for opening and closing details
         $('#factors-table tbody').on('click', 'td.details-control', function () {
@@ -319,6 +426,54 @@ function ViewModel() {
     };
 
 
+    self.loadFilters = function () {
+        console.log("load filters!")
+
+
+        //$.get("/factors/meta", );
+
+        $.ajax({
+            "url": "/data/factors/meta",
+            "async": false,
+            "dataType": "json",
+            "success": function (data) {
+                //console.log(JSON.stringify(data));
+                $.each(data.filters.factors, function (index, item) {
+                    //console.log(JSON.stringify(item));
+                    self.factorSelect.push(new Item(item.value, item.label, item.group))
+                });
+            }
+        });
+
+
+        $.each(self.columnFilters, function (index, filter) {
+            //var colSearch = data.columns[filter.column].search.search
+
+            var tabE = $('#factors-table').DataTable()
+
+            var colSearch = tabE.column(filter.column).search()
+            console.log("search: " + colSearch)
+
+            //filter.apply(colSearch)
+            filter.observable(colSearch)
+
+            //u.setSearch(filter.name, filter.serialize()).toString()
+
+//                    var colSearch = data.columns[filter.column].search.search
+
+
+            //console.log(JSON.stringify(filter));
+
+            //catalog.column(filter.column).search(filter.observable()).draw()
+
+        });
+
+        $.each(self.columnFilters, function (index, filter) {
+            filter.observable.subscribe(self.applyFilters);
+        });
+
+    }
+
 }
 
 
@@ -327,7 +482,18 @@ $(document).ready(function () {
     console.log("b");
 
     viewModel = new ViewModel();
+
     viewModel.loadRows();
 
+    viewModel.loadFilters()
+
     ko.applyBindings(viewModel);
+
+
+    //console.log("f: " + viewModel.filters.classes())
+
+
+    //viewModel.applyUrlFilters();
+
+
 });

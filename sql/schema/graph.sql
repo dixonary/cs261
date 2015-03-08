@@ -15,12 +15,9 @@ CREATE TABLE Trader (#TRADER TABLE#
   id       INTEGER     NOT NULL,
   email    VARCHAR(50) NOT NULL, #Contains entities which represent individual Traders and averages for Trading volume and Profit
   domain   VARCHAR(30) NOT NULL, #There email addresses are unique and so are used as our primary key
-  tradeCnt INTEGER     NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (id) REFERENCES Node (id),
   UNIQUE KEY (email)
-#,
-#FOREIGN KEY (tradeCnt) REFERENCES Counter (id)
 );
 
 DROP TABLE IF EXISTS Symbol CASCADE;

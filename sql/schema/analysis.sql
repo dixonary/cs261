@@ -16,8 +16,6 @@ CREATE TABLE Poisson (#COUNTER TABLE#
 );
 
 
-
-
 DROP TABLE IF EXISTS TickFactor CASCADE;
 CREATE TABLE TickFactor (
   id      INTEGER        NOT NULL AUTO_INCREMENT,
@@ -54,6 +52,8 @@ CREATE TABLE Factor (
   centile DOUBLE         NOT NULL,
   sig     DOUBLE         NOT NULL,
 
+  score   DOUBLE         NOT NULL,
+
   PRIMARY KEY (id),
   UNIQUE KEY (tick, edge, factor),
   FOREIGN KEY (tick) REFERENCES Tick (tick),
@@ -78,28 +78,53 @@ CREATE TABLE FactorFreq (
 );
 
 
-
-
 DROP TABLE IF EXISTS Cluster CASCADE;
 CREATE TABLE Cluster (
-  id   INTEGER NOT NULL AUTO_INCREMENT,
-  tick INTEGER NOT NULL,
+  id    INTEGER NOT NULL AUTO_INCREMENT,
+  tick  INTEGER NOT NULL,
 
+  nodes INTEGER NOT NULL,
+  edges INTEGER NOT NULL,
+
+  meta  TEXT,
+
+  status  ENUM('UNSEEN', 'SEEN', 'INVESTIGATED'),
 
   PRIMARY KEY (id),
   FOREIGN KEY (tick) REFERENCES Tick (tick)
 );
 
+DROP TABLE IF EXISTS ClusterNode CASCADE;
+CREATE TABLE ClusterNode (
+  cluster INTEGER NOT NULL,
+  node    INTEGER NOT NULL,
+
+  PRIMARY KEY (cluster, node),
+  FOREIGN KEY (cluster) REFERENCES Cluster (id),
+  FOREIGN KEY (node) REFERENCES Node (id)
+);
 
 DROP TABLE IF EXISTS ClusterEdge CASCADE;
 CREATE TABLE ClusterEdge (
-#cluster INTEGER NOT NULL,
+  cluster INTEGER NOT NULL,
+  edge    INTEGER NOT NULL,
+  weight  DOUBLE  NOT NULL,
+
+  meta    TEXT,
+
+  PRIMARY KEY (cluster, edge),
+  FOREIGN KEY (cluster) REFERENCES Cluster (id),
+  FOREIGN KEY (edge) REFERENCES Edge (id)
+);
+
+
+DROP TABLE IF EXISTS TickClusterEdge CASCADE;
+CREATE TABLE TickClusterEdge (
   tick   INTEGER NOT NULL,
   edge   INTEGER NOT NULL,
   weight DOUBLE  NOT NULL,
 
   PRIMARY KEY (tick, edge),
-#FOREIGN KEY (tick) REFERENCES Cluster (id),
   FOREIGN KEY (tick) REFERENCES Tick (tick),
   FOREIGN KEY (edge) REFERENCES Edge (id)
 );

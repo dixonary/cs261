@@ -22,15 +22,12 @@ public class Sectors {
     SectorDao sectorDao;
 
 
-    public Result collection() {
-        return ok(views.html.sectors.collection.render());
-    }
 
     public Result element(String sector) {
         //Trader ent = symbolDao.selectWhereId(email);
 
         //if (ent == null) {
-            return redirect(controllers.routes.Sectors.collection());
+            return redirect(routes.Application.sectors());
         //}
 
         //List<Trade> tradeEnts = symbolDao.findByTraderId(email);

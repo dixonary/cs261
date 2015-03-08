@@ -26,16 +26,12 @@ public class Symbols {
     SymbolDao symbolDao;
 
 
-    public Result collection() {
-        return ok(views.html.symbols.collection.render());
-    }
 
     public Result element(String email) {
         //Trader ent = symbolDao.selectWhereId(email);
 
         //if (ent == null) {
-        return redirect(controllers.routes.Symbols.collection());
-        //}
+        return redirect(routes.Application.symbols());        //}
 
         //List<Trade> tradeEnts = symbolDao.findByTraderId(email);
 

@@ -9,43 +9,29 @@ import com.mysema.query.types.expr.ComparableExpressionBase;
 import models.FactorDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jdbc.query.QueryDslJdbcTemplate;
+import org.springframework.stereotype.Controller;
 import play.libs.Json;
 import play.mvc.Result;
-import team16.cs261.common.dao.ClusterDao;
-import team16.cs261.common.dao.FactorDao;
-import team16.cs261.common.dao.TradeDao;
-import team16.cs261.common.entity.factor.Factor;
 import team16.cs261.common.meta.FactorClass;
-import team16.cs261.common.meta.FactorGroup;
 import team16.cs261.common.querydsl.entity.QFactor;
 import team16.cs261.common.querydsl.entity.QTick;
 import util.FactorClassUtil;
 import util.Filters;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
 
 import static play.mvc.Controller.request;
 import static play.mvc.Results.ok;
 
-@org.springframework.stereotype.Controller
+@Controller
 public class Factors {
-
 
     @Autowired
     QueryDslJdbcTemplate template;
 
-    @Autowired
-    ClusterDao clusterDao;
 
-    @Autowired
-    FactorDao factorDao;
-
-    @Autowired
-    TradeDao tradeDao;
-
-    public Result collection() {
-        return ok(views.html.factors.collection.render());
-    }
 
     private final QFactor f = new QFactor("f");
     private final QTick t = new QTick("t");
@@ -53,10 +39,16 @@ public class Factors {
             f.id, t.start, f.factor, null, f.value, f.centile, f.sig
     };
 
+    public SQLQuery getQuery() {
+        return template.newSqlQuery().from(f).join(t).on(f.tick.eq(t.tick));
+    }
+
     public Result query() {
         int draw = Integer.parseInt(request().getQueryString("draw"));
         int start = Integer.parseInt(request().getQueryString("start"));
         int length = Integer.parseInt(request().getQueryString("length"));
+
+        if(true)return null;
 
         //ordering
         int orderColumn = Integer.parseInt(request().getQueryString("order[0][column]"));
@@ -68,10 +60,7 @@ public class Factors {
         BooleanExpression fcf = factorClassFilter(request().getQueryString("columns[2][search][value]"));
 
 
-        //int recordsTotal = factorDao.selectCountAll();
-        //List<Factor> data = factorDao.selectAllLimit(start, length);
-
-        SQLQuery query = template.newSqlQuery().from(f).join(t).on(f.tick.eq(t.tick))
+        SQLQuery query = getQuery()
                 .where(fbt, fcf)
                 .orderBy(order).offset(start).limit(length);
 
@@ -104,37 +93,7 @@ public class Factors {
     }
 
 
-    public Result meta() {
-        ObjectNode meta = Json.newObject();
-        ObjectNode filters = Json.newObject();
 
-        meta.put("filters", filters);
-
-        filters.put("factors", Json.toJson(FactorClassUtil.getFactorTree()));
-
-        return ok(meta);
-    }
-
-
-    public Result query2() {
-
-        int draw = Integer.parseInt(request().getQueryString("draw"));
-
-        int start = Integer.parseInt(request().getQueryString("start"));
-        int length = Integer.parseInt(request().getQueryString("length"));
-
-
-        int recordsTotal = factorDao.selectCountAll();
-        List<Factor> data = factorDao.selectAllLimit(start, length);
-
-
-        ObjectNode response = Json.newObject();
-        response.put("draw", draw);
-        response.put("recordsTotal", recordsTotal);
-        response.put("recordsFiltered", recordsTotal);
-        response.put("data", Json.toJson(data));
-        return play.mvc.Controller.ok(response);
-    }
 
 
 }

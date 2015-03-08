@@ -25,9 +25,6 @@ public class Comms {
     @Autowired
     CommDao comms;
 
-    public Result collection() {
-        return play.mvc.Controller.ok(views.html.comms.collection.render());
-    }
 
     public Result get(int clusterId) {
         return play.mvc.Controller.ok("sup");

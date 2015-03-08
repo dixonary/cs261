@@ -196,7 +196,8 @@ function ViewModel() {
             //"bProcessing": true,
             "lengthMenu": [ 10, 25, 50, 100 ],
             serverSide: true,
-            ajax: '/clusters/query',
+            //ajax: '/clusters/query',
+            ajax: '/data/clusters',
             "columns": [
                 {
                     "className": 'details-control',

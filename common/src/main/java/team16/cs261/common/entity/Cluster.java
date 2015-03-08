@@ -5,7 +5,7 @@ package team16.cs261.common.entity;
  */
 public class Cluster {
 
-    private int clusterId;
+    private int id;
 
     private long time;
 
@@ -13,12 +13,12 @@ public class Cluster {
 
     }
 
-    public int getClusterId() {
-        return clusterId;
+    public int getId() {
+        return id;
     }
 
-    public void setClusterId(int clusterId) {
-        this.clusterId = clusterId;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public long getTime() {

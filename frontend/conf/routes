@@ -8,41 +8,85 @@ GET        /        @controllers.Application.index()
 GET        /stats        @controllers.Stats.index()
 
 GET        /ticks/:id        @controllers.Ticks.element(id: Integer)
-GET        /ticks/:id/graph        @controllers.Ticks.graph(id: Integer)
 
-GET        /clusters        @controllers.Clusters.collection()
-GET        /clusters/query        @controllers.Clusters.query()
+
+
+#GET        /clusters/query        @controllers.Clusters.query()
 GET        /clusters/meta        @controllers.Clusters.meta()
+GET        /clusters/:id.json        @controllers.Clusters.data(id: Integer)
 GET        /clusters/:id        @controllers.Clusters.element(id: Integer)
 
-GET        /factors        @controllers.Factors.collection()
-GET        /factors/query        @controllers.Factors.query()
-GET        /factors/meta        @controllers.Factors.meta()
 
-GET        /trades        @controllers.Trades.collection()
+
+# main navigation
+GET        /clusters        @controllers.Application.clusters()
+GET        /factors        @controllers.Application.factors()
+GET        /factors/classes        @controllers.Application.factorClasses()
+
+GET        /trades        @controllers.Application.trades()
+GET        /comms        @controllers.Application.comms()
+GET        /traders        @controllers.Application.traders()
+GET        /symbols        @controllers.Application.symbols()
+GET        /sectors        @controllers.Application.sectors()
+
+GET        /routes        controllers.Application.javascriptRoutes()
+
+# 'query generators'
+#GET        /trades?buyer=:bIds&seller=:sIds&symbols=:syIds&sectors=:seIds        @controllers.Application.tradesQuery(bIds: String, sIds:String, syIds:String, seIds:String)
+
+GET        /trades?buyer=:ids        @controllers.Application.tradesByBuyer(ids: String)
+GET        /trades?seller=:ids        @controllers.Application.tradesBySeller(ids: String)
+GET        /trades?buyer=:bIds&seller=:sIds        @controllers.Application.tradesByTraders(bIds: String, sIds:String)
+GET        /trades?buyer=:bIds&seller=:sIds&symbols=:syIds&sectors=:seIds        @controllers.Application.tradesBy(bIds: String, sIds:String, syIds:String, seIds:String)
+#GET        /trades?seller=:sIds        @controllers.Application.tradesQuery(bIds: String = null, sIds:String, syIds:String = null, seIds:String = null)
+
 GET        /trades/query        @controllers.Trades.query()
 GET        /trades/query/:email        @controllers.Trades.queryByTraderId(email: String)
 
-GET        /graph        @controllers.Graph.index()
-GET        /graph/data        @controllers.Graph.graph()
-GET        /graph/mcl        @controllers.Graph.mcl()
-GET        /graph/matlab        @controllers.Graph.matlab()
-GET        /graph/comms        @controllers.Graph.comms()
 
-GET        /comms        @controllers.Comms.collection()
+
 GET        /comms/query        @controllers.Comms.query()
 
-GET        /traders        @controllers.Traders.collection()
+
 GET        /traders/query        @controllers.Traders.query()
 GET        /traders/:email        @controllers.Traders.element(email: String)
 
-GET        /symbols        @controllers.Symbols.collection()
+
+
 GET        /symbols/query        @controllers.Symbols.query()
 GET        /symbols/:symbol        @controllers.Symbols.element(symbol: String)
 
-GET        /sectors        @controllers.Sectors.collection()
+
 GET        /sectors/query        @controllers.Sectors.query()
 GET        /sectors/:sector        @controllers.Sectors.element(sector: String)
+
+
+
+
+# data feeds
+GET        /dashboard/events.json        @controllers.data.Dashboard.events()
+GET        /dashboard/commons.json        @controllers.data.Dashboard.commons()
+
+GET        /data/dashboard/latest?since=:since        @controllers.data.Dashboard.latestClusters(since: Long)
+
+GET        /data/clusters        @controllers.data.ClusterTable.query()
+
+GET        /data/factors        @controllers.data.FactorTable.query()
+GET        /data/factors/meta        @controllers.data.FactorTable.meta()
+
+GET        /data/trades        @controllers.data.TradeTable.query()
+GET        /data/trades/meta        @controllers.data.TradeTable.meta()
+
+GET        /data/graph/factors/:tick        @controllers.data.Graph.factors(tick: Integer)
+GET        /data/graph/factors/mcl/:tick        @controllers.data.Graph.factorsMcl(tick: Integer)
+GET        /data/graph/clusters/:tick        @controllers.data.Graph.clusters(tick: Integer)
+GET        /data/graph/:tick        @controllers.data.Graph.graph(tick: Integer)
+#GET        /data/graph/:tick/:clusters/:factors        @controllers.data.Graph.graph(tick: Integer, clusters: String, factors: String)
+
+
+
+
+
 
 # Map static resources from the /public folder to the /assets URL path
 GET        /assets/*file        controllers.Assets.at(path="/public", file)

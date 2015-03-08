@@ -1,15 +1,17 @@
 package team16.cs261.backend.module.impl;
 
-import net.sf.javaml.clustering.mcl.SparseMatrix;
 import org.apache.commons.math3.distribution.PoissonDistribution;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import team16.cs261.backend.config.Config;
+import team16.cs261.backend.mcl.*;
 import team16.cs261.backend.module.Module;
-import team16.cs261.backend.util.Clusters;
+import team16.cs261.backend.model.MclOutput;
+import team16.cs261.backend.service.MclService;
 import team16.cs261.backend.util.Timer;
 import team16.cs261.common.dao.*;
 import team16.cs261.common.entity.Tick;
@@ -17,9 +19,9 @@ import team16.cs261.common.entity.Trade;
 import team16.cs261.common.entity.graph.Edge;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * Created by martin on 22/01/15.
@@ -63,6 +65,9 @@ public class AnalyserModule extends Module {
         super(config, "ANALYSER");
     }
 
+
+    Map<Long, Future<MclOutput>> mclOutputs = new HashMap<>();
+
     @Override
     public void run() {
         while (true) {
@@ -83,6 +88,24 @@ public class AnalyserModule extends Module {
     @Transactional
     public void process() {
 
+
+        for(Map.Entry<Long, Future<MclOutput>> entry : mclOutputs.entrySet()) {
+            Future<MclOutput> future = entry.getValue();
+            if(!future.isDone()) continue;
+
+            long tick = entry.getKey();
+            try {
+                List<Set<Integer>> clusters = future.get().getClusters();
+
+                insertClusters(tick, clusters);
+
+                mclOutputs.remove(tick);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
 
         //if(true)return;
 
@@ -147,7 +170,6 @@ public class AnalyserModule extends Module {
         updateFactors(tick, "COMMS", "TraderPair", "comms", avgTick.getCommsPerPair(), sig);
 
 
-
         //outputTime.stop();
 
 
@@ -169,8 +191,8 @@ public class AnalyserModule extends Module {
 
         //jdbcTemplate.update("UPDATE Tick SET analysed = TRUE, analysisTime = ? WHERE tick = ?", analysisTime, tick);
         jdbcTemplate.update(
-                "UPDATE Tick SET status = 'ANALYSED', aggrTime = ?, analysisTime = ?, commsGraph = ? WHERE tick = ?",
-                aggrTime.getElapsed(), analysisTime.getElapsed(), "", tick);
+                "UPDATE Tick SET status = 'ANALYSED', aggrTime = ?, analysisTime = ? WHERE tick = ?",
+                aggrTime.getElapsed(), analysisTime.getElapsed(), tick);
 
 
 
@@ -185,11 +207,19 @@ public class AnalyserModule extends Module {
     }
 
 
-    public static final String UPDATE_FACTORS =
+/*    public static final String UPDATE_FACTORS =
             "INSERT INTO Factor (tick, edge, factor, value, centile, sig) " +
                     "SELECT ?, id, ?, #fld, (select cdf from Poisson where x = #fld), (select sig from Poisson where x = #fld) " +
                     "FROM #tbl " +
-                    "WHERE #fld >= ?";
+                    "WHERE #fld >= ?";*/
+
+    public static final String UPDATE_FACTORS =
+            "INSERT INTO Factor (tick, edge, factor, value, centile, sig, score) " +
+                    "SELECT ?, id, ?, #fld, cdf, sig, 1-(sig/0.05) " +
+                    "FROM #tbl " +
+                    "JOIN Poisson " +
+                    "ON #fld = x " +
+                    "WHERE #fld > ?";
 
     public static final String UPDATE_FACTOR_FREQS =
             "INSERT INTO FactorFreq (tick, factor, x, fx) " +
@@ -241,14 +271,15 @@ public class AnalyserModule extends Module {
 
 
     public static final String SELECT_FACTOR_EDGES =
-            "SELECT E.id AS id, E.source AS source, E.target AS target, sum(centile) AS weight FROM Edge E JOIN Factor F ON E.id = F.edge WHERE tick = ? GROUP BY edge";
+            "SELECT E.id AS id, E.source AS source, E.target AS target, sum(score) AS weight FROM Edge E JOIN Factor F ON E.id = F.edge WHERE tick = ? GROUP BY edge";
+    //"SELECT E.id AS id, E.source AS source, E.target AS target, centile AS weight FROM Edge E JOIN Factor F ON E.id = F.edge WHERE tick = ?";
 
     // Maximum difference between row elements and row square sum (measure of
     // idempotence)
     private double maxResidual = 0.001;
 
     // inflation exponent for Gamma operator
-    private double pGamma = 2.0;
+    private double pGamma = 4.0;
 
     // loopGain values for cycles
     private double loopGain = 1.0;
@@ -256,55 +287,70 @@ public class AnalyserModule extends Module {
     // maximum value considered zero for pruning operations
     private double maxZero = 0.001;
 
+    //Clustererer legacy = new Clustererer(0.001, 2.0, 1.0, 0.001);
+    //Clusterizer cl = new Clusterizer(0.001, 2.0, 1.0, 0.001);
+    //Clustererer legacy = new Clustererer(maxResidual, pGamma, loopGain, maxZero);
+    //Clusterizer cl = new Clusterizer(maxResidual, pGamma, loopGain, maxZero);
+    //Clusterizer3 clr3 = new Clusterizer3(maxResidual, pGamma, loopGain, maxZero);
+    Mcl mcl4 = new Mcl(pGamma);
+
+    @Autowired
+    MclService mclService;
+
     public void findClusters(long tick) {
-        Integer maxIndex = jdbcTemplate.queryForObject("SELECT max(id) FROM Node", Integer.class);
+        //Integer maxIndex = jdbcTemplate.queryForObject("SELECT max(id) FROM Node", Integer.class);
         List<Edge> edges = jdbcTemplate.query(SELECT_FACTOR_EDGES, new Object[]{tick}, new BeanPropertyRowMapper<>(Edge.class));
 
-        double[][] weights = new double[maxIndex + 1][maxIndex + 1];
+        Graph g = new Graph(edges);
+        //System.out.println("Dataset: " + g);
 
-        for (Edge e : edges) {
+        //List<Set<Integer>> clusters3 = g.getClusterIds(clr3.cluster(g));
 
-            System.out.println("Edge: " + e);
+        double[][] input4 = g.toMatrix();
+        double[][] output4 = mcl4.run(input4);
+        //System.out.println("Cls: " + SqMatrix.prettyString(output4));
+        List<Set<Integer>> clusters4 = g.getClusterIds(mcl4.getClusters(output4));
 
-            int s = e.getSource();
-            int t = e.getTarget();
-            double w = e.getWeight();
-
-            weights[s][t] = w;
-            weights[t][s] = w;
-        }
-
-        SparseMatrix sm = new SparseMatrix(weights);
-
-        System.out.println("Size: " + Arrays.toString(sm.getSize()));
-
-        //MarkovClustering mcl = new MarkovClustering();
-        //SparseMatrix sm2 = mcl.run(sm, maxResidual, pGamma, 0., maxZero);
-
-        Clusters cl = new Clusters();
-        SparseMatrix sm2 = cl.cluster2(sm);
-
-        //System.out.println("SM1: \n" + sm.toStringDense());
-        //System.out.println("SM2: \n" + sm2.toStringDense());
+        String mclLines = g.toMcl();
+        mclOutputs.put(tick, mclService.run(tick, mclLines));
 
 
-        String insertEdges = "INSERT INTO ClusterEdge (tick, edge, weight) VALUES (?, ?, ?)";
-        List<Object[]> args = new ArrayList<>();
+        final String updateTick = "UPDATE Tick SET mclInput = ?, clusters = ?, clusters2 = ?, clusters3 = ? WHERE tick = ?";
+        //String tickMeta = toJson(mclOut.getClusters());
+        //String tickMeta = toJson(mclOut.getClusters().values());
+        String tickMeta = toJson(g.getNodeIds());
+        //String meta3 = toJson(clusters3);
+        String meta4 = toJson(clusters4);
+        jdbcTemplate.update(updateTick, g.toMcl(), tickMeta, null, meta4, tick);
 
-        System.out.println("SM2: " + Arrays.toString(sm2.getSize()));
-        sm2.adjustMaxIndex(maxIndex, maxIndex);
-        double[][] clusters = sm2.getDense();
-        System.out.println("clusters[][]: " + clusters.length + ", " + clusters[0].length);
+
+        //insertClusters(tick, clusters4);
+
+
+
+/*        System.out.println("legacy: \n" + legacyClusters.toStringDense());
+        System.out.println("new: \n" + mclOut.getOutput().toStringDense());
+        legacyClusters.hadamardProduct(mclOut.getOutput());
+        System.out.println("diff: \n" + legacyClusters.toStringDense());*/
+
+
+//        String insertEdges = "INSERT INTO TickClusterEdge (tick, edge, weight) VALUES (?, ?, ?)";
+/*  //      List<Object[]> args = new ArrayList<>();
+
+        //System.out.println("SM2: " + Arrays.toString(sm2.getSize()));
+        //sm2.adjustMaxIndex(maxIndex, maxIndex);
+        //double[][] clusters = sm2.getDense();
+        //System.out.println("clusters[][]: " + clusters.length + ", " + clusters[0].length);
 
         for (Edge e : edges) {
             int src = e.getSource();
             int trg = e.getTarget();
 
             double weight;
-            weight = src > trg ? sm2.get(src, trg) : sm2.get(trg, src);
+            weight = src > trg ? legacyClusters.get(src, trg) : legacyClusters.get(trg, src);
 
-            if(weight > 0.98) {
-            //if (sm2.get(src, trg) > 0 || sm2.get(trg, src) > 0) {
+            if (weight > 0.98) {
+                //if (sm2.get(src, trg) > 0 || sm2.get(trg, src) > 0) {
                 //System.out.println("s: " + s + ", t: " + t);
 
                 //System.out.println(String.format("%s : %s, %s", weight, sm2.get(s,t), sm2.get(t,s)));
@@ -312,73 +358,53 @@ public class AnalyserModule extends Module {
                 args.add(new Object[]{tick, e.getId(), weight});
             }
 
-            /*            //double newWeightA = clusters[e.getSource()][e.getTarget()];
-            //double newWeightB = clusters[e.getTarget()][e.getSource()];
-
-            //System.out.println(newWeightA + " : " + newWeightB);
-
-            if(newWeightA > 0) {
-                System.out.println("Edge: " + e);
-
-                args.add(new Object[]{tick, e.getId(), newWeightA});
-            }*/
-
 
         }
-        jdbcTemplate.batchUpdate(insertEdges, args);
+        jdbcTemplate.batchUpdate(insertEdges, args);*/
 
 
-        //System.out.println("nodes: " + nodeSet);
-        //System.out.println("nodes: " + ds);
+    }
 
-//System.out.println("before: " + sm);
+    final String insertCluster =
+            //"INSERT INTO Cluster (tick, nodes, edges, meta) VALUES (?, ?, ?, ?);";
+            "INSERT INTO Cluster (tick, nodes, edges, meta) VALUES (?, ?, ?, ?);";
+    final String insertCN = "INSERT INTO ClusterNode (cluster, node) VALUES (?, ?)";
 
-        /*AbstractSimilarity am = new AbstractSimilarity() {
-            @Override
-            public double measure(Instance x, Instance y) {
-                return sm.get(x,y);
+    public void insertClusters(long tick, List<Set<Integer>> clusters) {
+
+
+        for (Set<Integer> cl : clusters) {
+            String meta = toJson(cl);
+
+            //if(cl.size() < 2) continue;
+
+            //Integer cluster = cl.iterator().next();
+            jdbcTemplate.update(insertCluster, tick, cl.size(), -1, meta);
+            Integer cluster = jdbcTemplate.queryForObject("SELECT max(id) FROM Cluster;", Integer.class);
+            //Integer cluster = jdbcTemplate.queryForObject(insertCluster, new Object[]{tick, cl.size(), -1, meta}, Integer.class);
+            //jdbcTemplate.update(insertCluster, tick, cluster, cl.size(), -1, meta);
+
+            //System.out.println("cl: " + cluster);
+
+
+            for (int clNode : cl) {
+                //System.out.println("nd: " + clNode);
+                jdbcTemplate.update(insertCN, cluster, clNode);
             }
-        };*/
+        }
+
+    }
 
 
+    ObjectMapper om = new ObjectMapper();
 
-
-
-
-        /*System.out.println("after: ");
-        for (Dataset ds : clusters) {
-            System.out.println(ds);
-            for (int i = 0; i < ds.size(); i++) {
-                //ds.get(i).getID()
-            }
-        }*/
-
-
-  /*      Map<Integer, Set<Integer>> l = graphDao.getComms().map;
-
-
-        ObjectMapper mapper = new ObjectMapper();
-        String commsGraph = null;
+    public String toJson(Object o) {
         try {
-            commsGraph = mapper.writeValueAsString(l);
+            return om.writeValueAsString(o);
         } catch (IOException e) {
             e.printStackTrace();
         }
-*/
-
-/*        Clusters cl = new Clusters();
-
-        Dataset[] clusters = cl.cluster(sm);
-
-        System.out.println("after: ");
-        for (Dataset ds : clusters) {
-            System.out.println(ds);
-            for (int i = 0; i < ds.size(); i++) {
-                //ds.get(i).getID()
-            }
-        }*/
-
-
+        return "null";
     }
 
 

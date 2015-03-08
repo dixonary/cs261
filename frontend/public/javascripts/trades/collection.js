@@ -7,18 +7,11 @@
 
 $(function () {
     $('#trades-table').dataTable({
-        //"sDom": "<'row'<'col-xs-6'l><'col-xs-6'>r>t<'row'<'col-xs-6'i><'col-xs-6'p>>",
-        //"dom": "<'row'<'col-xs-6'l><'col-xs-6'>r>t<'row'<'col-xs-6'i><'col-xs-6'p>>",
         "dom": "<'row'<'col-xs-6'l><'col-xs-6'>r>t<'row'<'col-xs-6'i><'col-xs-6'p>>",
-        //"dom": "t",
-        //"dom": "lrtip",
-        "ordering": false,
-        //"autoWidth": false,
-        //"bPaginate": true,
-        //"bProcessing": true,
+        "ordering": true,
         "lengthMenu": [ 25, 50, 100, 200 ],
         serverSide: true,
-        ajax: '/trades/query',
+        ajax: '/data/trades',
         "columns": [
             { "data": "id" },
             { "data": "time",

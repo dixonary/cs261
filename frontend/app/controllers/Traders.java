@@ -23,15 +23,12 @@ public class Traders {
     @Autowired
     TraderDao tradersDao;
 
-    public Result collection() {
-        return ok(views.html.traders.collection.render());
-    }
 
     public Result element(String email) {
         Trader ent = tradersDao.selectWhereId(email);
 
         if (ent == null) {
-            return redirect(controllers.routes.Traders.collection());
+            return redirect(routes.Application.traders());
         }
 
         List<Trade> tradeEnts = tradesDao.findByTraderId(email);

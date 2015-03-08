@@ -13,16 +13,18 @@ public class ClusterDto {
 
     private int id;
     private int tick;
-    private long time;
+    private long start;
+    private long end;
 
     public Cluster cluster;
     public List<Factor> factors;
 
     @QueryProjection
-    public ClusterDto(int id, int tick, long time) {
+    public ClusterDto(int id, int tick, long start, long end) {
         this.id = id;
         this.tick = tick;
-        this.time=time;
+        this.start = start;
+        this.end = end;
     }
 
     public int getId() {
@@ -41,11 +43,19 @@ public class ClusterDto {
         this.tick = tick;
     }
 
-    public long getTime() {
-        return time;
+    public long getStart() {
+        return start;
     }
 
-    public void setTime(long time) {
-        this.time = time;
+    public void setStart(long start) {
+        this.start = start;
+    }
+
+    public long getEnd() {
+        return end;
+    }
+
+    public void setEnd(long end) {
+        this.end = end;
     }
 }

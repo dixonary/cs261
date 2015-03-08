@@ -21,7 +21,6 @@ CREATE TABLE Counter (#COUNTER TABLE#
 );
 
 
-
 DROP TABLE IF EXISTS Tick CASCADE;
 CREATE TABLE Tick (#RAWTRADE TABLE#
   tick               INTEGER NOT NULL, #Contains the full representation of a Trade as received from the Trades feed
@@ -31,7 +30,8 @@ CREATE TABLE Tick (#RAWTRADE TABLE#
                      ('UNPARSED',
                       'PARSED',
                       'ANALYSING',
-                      'ANALYSED')
+                      'ANALYSED',
+                      'CLUSTERED')
                              NOT NULL DEFAULT 'UNPARSED',
 
 # counts
@@ -46,7 +46,7 @@ CREATE TABLE Tick (#RAWTRADE TABLE#
   commonSells        INTEGER NOT NULL,
 
 # frequencies
-tradesPerTrader DOUBLE NOT NULL,
+  tradesPerTrader    DOUBLE  NOT NULL,
 
   commonPerPair      DOUBLE  NOT NULL,
   commonBuysPerPair  DOUBLE  NOT NULL,
@@ -65,9 +65,12 @@ tradesPerTrader DOUBLE NOT NULL,
 
   aggrTime           INT,
   analysisTime       INT     NOT NULL DEFAULT 0,
-  commsGraph         BLOB,
-  traderSymbolGraph  BLOB,
+
+  mclInput           BLOB,
+
   clusters           BLOB,
+  clusters2          BLOB,
+  clusters3          BLOB,
   PRIMARY KEY (tick)
 );
 

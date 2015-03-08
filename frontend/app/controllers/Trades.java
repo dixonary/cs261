@@ -17,10 +17,6 @@ public class Trades {
     @Autowired
     TradeDao trades;
 
-    public Result collection() {
-        return play.mvc.Controller.ok(views.html.trades.collection.render());
-    }
-
     private static final String SELECT_COUNT = "SELECT COUNT(*) FROM Trade";
     private static final String SELECT_AND_LIMIT_COUNT = "SELECT COUNT(*) FROM Trade LIMIT ?, ?";
 

@@ -2,7 +2,9 @@ $(function () {
 
     var tick = $('#tick').attr('data-tick')
 
-    var path = "/ticks/" + tick + "/graph";
+    //var path = "/data/graph/" + tick ;
+    var path = $('#data-feeds').attr('data-graph')
+
 
     var groups = {
         def : {

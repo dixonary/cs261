@@ -1,26 +1,24 @@
 package team16.cs261.backend.util;
 
-import net.sf.javaml.clustering.mcl.MCL;
 import net.sf.javaml.clustering.mcl.MarkovClustering;
 import net.sf.javaml.clustering.mcl.SparseMatrix;
-import net.sf.javaml.clustering.Clusterer;
 import net.sf.javaml.core.*;
-import net.sf.javaml.distance.AbstractSimilarity;
-import net.sf.javaml.distance.DistanceMeasure;
 
+import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 /**
  * Created by martin on 27/02/15.
  */
-public class Clusters /*implements Clusterer*/ {
+public class Clustererer /*implements Clusterer*/ {
 
     /**
      * XXX doc
      *
      * @param dm
      */
-    public Clusters() {
+    public Clustererer() {
         //this(null, 0.001, 2.0, 0, 0.001);
         this(0.001, 2.0, 1.0, 0.001);
 
@@ -35,7 +33,7 @@ public class Clusters /*implements Clusterer*/ {
      * @param loopGain
      * @param maxZero
      */
-    public Clusters(double maxResidual, double pGamma, double loopGain, double maxZero) {
+    public Clustererer(double maxResidual, double pGamma, double loopGain, double maxZero) {
         this.maxResidual = maxResidual;
         this.pGamma = pGamma;
         this.loopGain = loopGain;
@@ -186,4 +184,7 @@ public class Clusters /*implements Clusterer*/ {
         return null;
 
     }
+
+
+
 }

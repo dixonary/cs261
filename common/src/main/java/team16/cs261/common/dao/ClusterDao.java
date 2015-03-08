@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import team16.cs261.common.entity.Cluster;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by martin on 13/02/15.
@@ -37,6 +38,13 @@ public class ClusterDao extends AbstractDao<Integer, Cluster> {
                 new Object[]{dateFrom, dateTo, offset, limit},
                 new BeanPropertyRowMapper<>(Cluster.class)
         );
+    }
+
+
+    //final String insertCluster = "INSERT INTO Cluster (tick, nodes, edges, meta) VALUES (?, ?, ?, ?)";
+    //final String insertCN = "INSERT INTO ClusterNode (cluster, node) VALUES (?, ?)";
+    public void insertCluster(int tick, Set<Integer> ids) {
+
     }
 
 }

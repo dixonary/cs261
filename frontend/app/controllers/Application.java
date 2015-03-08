@@ -1,62 +1,90 @@
 package controllers;
 
-import menu.Menu;
-import menu.MenuItem;
-import menu.Navigation;
 import org.springframework.stereotype.Controller;
-import play.api.mvc.Call;
+import play.Routes;
 import play.mvc.Result;
 import views.html.index;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 
+import static play.mvc.Controller.response;
 import static play.mvc.Results.ok;
 
 @Controller
 public class Application {
 
+
+
     public Result index() {
         return ok(index.render("Whoa"));
     }
 
-    public static Map<Call, String> getNavigation() {
-        Map<Call, String> map = new LinkedHashMap<>();
-
-        map.put(controllers.routes.Application.index(), "Dashboard");
-        map.put(controllers.routes.Clusters.collection(), "Clusters");
-        map.put(controllers.routes.Trades.collection(), "Trades");
-
-        return map;
+    public Result clusters() {
+        return ok(views.html.clusters.collection.render());
     }
 
-    public static Navigation getMenu() {
-        MenuItem dashboard = new MenuItem("fa-dashboard", "Dashboard", controllers.routes.Application.index());
-
-        MenuItem clusters = new MenuItem("fa-gears", "Clusters", controllers.routes.Clusters.collection());
-        MenuItem factors = new MenuItem("fa-gear", "Factors", controllers.routes.Factors.collection());
-
-        MenuItem car = new MenuItem("fa-car", "Stats", controllers.routes.Stats.index());
-
-        Menu rawData = new Menu("fa-database", "Raw Data");
-        rawData.addItem(new MenuItem("fa-exchange", "Trades", controllers.routes.Trades.collection()));
-        rawData.addItem(new MenuItem("fa-envelope", "Communications", controllers.routes.Comms.collection()));
-        rawData.addItem(new MenuItem("fa-user", "Traders",
-                controllers.routes.Traders.collection()/*,
-                new Call[]{
-                        controllers.routes.Traders.element("test")
-                }*/
-        ));
-        rawData.addItem(new MenuItem("fa-cube", "Symbols", controllers.routes.Symbols.collection()));
-        rawData.addItem(new MenuItem("fa-cubes", "Sectors", controllers.routes.Sectors.collection()));
-
-
-        Navigation navigation = new Navigation("Navigation");
-        navigation.addItem(dashboard);
-        navigation.addItem(clusters);
-        navigation.addItem(factors);
-        navigation.addItem(rawData);
-
-        return navigation;
+    public Result factors() {
+        return ok(views.html.factors.collection.render());
     }
+
+    public Result factorClasses() {
+        return ok(views.html.factors.collection.render());
+    }
+
+    public Result trades() {
+        return ok(views.html.trades.collection.render());
+    }
+
+
+    public Result tradesByBuyer(String ids) {
+        return ok(views.html.trades.collection.render());
+    }
+
+    public Result tradesBySeller(String ids) {
+        return ok(views.html.trades.collection.render());
+    }
+
+    public Result tradesByTraders(String ids, String ids2) {
+        return ok(views.html.trades.collection.render());
+    }
+
+    public Result tradesBy(String ids, String ids2, String ids3, String ids4) {
+        return ok(views.html.trades.collection.render());
+    }
+
+
+
+
+
+    public Result comms() {
+        return ok(views.html.comms.collection.render());
+    }
+
+    public Result traders() {
+        return ok(views.html.traders.collection.render());
+    }
+
+
+    public Result symbols() {
+        return ok(views.html.symbols.collection.render());
+    }
+
+
+    public Result sectors() {
+        return ok(views.html.sectors.collection.render());
+    }
+
+    public static Result javascriptRoutes() {
+        response().setContentType("text/javascript");
+        //Routes.
+
+        return ok(
+                Routes.javascriptRouter("jsRoutes",
+                        routes.javascript.Application.tradesByBuyer(),
+                        routes.javascript.Application.tradesBySeller(),
+                        routes.javascript.Application.tradesByTraders(),
+                        routes.javascript.Application.tradesBy()
+                )
+        );
+    }
+
 }
