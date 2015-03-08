@@ -1,4 +1,4 @@
-package team16.cs261.backend.mcl;
+package team16.cs261.backend.model;
 
 import team16.cs261.common.entity.graph.Edge;
 

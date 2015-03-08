@@ -107,7 +107,7 @@ public class TradeTable extends DataTable<TradeDto> {
 
             Predicate pred = cd.getPredicate(queryString);
 
-            System.out.println(cd.getName() + " filter: " + queryString);
+            //System.out.println(cd.getName() + " filter: " + queryString);
 
             bb.and(pred);
         }

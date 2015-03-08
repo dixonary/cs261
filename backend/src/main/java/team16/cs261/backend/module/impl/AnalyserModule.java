@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import team16.cs261.backend.config.Config;
-import team16.cs261.backend.mcl.Graph;
+import team16.cs261.backend.model.Graph;
 import team16.cs261.backend.model.MclOutput;
 import team16.cs261.backend.module.Module;
 import team16.cs261.backend.service.MclService;
