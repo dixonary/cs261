@@ -12,9 +12,10 @@ import java.util.List;
 public enum Directory implements MenuItem {
     DASHBOARD("Dashboard", "fa-dashboard", routes.Application.index()),
 
-    CLUSTERS("Clusters", "fa-gears", routes.Application.clusters()),
-    FACTORS("Factors", "fa-gear", routes.Application.factors()),
-    FACTOR_CLASSES(FACTORS, "Types", "fa-info", routes.Application.factorClasses()),
+    CLUSTERS("Clusters", "fa-cubes", routes.Application.clusters()),
+    FACTORS("Factors", "fa-cube", null),
+    FACTOR_CLASSES(FACTORS, "Overview", "fa-info", routes.Application.factorClasses()),
+    FACTOR_TABLE(FACTORS, "Table", "fa-table", routes.Application.factors()),
 
     DATA("Data", "fa-database", null),
 
@@ -69,12 +70,15 @@ public enum Directory implements MenuItem {
     public boolean isActive(String uri) {
         if (call != null && uri.equals(call.url())) return true;
 
-        for (Directory dir : getChildren()) {
+        for (MenuItem dir : getChildren()) {
             if (dir.isActive(uri)) return true;
         }
 
-
         return false;
+    }
+
+    public boolean isLive(String uri) {
+        return (call != null && uri.equals(call.url())) ;
     }
 
     @Override
@@ -86,8 +90,8 @@ public enum Directory implements MenuItem {
     }
 
     @Override
-    public List<Directory> getChildren() {
-        List<Directory> dirs = new ArrayList<>();
+    public List<MenuItem> getChildren() {
+        List<MenuItem> dirs = new ArrayList<>();
 
         for (Directory dir : values()) {
             if (dir.parent == this)
@@ -99,11 +103,43 @@ public enum Directory implements MenuItem {
     public static List<MenuItem> getItems() {
         List<MenuItem> items = new ArrayList<>();
 
-        for(Directory dir : values()) {
+        for (Directory dir : values()) {
             items.add(dir);
         }
 
         return items;
+    }
+
+    public static List<MenuItem> getRoot() {
+        List<MenuItem> dirs = new ArrayList<>();
+
+        for (Directory dir : values()) {
+            if (dir.isRoot())
+                dirs.add(dir);
+        }
+        return dirs;
+    }
+
+    public static List<MenuItem> getPath(String uri) {
+        List<MenuItem> path = new ArrayList<>();
+
+        List<MenuItem> nodes = getRoot();
+
+        outer:while (nodes != null) {
+            for (MenuItem n : nodes) {
+                System.out.println("Node: " + n.getCall());
+                if (!n.isActive(uri)) continue;
+                System.out.println("active");
+                path.add(n);
+                nodes = n.getChildren();
+                continue outer;
+            }
+
+            nodes = null;
+        }
+
+
+        return path;
     }
 
 }

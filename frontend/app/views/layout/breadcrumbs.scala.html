@@ -1,0 +1,17 @@
+@(nav: List[util.MenuItem])
+@import util.MenuItem
+
+<ol class="breadcrumb">
+@util.Directory.getPath(request.path).map { dir : MenuItem =>
+    <li><a href="@dir.getCall"><i class="fa @dir.getIcon"></i>@dir.getLabel</a></li>
+}
+</ol>
+
+
+
+@*
+<ol class="breadcrumb">
+    <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+    <li><a href="#">Charts</a></li>
+    <li class="active">Morris</li>
+</ol>*@

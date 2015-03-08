@@ -84,10 +84,11 @@
                     @subheading
                     </small>
                     </h1>
-                    <ol class="breadcrumb">
+                    @layout.breadcrumbs(util.Directory.getItems)
+@*                    <ol class="breadcrumb">
                         <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
                         <li class="active">@heading</li>
-                    </ol>
+                    </ol>*@
                 </section>
 
                     <!-- Main content -->

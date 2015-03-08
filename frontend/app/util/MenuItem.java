@@ -21,10 +21,10 @@ public interface MenuItem {
 
     boolean isActive(String uri);
 
+    boolean isLive(String uri);
+
     boolean hasChildren();
 
-    List<Directory> getChildren();
-
-
+    List<MenuItem> getChildren();
 
 }

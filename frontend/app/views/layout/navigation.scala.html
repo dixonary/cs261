@@ -9,7 +9,7 @@
 
     @renderItem(item: MenuItem) = {
 
-        <li class="@if(item.hasChildren) {treeview} @if(item.isActive(request.uri)) {active}">
+        <li class="@if(item.hasChildren) {treeview} @if(item.isActive(request.path)) {active}">
 
             <a href="@item.getCall">
                 <i class="fa @item.getIcon"></i>
