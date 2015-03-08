@@ -166,6 +166,7 @@ CREATE PROCEDURE InsertSector(inSector VARCHAR(40))
   END //
 DELIMITER ;
 
+
 DELIMITER //
 DROP PROCEDURE IF EXISTS InsertSymbol;
 CREATE PROCEDURE InsertSymbol(inSymbol VARCHAR(10), inSector VARCHAR(40))
@@ -211,7 +212,6 @@ CREATE PROCEDURE InsertSymbol(inSymbol VARCHAR(10), inSector VARCHAR(40))
 DELIMITER ;
 
 
-
 DELIMITER //
 DROP PROCEDURE IF EXISTS InsertComm;
 CREATE PROCEDURE InsertComm(
@@ -227,6 +227,9 @@ CREATE PROCEDURE InsertComm(
     INSERT INTO Comm
     (time, tick, sender, recipient, senderId, recipientId)
     VALUES
-      (time, tick, sender, recipient, senderId, recipientId);
+      (time, tick, sender, recipient, @senderId, @recipientId);
   END //
 DELIMITER ;
+
+
+
