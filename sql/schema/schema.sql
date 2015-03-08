@@ -146,15 +146,21 @@ CREATE TABLE Trade (#TRADE TABLE#
 
 DROP TABLE IF EXISTS Comm CASCADE;
 CREATE TABLE Comm (#COMM TABLE#
-  id        INTEGER     NOT NULL AUTO_INCREMENT, #Contains individual Communcations between Traders
-  time      BIGINT      NOT NULL, #Has an id field as the timestamp cannot be guaranteed to be unique
-  tick      INTEGER     NOT NULL,
-  sender    VARCHAR(50) NOT NULL,
-  recipient VARCHAR(50) NOT NULL,
+  id          INTEGER     NOT NULL AUTO_INCREMENT, #Contains individual Communcations between Traders
+  time        BIGINT      NOT NULL, #Has an id field as the timestamp cannot be guaranteed to be unique
+  tick        INTEGER     NOT NULL,
+  sender      VARCHAR(50) NOT NULL,
+  recipient   VARCHAR(50) NOT NULL,
+
   PRIMARY KEY (id),
   FOREIGN KEY (tick) REFERENCES Tick (tick),
   FOREIGN KEY (sender) REFERENCES Trader (email),
-  FOREIGN KEY (recipient) REFERENCES Trader (email)
+  FOREIGN KEY (recipient) REFERENCES Trader (email),
+
+  senderId    INT         NOT NULL,
+  recipientId INT         NOT NULL,
+  FOREIGN KEY (senderId) REFERENCES Trader (id),
+  FOREIGN KEY (recipientId) REFERENCES Trader (id)
 );
 
 DROP TABLE IF EXISTS TraderStock CASCADE;

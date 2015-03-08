@@ -210,3 +210,23 @@ CREATE PROCEDURE InsertSymbol(inSymbol VARCHAR(10), inSector VARCHAR(40))
   END //
 DELIMITER ;
 
+
+
+DELIMITER //
+DROP PROCEDURE IF EXISTS InsertComm;
+CREATE PROCEDURE InsertComm(
+  time     BIGINT,
+  tick    INT,
+  sender    VARCHAR(50),
+  recipient   VARCHAR(50)
+)
+  BEGIN
+    SELECT @senderId := id FROM Trader WHERE `email` = sender;
+    SELECT @recipientId := id FROM Trader WHERE `email` = recipient;
+
+    INSERT INTO Comm
+    (time, tick, sender, recipient, senderId, recipientId)
+    VALUES
+      (time, tick, sender, recipient, senderId, recipientId);
+  END //
+DELIMITER ;

@@ -14,7 +14,7 @@ import java.util.List;
 @Component
 public class CommDao extends AbstractDao<Integer, Comm> {
 
-    private static final String INSERT = "INSERT INTO Comm (time, tick, sender, recipient)  VALUES (?, ?, ?, ?)";
+    private static final String INSERT = "CALL InsertComm(?, ?, ?, ?)";
     private static final String SELECT = "SELECT * FROM Comm";
 
     public CommDao() {
@@ -22,7 +22,10 @@ public class CommDao extends AbstractDao<Integer, Comm> {
     }
 
     public void insert(Comm ent) {
-        jdbcTemplate.update(INSERT, ent.getTime(), ent.getTick(), ent.getSender(), ent.getRecipient());
+        jdbcTemplate.update(INSERT,
+                ent.getTime(), ent.getTick(),
+                ent.getSender(), ent.getRecipient()
+        );
     }
 
     public void insert(final Iterable<Comm> ents) {
