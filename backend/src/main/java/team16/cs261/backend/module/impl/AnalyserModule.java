@@ -8,9 +8,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import team16.cs261.backend.config.Config;
-import team16.cs261.backend.mcl.*;
-import team16.cs261.backend.module.Module;
+import team16.cs261.backend.mcl.Graph;
 import team16.cs261.backend.model.MclOutput;
+import team16.cs261.backend.module.Module;
 import team16.cs261.backend.service.MclService;
 import team16.cs261.backend.util.Timer;
 import team16.cs261.common.dao.*;
@@ -292,7 +292,7 @@ public class AnalyserModule extends Module {
     //Clustererer legacy = new Clustererer(maxResidual, pGamma, loopGain, maxZero);
     //Clusterizer cl = new Clusterizer(maxResidual, pGamma, loopGain, maxZero);
     //Clusterizer3 clr3 = new Clusterizer3(maxResidual, pGamma, loopGain, maxZero);
-    Mcl mcl4 = new Mcl(pGamma);
+    //Mcl mcl4 = new Mcl(pGamma);
 
     @Autowired
     MclService mclService;
@@ -307,9 +307,9 @@ public class AnalyserModule extends Module {
         //List<Set<Integer>> clusters3 = g.getClusterIds(clr3.cluster(g));
 
         double[][] input4 = g.toMatrix();
-        double[][] output4 = mcl4.run(input4);
+        //double[][] output4 = mcl4.run(input4);
         //System.out.println("Cls: " + SqMatrix.prettyString(output4));
-        List<Set<Integer>> clusters4 = g.getClusterIds(mcl4.getClusters(output4));
+        //List<Set<Integer>> clusters4 = g.getClusterIds(mcl4.getClusters(output4));
 
         String mclLines = g.toMcl();
         mclOutputs.put(tick, mclService.run(tick, mclLines));
@@ -320,8 +320,8 @@ public class AnalyserModule extends Module {
         //String tickMeta = toJson(mclOut.getClusters().values());
         String tickMeta = toJson(g.getNodeIds());
         //String meta3 = toJson(clusters3);
-        String meta4 = toJson(clusters4);
-        jdbcTemplate.update(updateTick, g.toMcl(), tickMeta, null, meta4, tick);
+        //String meta4 = toJson(clusters4);
+        jdbcTemplate.update(updateTick, g.toMcl(), tickMeta, null, null, tick);
 
 
         //insertClusters(tick, clusters4);
