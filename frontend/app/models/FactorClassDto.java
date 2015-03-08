@@ -48,6 +48,7 @@ public class FactorClassDto {
                 return routes.Application.tradesBySeller(p);
                 //c = routes.Application.tradesQuery("", p, "", "");
             case COMMS:
+                return routes.Application.commsBy(p, p);
                 //c = routes.Application.tradesQuery("", "%TRADERS%", "", "");
         }
 

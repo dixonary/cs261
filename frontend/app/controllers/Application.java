@@ -51,6 +51,10 @@ public class Application {
         return ok(views.html.trades.collection.render());
     }
 
+    public Result commsBy(String ids, String ids2) {
+        return ok(views.html.comms.collection.render());
+    }
+
 
 
 

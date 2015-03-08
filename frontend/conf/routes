@@ -40,6 +40,8 @@ GET        /trades?buyer=:bIds&seller=:sIds        @controllers.Application.trad
 GET        /trades?buyer=:bIds&seller=:sIds&symbols=:syIds&sectors=:seIds        @controllers.Application.tradesBy(bIds: String, sIds:String, syIds:String, seIds:String)
 #GET        /trades?seller=:sIds        @controllers.Application.tradesQuery(bIds: String = null, sIds:String, syIds:String = null, seIds:String = null)
 
+GET        /comms?sender=:s&recipient=:r             @controllers.Application.commsBy(s: String, r:String)
+
 GET        /trades/query        @controllers.Trades.query()
 GET        /trades/query/:email        @controllers.Trades.queryByTraderId(email: String)
 
