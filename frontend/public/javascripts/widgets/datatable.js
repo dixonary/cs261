@@ -44,8 +44,7 @@ function DTModel(id, options) {
     };
 
     self.openExportUrl = function() {
-        var url = tradeTable.dt.ajax.url() + ".csv?" + $.param(tradeTable.dt.ajax.params())
-
+        var url = self.dt.ajax.url() + ".csv?" + $.param(self.dt.ajax.params())
         window.open(url, '_blank');
 
     }

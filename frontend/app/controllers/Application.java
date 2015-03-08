@@ -51,6 +51,14 @@ public class Application {
         return ok(views.html.trades.collection.render());
     }
 
+    public Result commsBySender(String ids) {
+        return ok(views.html.comms.collection.render());
+    }
+
+    public Result commsByRecipient(String ids) {
+        return ok(views.html.comms.collection.render());
+    }
+
     public Result commsBy(String ids, String ids2) {
         return ok(views.html.comms.collection.render());
     }
@@ -86,7 +94,10 @@ public class Application {
                         routes.javascript.Application.tradesByBuyer(),
                         routes.javascript.Application.tradesBySeller(),
                         routes.javascript.Application.tradesByTraders(),
-                        routes.javascript.Application.tradesBy()
+                        routes.javascript.Application.tradesBy(),
+                        routes.javascript.Application.commsBySender(),
+                        routes.javascript.Application.commsByRecipient(),
+                        routes.javascript.Application.commsBy()
                 )
         );
     }

@@ -41,7 +41,7 @@ public abstract class DataTable<E> {
 
     public abstract Predicate getPredicate();
 
-    public abstract ConstructorExpression<E> getProjection();
+    public abstract Expression<E> getProjection();
 
     public abstract String getSource();
 

@@ -40,7 +40,9 @@ GET        /trades?buyer=:bIds&seller=:sIds        @controllers.Application.trad
 GET        /trades?buyer=:bIds&seller=:sIds&symbols=:syIds&sectors=:seIds        @controllers.Application.tradesBy(bIds: String, sIds:String, syIds:String, seIds:String)
 #GET        /trades?seller=:sIds        @controllers.Application.tradesQuery(bIds: String = null, sIds:String, syIds:String = null, seIds:String = null)
 
-GET        /comms?sender=:s&recipient=:r             @controllers.Application.commsBy(s: String, r:String)
+GET        /comms?sender=:s        @controllers.Application.commsBySender(s: String)
+GET        /comms?recipient=:r        @controllers.Application.commsByRecipient(r:String)
+GET        /comms?sender=:s&recipient=:r        @controllers.Application.commsBy(s: String, r:String)
 
 GET        /trades/query        @controllers.Trades.query()
 GET        /trades/query/:email        @controllers.Trades.queryByTraderId(email: String)
@@ -79,6 +81,10 @@ GET        /data/factors/meta        @controllers.data.FactorTable.meta()
 GET        /data/trades        @controllers.data.TradeTable.query()
 GET        /data/trades.csv        @controllers.data.TradeTable.csv()
 GET        /data/trades/meta        @controllers.data.TradeTable.meta()
+
+GET        /data/comms        @controllers.data.CommTable.query()
+GET        /data/comms.csv        @controllers.data.CommTable.csv()
+GET        /data/comms/meta        @controllers.data.CommTable.meta()
 
 GET        /data/graph/factors/:tick        @controllers.data.Graph.factors(tick: Integer)
 GET        /data/graph/factors/mcl/:tick        @controllers.data.Graph.factorsMcl(tick: Integer)

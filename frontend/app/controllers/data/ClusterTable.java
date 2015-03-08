@@ -32,7 +32,8 @@ public class ClusterTable extends DataTable<ClusterDto> {
 
     @Override
     public String getSource() {
-        return controllers.data.routes.ClusterTable.query().toString();
+        //return controllers.data.routes.ClusterTable.query().toString();
+        return routes.ClusterTable.query().toString();
     }
 
 
