@@ -121,10 +121,10 @@ $ ( function ( ) {
 
     factorTable.loadMeta();
     factorTable.loadRows();
-
+    factorTable.observables ( )
     ko.applyBindings ( factorTable, $(id)[0] ) ;
-
     factorTable.subscribe ( )
+
 
     console.log("postload: "+  factorTable.columns[2].filter())
 

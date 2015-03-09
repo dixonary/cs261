@@ -17,6 +17,8 @@ import play.mvc.Result;
 import team16.cs261.common.dao.ClusterDao;
 import team16.cs261.common.dao.FactorDao;
 import team16.cs261.common.dao.TradeDao;
+import team16.cs261.common.querydsl.entity.Cluster;
+import team16.cs261.common.querydsl.entity.QCluster;
 import team16.cs261.common.querydsl.entity.QFactorFreq;
 import team16.cs261.common.querydsl.entity.QTick;
 
@@ -46,6 +48,35 @@ public class Dashboard {
 
     @Autowired
     TradeDao tradeDao;
+
+    QCluster cl = QCluster.Cluster;
+    public Result clusters(int since, int count) {
+        ObjectNode res = Json.newObject();
+
+        SQLQuery latest = template.newSqlQuery()
+                .from(cl)
+                //.where(cl.status.eq("UNSEEN"))
+                .where(cl.id.gt(since))
+                .orderBy(cl.id.desc())
+                .limit(count);
+
+        List<Cluster> data = template.query(latest,
+                Projections.bean(Cluster.class, cl.id, cl.tick, cl.time, cl.status)
+        );
+
+        long newSince = since;
+        for(Cluster cl : data) {
+            newSince = Math.max(newSince, cl.getId());
+            System.out.println("new: " + newSince);
+        }
+
+        res.put("since", since);
+        res.put("latest", newSince);
+        res.put("clusters", Json.toJson(data));
+
+
+        return ok(Json.toJson(res));
+    }
 
     public Result events() {
 
@@ -123,9 +154,7 @@ public class Dashboard {
     }
 
 
-    public Result latestClusters(long since) {
-        return play.mvc.Results.TODO;
-    }
+
 
     public Result cluster(int id) {
         return ok("null");

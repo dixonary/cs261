@@ -17,13 +17,13 @@ public enum Directory implements MenuItem {
     FACTOR_CLASSES(FACTORS, "Overview", "fa-info", routes.Application.factorClasses()),
     FACTOR_TABLE(FACTORS, "Table", "fa-table", routes.Application.factors()),
 
-    DATA("Data", "fa-database", null),
+    DATA("Events", "fa-database", null),
 
     TRADES(DATA, "Trades", "fa-exchange", routes.Application.trades()),
-    COMMS(DATA, "Communications", "fa-envelope", routes.Application.comms()),
-    TRADERS(DATA, "Traders", "fa-user", routes.Application.traders()),
-    SYMBOLS(DATA, "Symbols", "fa-cube", routes.Application.symbols()),
-    SECTORS(DATA, "Sectors", "fa-cubes", routes.Application.sectors());
+    COMMS(DATA, "Communications", "fa-envelope", routes.Application.comms());//,
+    //TRADERS(DATA, "Traders", "fa-user", routes.Application.traders()),
+    //SYMBOLS(DATA, "Symbols", "fa-cube", routes.Application.symbols()),
+    //SECTORS(DATA, "Sectors", "fa-cubes", routes.Application.sectors());
 
     Directory parent;
     String label;

@@ -30,7 +30,7 @@ $ ( function ( ) {
                 "data": "buyer",
                 "render": function (data, type, row) {
                     //return '<a href="/traders/' + data + '">' + data + '</a>'
-                    var url = jsRoutes.controllers.Application.tradesByBuyer(row.buyerId).url;
+                    var url = jsRoutes.controllers.Application.tradesBy(row.buyerId, null, null, null).url;
                     return '<a href="' + url + '">' + data + '</a>'
                 }
             },
@@ -38,7 +38,7 @@ $ ( function ( ) {
                 "data": "seller",
                 "render": function (data, type, row) {
                     //return '<a href="/traders/' + data + '">' + data + '</a>'
-                    var url = jsRoutes.controllers.Application.tradesBySeller(row.sellerId).url;
+                    var url = jsRoutes.controllers.Application.tradesBy(null, row.sellerId, null, null).url;
                     return '<a href="' + url + '">' + data + '</a>'
                 }
             },
@@ -71,8 +71,11 @@ $ ( function ( ) {
 
     tradeTable = new DTModel('#trades-table', options)
 
+    tradeTable.daterangepickerOptions = defaultDrpOptions()
+
     tradeTable.loadMeta();
     tradeTable.loadRows();
+    tradeTable.observables ( )
 
     ko.applyBindings ( tradeTable ) ;
 

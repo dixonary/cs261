@@ -42,9 +42,7 @@ public class Data {
     @Autowired
     TradeDao tradeDao;
 
-    public Result latestClusters(long since) {
-        return play.mvc.Results.TODO;
-    }
+
 
     public Result cluster(int id) {
         return ok("null");

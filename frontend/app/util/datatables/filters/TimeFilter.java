@@ -1,23 +1,26 @@
-package util.datatables;
+package util.datatables.filters;
 
 import com.mysema.query.types.Predicate;
 import com.mysema.query.types.path.NumberPath;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by martin on 07/03/15.
  */
-public class TimeFilter extends Column {
+public class TimeFilter extends ColumnFilter {
 
     final NumberPath<Long> path;
+    //final String def;
 
-    public TimeFilter(String name, NumberPath<Long> path) {
-        super(name);
+    public TimeFilter(NumberPath<Long> path) {
+        super(true);
         this.path = path;
     }
 
+    public TimeFilter(NumberPath<Long> path, long from, long to) {
+        super(true, new Long[]{from, to});
+
+        this.path = path;
+    }
 
     @Override
     public Predicate getPredicate(String input) {

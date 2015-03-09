@@ -1,8 +1,8 @@
-package util.datatables;
+package util.datatables.filters;
 
-import com.mysema.query.types.Path;
 import com.mysema.query.types.Predicate;
-import com.mysema.query.types.path.NumberPath;
+import com.mysema.query.types.path.StringPath;
+import util.datatables.DomainValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,21 +10,19 @@ import java.util.List;
 /**
  * Created by martin on 07/03/15.
  */
-public class IdFilter extends Column {
+public class StringFilter extends ColumnFilter {
 
-    final List<DomainValue> domain;
-    final NumberPath<Integer> path;
+    final List<DomainValue<String>> domain;
+    final StringPath path;
     final boolean multi;
 
-    public IdFilter(String name, NumberPath<Integer> path, List<DomainValue> domain, boolean multi) {
-        super(name);
-
+    public StringFilter(StringPath path, List<DomainValue<String>> domain, boolean multi) {
         this.path = path;
         this.domain = domain;
         this.multi = multi;
     }
 
-    public List<DomainValue> getDomain() {
+    public List<DomainValue<String>> getDomain() {
         return domain;
     }
 
@@ -34,9 +32,9 @@ public class IdFilter extends Column {
 
     @Override
     public Predicate getPredicate(String input) {
-        List<Integer> ids = getIds(input);
+        List<String> ids = new ArrayList<>();
 
-        if(ids.size()==0)return null;
+        //if(ids.size()==0)return null;
 
         return path.in(ids);
     }

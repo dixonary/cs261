@@ -6,11 +6,12 @@ import com.mysema.query.support.Expressions;
 import com.mysema.query.types.*;
 import com.mysema.query.types.expr.ComparableExpressionBase;
 import com.mysema.query.types.expr.StringExpression;
-import models.TradeDto;
-import models.graph.NodeDto;
 import org.springframework.stereotype.Controller;
 import team16.cs261.common.querydsl.entity.*;
 import util.datatables.*;
+import util.datatables.filters.ColumnFilter;
+import util.datatables.filters.IdFilter;
+import util.datatables.filters.TimeFilter;
 
 import javax.annotation.PostConstruct;
 import java.util.Arrays;
@@ -53,9 +54,9 @@ public class CommTable extends DataTable<Comm> {
 
         return new Column[]{
                 new Column("id"),
-                new TimeFilter("time", c.time),
-                new IdFilter("sender", c.senderId, traders, true),
-                new IdFilter("recipient", c.recipientId, traders, true),
+                new Column("time", new TimeFilter(c.time, 1420070400000L,1427842799999L)),
+                new Column("sender", new IdFilter(c.senderId, traders, true)),
+                new Column("recipient", new IdFilter(c.recipientId, traders, true)),
         };
     }
 
@@ -85,11 +86,13 @@ public class CommTable extends DataTable<Comm> {
 
         for (int i = 0; i < cds.length; i++) {
             Column cd = cds[i];
+            if(cd.getFilter() == null) continue;
+            ColumnFilter cf= cd.getFilter();
 
             String queryParam = "columns[" + i + "][search][value]";
             String queryString = request().getQueryString(queryParam);
 
-            Predicate pred = cd.getPredicate(queryString);
+            Predicate pred = cf.getPredicate(queryString);
 
             //System.out.println(cd.getName() + " filter: " + queryString);
 

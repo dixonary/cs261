@@ -30,14 +30,14 @@ $(function () {
                 "data": "sender",
                 "render": function (data, type, row) {
                     //return '<a href="/traders/' + data + '">' + data + '</a>'
-                    var url = jsRoutes.controllers.Application.commsBySender(row.senderId).url;
+                    var url = jsRoutes.controllers.Application.commsBy(row.senderId, null).url;
                     return '<a href="' + url + '">' + data + '</a>'
                 }
             },
             {
                 "data": "recipient",
                 "render": function (data, type, row) {
-                    var url = jsRoutes.controllers.Application.commsByRecipient(row.recipientId).url;
+                    var url = jsRoutes.controllers.Application.commsBy(null, row.recipientId).url;
                     return '<a href="' + url + '">' + data + '</a>'
                 }
             }
@@ -50,10 +50,13 @@ $(function () {
 
     commTable.loadMeta();
     commTable.loadRows();
-
+    commTable.observables();
     ko.applyBindings(commTable);
-
     commTable.subscribe()
+
+
+
+
 
     //tradeTable.loadRows ( ) ;
 

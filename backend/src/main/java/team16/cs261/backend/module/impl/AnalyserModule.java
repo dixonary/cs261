@@ -97,6 +97,10 @@ public class AnalyserModule extends Module {
             try {
                 List<Set<Integer>> clusters = future.get().getClusters();
 
+                jdbcTemplate.update(
+                        "UPDATE Tick SET clusters = ? WHERE tick = ?",
+                        toJson(clusters), tick);
+
                 insertClusters(tick, clusters);
 
                 mclOutputs.remove(tick);

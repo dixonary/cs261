@@ -20,8 +20,6 @@
                                     <th>
                                     </th>
                                     <th>
-                                    </th>
-                                    <th>
 @*                                        <div class="input-group">
                                             <div class="input-group-addon">
                                                 <i class="fa fa-clock-o"></i>
@@ -49,20 +47,24 @@
                                             </div>
                                         </div>
                                     </th>
+                                    <th></th>
+                                    <th></th>
                                 </tr>
                                 <tr>
-                                    <th></th>
                                     <th>Id</th>
                                     <th>Time</th>
+                                    <th>Nodes</th>
+                                    <th>Factors</th>
                                 </tr>
                             </thead>
                             <tbody>
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <th></th>
                                     <th>Id</th>
                                     <th>Time</th>
+                                    <th>Nodes</th>
+                                    <th>Factors</th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -86,7 +88,9 @@
         <script src="@routes.Assets.at("AdminLTE/plugins/daterangepicker/daterangepicker.js")" type="text/javascript"></script>
 
         <!-- page script -->
-        <script src="@routes.Assets.at("javascripts/clusters/collection.js")"></script>
+        <script src="@routes.Assets.at("javascripts/widgets/datatable.js")"></script>
+        <script src="@routes.Assets.at("javascripts/widgets/clusters.js")"></script>
+        @*<script src="@routes.Assets.at("javascripts/clusters/collection.js")"></script>*@
 
         @Html("")
     }

@@ -2,6 +2,7 @@ package controllers;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mysema.query.sql.SQLQuery;
+import com.mysema.query.sql.dml.SQLUpdateClause;
 import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.Projections;
 import com.mysema.query.types.expr.BooleanExpression;
@@ -10,6 +11,7 @@ import models.ClusterDto;
 import models.FactorDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jdbc.query.QueryDslJdbcTemplate;
+import org.springframework.data.jdbc.query.SqlUpdateCallback;
 import play.libs.Json;
 import play.mvc.Result;
 import team16.cs261.common.dao.ClusterDao;
@@ -79,16 +81,12 @@ public class Clusters {
         return ok(views.html.pages.cluster.render(id, "/data/graph/clusters/"+dto.getTick()+"?cluster="+dto.getId()));
     }
 
-    public Result data(int id) {
-
-
+    public Result data(final int id) {
         SQLQuery select = template.newSqlQuery().
                 from(c).
                 join(t).
                 on(c.tick.eq(t.tick)).
                 where(c.id.eq(id));
-
-
 
         /*List<ClusterDto> dto = template.query(select, Projections.constructor(
                 ClusterDto.class, c.id, c.tick, t.start, t.end
@@ -99,6 +97,12 @@ public class Clusters {
         ));
 
 
+        template.update(c, new SqlUpdateCallback() {
+            @Override
+            public long doInSqlUpdateClause(SQLUpdateClause update) {
+                return update.set(c.status, "SEEN").where(c.id.eq(id)).execute();
+            }
+        });
         /*if (dto.size() == 0) {
             return null;
         }*/

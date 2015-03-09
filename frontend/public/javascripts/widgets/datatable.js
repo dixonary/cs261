@@ -18,10 +18,15 @@ function DTModel(id, options) {
             "dataType": "json",
             "success": function (data) {
                 self.source = data.source;
-                self.columns = data.columns;
+                //self.columns = data.columns;
+                self.columns = []
 
-                $.each(self.columns, function (index, column) {
+                $.each(data.columns, function (index, columnDef) {
+                    self.columns[index] = {
+                        name: columnDef.name
+                    };
 
+                    var col = self.columns[index]
 
                     //if ('canFilter' in column) {
                     /*                    if(column.canFilter) {
@@ -32,18 +37,23 @@ function DTModel(id, options) {
                      column.filter = ko.observable()
                      }
                      }*/
-                    column.domain = ko.mapping.fromJS(column.domain)
-                    if (column.multi) {
-                        column.filter = ko.observableArray()
+
+                    if (columnDef.filter) {
+                        col.domain = ko.mapping.fromJS(columnDef.filter.domain)
+                        if (columnDef.filter.multi) {
+                            col.filter = ko.observableArray(columnDef.filter.value)
+                        } else {
+                            col.filter = ko.observable(columnDef.filter.value)
+                        }
                     } else {
-                        column.filter = ko.observable()
+                        col.filter = ko.observable()
                     }
                 });
             }
         });
     };
 
-    self.openExportUrl = function() {
+    self.openExportUrl = function () {
         var url = self.dt.ajax.url() + ".csv?" + $.param(self.dt.ajax.params())
         window.open(url, '_blank');
 
@@ -59,13 +69,13 @@ function DTModel(id, options) {
             "ajax": options.ajax,
             //ajax: self.source,
             /*"ajax": {
-                "url": self.source,
-                "data": function (d) {
-                    d.myKey = "myValue";
-                    // d.custom = $('#myInput').val();
-                    // etc
-                }
-            },*/
+             "url": self.source,
+             "data": function (d) {
+             d.myKey = "myValue";
+             // d.custom = $('#myInput').val();
+             // etc
+             }
+             },*/
             "columns": options.columns,
             "stateSave": true,
             "_stateLoadCallback": function () {
@@ -79,9 +89,9 @@ function DTModel(id, options) {
                 var query = new URI().search(true);
                 //console.log("query: " + JSON.stringify(query))
 
-                if(query.start)
+                if (query.start)
                     data.start = query.start;
-                if(query.length)
+                if (query.length)
                     data.length = query.length;
 
                 $.each(self.columns, function (index, column) {
@@ -143,7 +153,7 @@ function DTModel(id, options) {
                     if (!search) {
                         delete params[column.name];
                     } else
-                        params[column.name]=search;
+                        params[column.name] = search;
 
 
                     //u.setSearch(filter.name, filter.serialize()).toString()
@@ -254,10 +264,8 @@ function DTModel(id, options) {
     //self.filters.classes.subscribe(self.applyFilters);
 
 
-    self.subscribe = function () {
-        console.log("subscribe to filter fields!")
-
-        $.each(self.columns, function (index, column) {
+    self.observables = function () {
+       $.each(self.columns, function (index, column) {
             var tabE = $(id).DataTable()
 
             var colSearch = tabE.column(index).search()
@@ -286,7 +294,9 @@ function DTModel(id, options) {
 
             console.log("now: " + column.filter())
         });
+    };
 
+    self.subscribe = function () {
         $.each(self.columns, function (index, column) {
             column.filter.subscribe(self.applyFilters);
         });

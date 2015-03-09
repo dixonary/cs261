@@ -14,6 +14,7 @@ import team16.cs261.common.querydsl.entity.QTick;
 import util.Filters;
 import util.datatables.Column;
 import util.datatables.DataTable;
+import util.datatables.filters.TimeFilter;
 
 import static play.mvc.Controller.request;
 
@@ -41,7 +42,7 @@ public class ClusterTable extends DataTable<ClusterDto> {
     public Column[] getColumnDefs() {
         return new Column[] {
                 new Column("id"),
-                new Column("time"),
+                new Column("time", new TimeFilter(t.start, 1420070400000L,1427842799999L)),
                 new Column("class"),
         };
     }

@@ -13,7 +13,24 @@
             <thead>
                 <tr>
                     <th></th>
-                    <th></th>
+                    <th>
+                        <div class="form-group"  style="width: 360px">
+                            <div class="input-group">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                <button class="form-control pull-left"
+                                id="daterange"
+                                data-bind="
+                                    daterangepicker: columns[1].filter
+                                    ">
+                                    <span>-</span>
+                                        &nbsp;
+                                    <i class="fa fa-caret-down"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </th>
                     <th>
                         <select class="form-control"
                         multiple title='Select senders...'

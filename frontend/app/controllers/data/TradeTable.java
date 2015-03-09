@@ -1,17 +1,18 @@
 package controllers.data;
 
 import com.mysema.query.BooleanBuilder;
-import com.mysema.query.sql.SQLExpressions;
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.support.Expressions;
 import com.mysema.query.types.*;
 import com.mysema.query.types.expr.ComparableExpressionBase;
 import com.mysema.query.types.expr.StringExpression;
-import com.mysema.query.types.template.StringTemplate;
 import models.*;
 import org.springframework.stereotype.Controller;
 import team16.cs261.common.querydsl.entity.*;
 import util.datatables.*;
+import util.datatables.filters.ColumnFilter;
+import util.datatables.filters.IdFilter;
+import util.datatables.filters.TimeFilter;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -64,14 +65,14 @@ public class TradeTable extends DataTable<TradeDto> {
 
         return new Column[]{
                 new Column("id"),
-                new TimeFilter("time", t.time),
-                new IdFilter("buyer", t.buyerId, traders, true),
-                new IdFilter("seller", t.sellerId, traders, true),
+                new Column("time", new TimeFilter(t.time, 1420070400000L,1427842799999L)),
+                new Column("buyer",new IdFilter( t.buyerId, traders, true)),
+                new Column("seller", new IdFilter(t.sellerId, traders, true)),
                 new Column("price"),
                 new Column("size"),
                 new Column("currency"),
-                new IdFilter("symbol", t.symbolId, symbols, true),
-                new IdFilter("sector", t.sectorId, sectors, true),
+                new Column("symbol", new IdFilter(t.symbolId, symbols, true)),
+                new Column("sector", new IdFilter( t.sectorId, sectors, true)),
         };
     }
 
@@ -101,11 +102,13 @@ public class TradeTable extends DataTable<TradeDto> {
 
         for (int i = 0; i < cds.length; i++) {
             Column cd = cds[i];
+            if(cd.getFilter() == null) continue;
+            ColumnFilter cf= cd.getFilter();
 
             String queryParam = "columns[" + i + "][search][value]";
             String queryString = request().getQueryString(queryParam);
 
-            Predicate pred = cd.getPredicate(queryString);
+            Predicate pred = cf.getPredicate(queryString);
 
             //System.out.println(cd.getName() + " filter: " + queryString);
 

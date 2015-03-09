@@ -1,6 +1,112 @@
 var rd;
 
+var ClVM = function () {
+    var self = this;
+
+    self.id = ko.observable()
+    self.status = ko.observable()
+
+    self.discovered = ko.computed(function () {
+        return moment(self.time).format(timeFormat)
+    }, this);
+
+    self.unseen = ko.computed(function () {
+        return this.status() == "UNSEEN";
+    }, self);
+
+    self.link = ko.computed(function () {
+        return jsRoutes.controllers.Clusters.element(self.id()).url
+    }, self);
+
+    return self;
+}
+
+var ClusterVM = function () {
+    var self = this;
+
+    self.clusters = ko.observableArray();
+
+    var since = -1;
+    var count = 12;
+
+    var updateInterval = 500; //Fetch data ever x milliseconds
+    var realtime = "on"; //If == to on then fetch data every x seconds. else stop fetching
+
+    self.update = function () {
+
+        //interactive_plot.setData([getRandomData()]);
+
+        $.ajax(
+            '/dashboard/clusters',
+            {
+                data: {since: since, count: count},
+                success: function (data) {
+                    since = data.latest;
+
+
+                    //var old = self.clusters();
+
+                    $.each(data.clusters.reverse(), function (index, row) {
+
+                        /*var cl = ko.mapping.fromJS(row, {}, new ClVM());
+
+                        console.log(JSON.stringify(ko.mapping.toJS(cl)))
+
+                        self.clusters.unshift(cl);
+
+                        if (self.clusters().length > count) {
+                            self.clusters.pop();
+                        }*/
+
+                        var items = data.clusters.length;
+
+                        var delay = 10 * (count/items)
+
+                        $('#clusters').delay(delay).queue(function(next) {
+                            console.log("row: " + JSON.stringify(row))
+
+
+                            var cl = ko.mapping.fromJS(row, {}, new ClVM());
+
+                            console.log(JSON.stringify(ko.mapping.toJS(cl)))
+
+                            self.clusters.unshift(cl);
+
+                            if (self.clusters().length > count) {
+                                self.clusters.pop();
+                            }
+
+
+                            next();
+                        })
+
+
+
+                    })
+
+
+                    setTimeout(self.update, updateInterval);
+                }
+            }
+        )
+    }
+    self.newRow = function (element, index, data) {
+        $el = $(element);
+
+        $el.find("td").hide().slideDown();
+        $el.hide().fadeIn();
+    };
+
+
+}
+
 $(function () {
+
+
+    vm = new ClusterVM();
+    vm.update();
+    ko.applyBindings(vm, $('#clusters')[0]);
+
 
     /*
      * Flot Interactive Chart
@@ -34,10 +140,10 @@ $(function () {
 
 // Zip the generated y values with the x values
         var res = [];
-        var res2= [];
+        var res2 = [];
         for (var i = 0; i < data.length; ++i) {
             res.push([i, data[i]]);
-            res2.push([i, data[i] + Math.random()*5]);
+            res2.push([i, data[i] + Math.random() * 5]);
         }
 
         return [res];
@@ -99,12 +205,6 @@ $(function () {
      */
 
 
-
-
-
-
-
-
     /*
      * BAR CHART
      * ---------
@@ -113,7 +213,7 @@ $(function () {
 
     $.ajax({
         url: '/dashboard/commons.json',
-        success: function(data) {
+        success: function (data) {
 
             console.log("DATS: " + JSON.stringify(data))
 
@@ -139,10 +239,15 @@ $(function () {
     });
 
 
-
-
     var bar_data = {
-        data: [["January", 10], ["February", 8], ["March", 4], ["April", 13], ["May", 17], ["June", 9]],
+        data: [
+            ["January", 10],
+            ["February", 8],
+            ["March", 4],
+            ["April", 13],
+            ["May", 17],
+            ["June", 9]
+        ],
         color: "#3c8dbc"
     };
 

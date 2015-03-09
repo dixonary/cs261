@@ -23,26 +23,18 @@ GET        /clusters        @controllers.Application.clusters()
 GET        /factors        @controllers.Application.factors()
 GET        /factors/classes        @controllers.Application.factorClasses()
 
+GET        /trades        @controllers.Application.tradesBy(buyer: String ?= null, seller: String ?= null, symbol: String ?= null, sector: String ?= null)
+GET        /comms        @controllers.Application.commsBy(sender: String ?= null, recipient:String ?= null)
 GET        /trades        @controllers.Application.trades()
 GET        /comms        @controllers.Application.comms()
+
 GET        /traders        @controllers.Application.traders()
 GET        /symbols        @controllers.Application.symbols()
 GET        /sectors        @controllers.Application.sectors()
 
 GET        /routes        controllers.Application.javascriptRoutes()
 
-# 'query generators'
-#GET        /trades?buyer=:bIds&seller=:sIds&symbols=:syIds&sectors=:seIds        @controllers.Application.tradesQuery(bIds: String, sIds:String, syIds:String, seIds:String)
 
-GET        /trades?buyer=:ids        @controllers.Application.tradesByBuyer(ids: String)
-GET        /trades?seller=:ids        @controllers.Application.tradesBySeller(ids: String)
-GET        /trades?buyer=:bIds&seller=:sIds        @controllers.Application.tradesByTraders(bIds: String, sIds:String)
-GET        /trades?buyer=:bIds&seller=:sIds&symbols=:syIds&sectors=:seIds        @controllers.Application.tradesBy(bIds: String, sIds:String, syIds:String, seIds:String)
-#GET        /trades?seller=:sIds        @controllers.Application.tradesQuery(bIds: String = null, sIds:String, syIds:String = null, seIds:String = null)
-
-GET        /comms?sender=:s        @controllers.Application.commsBySender(s: String)
-GET        /comms?recipient=:r        @controllers.Application.commsByRecipient(r:String)
-GET        /comms?sender=:s&recipient=:r        @controllers.Application.commsBy(s: String, r:String)
 
 GET        /trades/query        @controllers.Trades.query()
 GET        /trades/query/:email        @controllers.Trades.queryByTraderId(email: String)
@@ -68,12 +60,13 @@ GET        /sectors/:sector        @controllers.Sectors.element(sector: String)
 
 
 # data feeds
+#GET        /dashboard/clusters?since=:since        @controllers.data.Dashboard.clusters(since: Long)
+GET        /dashboard/clusters        @controllers.data.Dashboard.clusters(since: Int ?= 0, count: Int ?= 10)
 GET        /dashboard/events.json        @controllers.data.Dashboard.events()
 GET        /dashboard/commons.json        @controllers.data.Dashboard.commons()
 
-GET        /data/dashboard/latest?since=:since        @controllers.data.Dashboard.latestClusters(since: Long)
-
 GET        /data/clusters        @controllers.data.ClusterTable.query()
+GET        /data/clusters/meta        @controllers.data.ClusterTable.meta()
 
 GET        /data/factors        @controllers.data.FactorTable.query()
 GET        /data/factors/meta        @controllers.data.FactorTable.meta()

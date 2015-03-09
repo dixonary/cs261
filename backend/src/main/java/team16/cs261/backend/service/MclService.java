@@ -32,8 +32,11 @@ public class MclService {
 
             Files.createDirectories(mclWd);
 
-            Path path = mclWd.resolve(String.valueOf(tick));
-            Path out = mclWd.resolve("out." + String.valueOf(tick) + suffix);
+            String fIn = String.valueOf(tick);
+            String fOut = "out."+tick;
+
+            Path path = mclWd.resolve(fIn);
+            Path out = mclWd.resolve(fOut);
             System.out.println("p: " + path.toAbsolutePath());
 
 
@@ -41,11 +44,10 @@ public class MclService {
 
             Process p = Runtime.getRuntime().exec(new String[]{
                     "mcl",
-                    String.valueOf(tick),
+                    fIn,
                     "--abc",
+                    "-o", fOut,
                     "--sum-loops",
-                    "-c",
-                    "3"
             }, new String[0], mclWd.toFile());
 
             p.waitFor();

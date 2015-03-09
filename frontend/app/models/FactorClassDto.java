@@ -32,24 +32,17 @@ public class FactorClassDto {
     }
 
     private static Call getCall(FactorClass fc) {
-        final String p = "_traders";
+        final String s = "_traders";
 
         switch (fc) {
             case COMMON:
-
-                return routes.Application.tradesByTraders(p, p);
-                //c = routes.Application.tradesQuery(p, p, "", "");
-                //c = routes.Application.tradesQuery()
-                //c = routes.ref.Application.tradesQuery(p, p, null, null);
+                return routes.Application.tradesBy(s, s, null, null);
             case COMMON_BUYS:
-                return routes.Application.tradesByBuyer(p);
-                //c = routes.Application.tradesQuery(p, "", "", "");
+                return routes.Application.tradesBy(s, null, null, null);
             case COMMON_SELLS:
-                return routes.Application.tradesBySeller(p);
-                //c = routes.Application.tradesQuery("", p, "", "");
+                return routes.Application.tradesBy(null, s, null, null);
             case COMMS:
-                return routes.Application.commsBy(p, p);
-                //c = routes.Application.tradesQuery("", "%TRADERS%", "", "");
+                return routes.Application.commsBy(s, s);
         }
 
         return null;

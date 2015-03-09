@@ -1,6 +1,5 @@
 package controllers.data;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.SQLSubQuery;
@@ -14,13 +13,14 @@ import models.FactorDto;
 import models.graph.EdgeDto;
 import models.graph.NodeDto;
 import org.springframework.stereotype.Controller;
-import play.libs.Json;
-import play.mvc.Result;
 import team16.cs261.common.meta.FactorClass;
 import team16.cs261.common.querydsl.entity.*;
 import util.datatables.*;
 import util.FactorClassUtil;
 import util.Filters;
+import util.datatables.filters.IdFilter;
+import util.datatables.filters.StringFilter;
+import util.datatables.filters.TimeFilter;
 
 import java.util.*;
 
@@ -77,9 +77,9 @@ public class FactorTable extends DataTable<FactorDto> {
 
         return new Column[]{
                 new Column("id"),
-                new Column("time"),
-                new StringFilter("factor", f.factor, factors, false),
-                new IdFilter("edge", f.edge, edges, true),
+                new Column("time", new TimeFilter(t.start, 1420070400000L,1427842799999L)),
+                new Column("factor", new StringFilter(f.factor, factors, false)),
+                new Column("edge", new IdFilter(f.edge, edges, true)),
                 new Column("value"),
                 new Column("centile"),
                 new Column("sig"),
