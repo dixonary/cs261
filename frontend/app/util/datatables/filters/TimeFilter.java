@@ -11,15 +11,14 @@ public class TimeFilter extends ColumnFilter {
     final NumberPath<Long> path;
     //final String def;
 
-    public TimeFilter(NumberPath<Long> path) {
-        super(true);
+    public TimeFilter(NumberPath<Long> path, long from, long to) {
+        super(false, from + "," + to);
+
         this.path = path;
     }
 
-    public TimeFilter(NumberPath<Long> path, long from, long to) {
-        super(true, new Long[]{from, to});
-
-        this.path = path;
+    public TimeFilter(NumberPath<Long> path) {
+        this(path, 0, 0);
     }
 
     @Override

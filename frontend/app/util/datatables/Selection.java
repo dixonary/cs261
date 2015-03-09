@@ -3,21 +3,21 @@ package util.datatables;
 /**
  * Created by martin on 07/03/15.
  */
-public class DomainValue<E> {
+public class Selection {
 
-    E id;
+    String id;
     String label;
 
-    public DomainValue(E id, String label) {
+    public Selection(String id, String label) {
         this.id = id;
         this.label = label;
     }
 
-    public E getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(E id) {
+    public void setId(String id) {
         this.id = id;
     }
 

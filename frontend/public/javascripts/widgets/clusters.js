@@ -31,15 +31,34 @@ $ ( function ( ) {
         },
         "columns": [
             {
-                "className": 'details-control',
-                "orderable": false,
-                "data": null,
-                "defaultContent": ''
+                "data": "id",
+                "render": function (data, type, row) {
+                    return '<a href="/clusters/'+data+'">'+data+'</a>'
+                }
             },
             {
-                "data": "id",
-                "render": function (data) {
-                    return '<a href="/clusters/'+data+'">'+data+'</a>'
+                "data": "status",
+                "className": "text-center",
+                "render": function (data, type, row) {
+                    var c;
+                    var t;
+
+                    switch(row.status) {
+                        case "UNSEEN":
+                            c = "label-default"
+                            t = "New"
+                            break;
+                        case "SEEN":
+                            c = "label-info"
+                            t = "Pending"
+                            break;
+                        case "INVESTIGATED":
+                            c = "label-success"
+                            t = "Investigated"
+                            break;
+                    }
+
+                    return '<span class="label '+c+'" >'+t+'</span>'
                 }
             },
             {
@@ -47,6 +66,12 @@ $ ( function ( ) {
                 "render": function (data) {
                     return moment(data).format(timeFormat)
                 }
+            },
+            {
+                "className": 'details-control',
+                "orderable": false,
+                "data": null,
+                "defaultContent": ''
             },
             {
                 "data": "time",

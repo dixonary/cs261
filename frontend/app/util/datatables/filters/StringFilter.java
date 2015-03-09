@@ -1,10 +1,13 @@
 package util.datatables.filters;
 
 import com.mysema.query.types.Predicate;
+import com.mysema.query.types.expr.StringExpression;
 import com.mysema.query.types.path.StringPath;
 import util.datatables.DomainValue;
+import util.datatables.Selection;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -12,17 +15,17 @@ import java.util.List;
  */
 public class StringFilter extends ColumnFilter {
 
-    final List<DomainValue<String>> domain;
-    final StringPath path;
+    final List<Selection> domain;
+    final StringExpression path;
     final boolean multi;
 
-    public StringFilter(StringPath path, List<DomainValue<String>> domain, boolean multi) {
+    public StringFilter(StringExpression path, List<Selection> domain, boolean multi) {
         this.path = path;
         this.domain = domain;
         this.multi = multi;
     }
 
-    public List<DomainValue<String>> getDomain() {
+    public List<Selection> getDomain() {
         return domain;
     }
 
@@ -32,24 +35,16 @@ public class StringFilter extends ColumnFilter {
 
     @Override
     public Predicate getPredicate(String input) {
-        List<String> ids = new ArrayList<>();
+        if(input.equals("")) return null;
 
-        //if(ids.size()==0)return null;
+        List<String> ids = Arrays.asList(input.split(","));
 
-        return path.in(ids);
-    }
-
-    public static List<Integer> getIds(String input) {
-        List<Integer> ids = new ArrayList<>();
-
-        for (String part : input.split(",")) {
-            try {
-                ids.add(Integer.parseInt(part));
-            } catch (Exception ignored) {
-
-            }
+        if (ids.size() == 0) {
+            return null;
         }
 
-        return ids;
+        System.out.println("input: " + ids + " size: " + ids.size());
+
+        return path.in(ids);
     }
 }

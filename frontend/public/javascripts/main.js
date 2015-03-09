@@ -51,8 +51,12 @@ ko.bindingHandlers.daterangepicker = {
         var obs = valueAccessor();
         var range = obs();
 
-        options.startDate = moment(range[0]);
-        options.endDate = moment(range[1]);
+        console.log("type: " + typeof range);
+
+        var p = range.split(",");
+
+        options.startDate = moment(parseInt(p[0]));
+        options.endDate = moment(parseInt(p[1]));
 
         console.log("default: " + JSON.stringify(options))
 
@@ -101,8 +105,9 @@ ko.bindingHandlers.daterangepicker = {
 
         var drp_data = $el.data('daterangepicker');
 
-        var start = parseInt(value[0]);
-        var end=  parseInt(value[1]);
+
+        var start = parseInt(value.split(",")[0]);
+        var end=  parseInt(value.split(",")[1]);
 
         drp_data.setStartDate(start)
         drp_data.setEndDate(end)

@@ -12,6 +12,7 @@ import models.FactorClassDto;
 import models.FactorDto;
 import models.graph.EdgeDto;
 import models.graph.NodeDto;
+import models.meta.ClusterStatus;
 import org.springframework.stereotype.Controller;
 import team16.cs261.common.meta.FactorClass;
 import team16.cs261.common.querydsl.entity.*;
@@ -61,9 +62,10 @@ public class FactorTable extends DataTable<FactorDto> {
         //List<DomainValue> values = new ArrayList<>();
 
         //Map<String, String> factors = new HashMap<>();
-        List<DomainValue<String>> factors = new ArrayList<>();
+
+        List<Selection> factorSelect = new ArrayList<>();
         for (FactorClassUtil.Item i : FactorClassUtil.getFactorTree()) {
-            factors.add(new DomainValue<>(i.value, i.label));
+            factorSelect.add(new Selection(i.value, i.label));
         }
 
         List<DomainValue> edges = new ArrayList<>();
@@ -78,7 +80,7 @@ public class FactorTable extends DataTable<FactorDto> {
         return new Column[]{
                 new Column("id"),
                 new Column("time", new TimeFilter(t.start, 1420070400000L,1427842799999L)),
-                new Column("factor", new StringFilter(f.factor, factors, false)),
+                new Column("factor", new StringFilter(f.factor, factorSelect, false)),
                 new Column("edge", new IdFilter(f.edge, edges, true)),
                 new Column("value"),
                 new Column("centile"),

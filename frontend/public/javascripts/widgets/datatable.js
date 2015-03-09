@@ -274,10 +274,9 @@ function DTModel(id, options) {
             if (!colSearch) return;
 
             var values = colSearch;
-
-            var values = colSearch.split(',').map(function (item) {
+            /*var values = colSearch.split(',').map(function (item) {
                 return parseInt(item, 10);
-            });
+            });*/
 
             /*            var values = [];
              if(colSearch){

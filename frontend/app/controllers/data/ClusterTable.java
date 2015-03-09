@@ -1,20 +1,28 @@
 package controllers.data;
 
+import com.mysema.query.BooleanBuilder;
 import com.mysema.query.sql.SQLQuery;
-import com.mysema.query.types.ConstructorExpression;
-import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.Predicate;
-import com.mysema.query.types.Projections;
+import com.mysema.query.types.*;
 import com.mysema.query.types.expr.BooleanExpression;
 import com.mysema.query.types.expr.ComparableExpressionBase;
 import models.ClusterDto;
+import models.meta.ClusterStatus;
 import org.springframework.stereotype.Controller;
+import team16.cs261.common.querydsl.entity.Cluster;
 import team16.cs261.common.querydsl.entity.QCluster;
 import team16.cs261.common.querydsl.entity.QTick;
+import util.FactorClassUtil;
 import util.Filters;
 import util.datatables.Column;
 import util.datatables.DataTable;
+import util.datatables.DomainValue;
+import util.datatables.Selection;
+import util.datatables.filters.ColumnFilter;
+import util.datatables.filters.StringFilter;
 import util.datatables.filters.TimeFilter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static play.mvc.Controller.request;
 
@@ -23,12 +31,12 @@ import static play.mvc.Controller.request;
  */
 
 @Controller
-public class ClusterTable extends DataTable<ClusterDto> {
+public class ClusterTable extends DataTable<Cluster> {
 
     private final QCluster c = new QCluster("c");
     private final QTick t = new QTick("t");
     private final ComparableExpressionBase[] columns = {
-            c.id, c.tick
+            c.id, c.status, c.time
     };
 
     @Override
@@ -40,8 +48,15 @@ public class ClusterTable extends DataTable<ClusterDto> {
 
     @Override
     public Column[] getColumnDefs() {
+
+        List<Selection> s = new ArrayList<>();
+        for (ClusterStatus i : ClusterStatus.values()) {
+            s.add(new Selection(i.name(), i.label));
+        }
+
         return new Column[] {
                 new Column("id"),
+                new Column("status", new StringFilter(c.status, s, true)),
                 new Column("time", new TimeFilter(t.start, 1420070400000L,1427842799999L)),
                 new Column("class"),
         };
@@ -62,16 +77,33 @@ public class ClusterTable extends DataTable<ClusterDto> {
 
     @Override
     public Predicate getPredicate() {
-        BooleanExpression fbt = Filters.timerangeFilter(t.start, request().getQueryString("columns[1][search][value]"));
+        BooleanBuilder bb = new BooleanBuilder();
 
-        return fbt;
-        //return new BooleanBuilder().and(fbt).and(fcf).getValue();
+        Column[] cds = getColumnDefs();
+
+        for (int i = 0; i < cds.length; i++) {
+            Column cd = cds[i];
+            if (cd.getFilter() == null) continue;
+            //if(i!=2)continue;
+            ColumnFilter cf = cd.getFilter();
+
+            String queryParam = "columns[" + i + "][search][value]";
+            String queryString = request().getQueryString(queryParam);
+
+            System.out.println("qs["+i+"] = " + queryString);
+
+            Predicate pred = cf.getPredicate(queryString);
+
+            bb.and(pred);
+        }
+
+        return bb;
     }
 
     @Override
-    public ConstructorExpression<ClusterDto> getProjection() {
-        return Projections.constructor(
-                ClusterDto.class, c.id, c.tick, t.start, t.end
+    public Expression<Cluster> getProjection() {
+        return Projections.bean(
+                Cluster.class, c.id, c.tick, c.time, c.status, t.start, t.end
         );
     }
 

@@ -6,19 +6,24 @@ import com.mysema.query.support.Expressions;
 import com.mysema.query.types.*;
 import com.mysema.query.types.expr.ComparableExpressionBase;
 import com.mysema.query.types.expr.StringExpression;
-import models.*;
+import models.TradeDto;
 import org.springframework.stereotype.Controller;
-import team16.cs261.common.querydsl.entity.*;
-import util.datatables.*;
+import team16.cs261.common.querydsl.entity.QSector;
+import team16.cs261.common.querydsl.entity.QSymbol;
+import team16.cs261.common.querydsl.entity.QTrade;
+import team16.cs261.common.querydsl.entity.QTrader;
+import util.datatables.Column;
+import util.datatables.DataTable;
+import util.datatables.Selection;
 import util.datatables.filters.ColumnFilter;
-import util.datatables.filters.IdFilter;
+import util.datatables.filters.StringFilter;
 import util.datatables.filters.TimeFilter;
 
 import javax.annotation.PostConstruct;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
 import static play.mvc.Controller.request;
-import static play.mvc.Results.ok;
 
 /**
  * Created by martin on 05/03/15.
@@ -37,8 +42,6 @@ public class TradeTable extends DataTable<TradeDto> {
 
     @PostConstruct
     public void init() {
-
-
     }
 
     public String getSource() {
@@ -52,27 +55,26 @@ public class TradeTable extends DataTable<TradeDto> {
         QSymbol sy = QSymbol.Symbol;
         QSector se = QSector.Sector;
 
-        List<DomainValue> traders = template.query(
+        List<Selection> traders = template.query(
                 template.newSqlQuery().from(trdr),
-                Projections.constructor(DomainValue.class, trdr.id, trdr.email));
-        List<DomainValue> symbols = template.query(
+                Projections.constructor(Selection.class, trdr.id.stringValue(), trdr.email));
+        List<Selection> symbols = template.query(
                 template.newSqlQuery().from(sy),
-                Projections.constructor(DomainValue.class, sy.id, sy.symbol));
-        List<DomainValue> sectors = template.query(
+                Projections.constructor(Selection.class, sy.id.stringValue(), sy.symbol));
+        List<Selection> sectors = template.query(
                 template.newSqlQuery().from(se),
-                Projections.constructor(DomainValue.class, se.id, se.sector));
-
+                Projections.constructor(Selection.class, se.id.stringValue(), se.sector));
 
         return new Column[]{
                 new Column("id"),
-                new Column("time", new TimeFilter(t.time, 1420070400000L,1427842799999L)),
-                new Column("buyer",new IdFilter( t.buyerId, traders, true)),
-                new Column("seller", new IdFilter(t.sellerId, traders, true)),
+                new Column("time", new TimeFilter(t.time, 1420070400000L, 1427842799999L)),
+                new Column("buyer", new StringFilter(t.buyerId.stringValue(), traders, true)),
+                new Column("seller", new StringFilter(t.sellerId.stringValue(), traders, true)),
                 new Column("price"),
                 new Column("size"),
                 new Column("currency"),
-                new Column("symbol", new IdFilter(t.symbolId, symbols, true)),
-                new Column("sector", new IdFilter( t.sectorId, sectors, true)),
+                new Column("symbol", new StringFilter(t.symbolId.stringValue(), symbols, true)),
+                new Column("sector", new StringFilter(t.sectorId.stringValue(), sectors, true)),
         };
     }
 
@@ -93,33 +95,24 @@ public class TradeTable extends DataTable<TradeDto> {
 
     @Override
     public Predicate getPredicate() {
-        //BooleanExpression fbt = Filters.timerangeFilter(t.start, request().getQueryString("columns[1][search][value]"));
-        //BooleanExpression fcf = factorClassFilter(request().getQueryString("columns[2][search][value]"));
-
         BooleanBuilder bb = new BooleanBuilder();
 
         Column[] cds = getColumnDefs();
 
         for (int i = 0; i < cds.length; i++) {
             Column cd = cds[i];
-            if(cd.getFilter() == null) continue;
-            ColumnFilter cf= cd.getFilter();
+            if (cd.getFilter() == null) continue;
+            ColumnFilter cf = cd.getFilter();
 
             String queryParam = "columns[" + i + "][search][value]";
             String queryString = request().getQueryString(queryParam);
 
             Predicate pred = cf.getPredicate(queryString);
 
-            //System.out.println(cd.getName() + " filter: " + queryString);
-
             bb.and(pred);
         }
 
-        //String buyerString = request().getQueryString("buyer");
-        //System.out.println("buyers: " + buyerString);
-
         return bb;
-        //return new BooleanBuilder().and(fbt).and(fcf).getValue();
     }
 
     @Override

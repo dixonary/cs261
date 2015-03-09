@@ -11,6 +11,7 @@ import team16.cs261.common.querydsl.entity.*;
 import util.datatables.*;
 import util.datatables.filters.ColumnFilter;
 import util.datatables.filters.IdFilter;
+import util.datatables.filters.StringFilter;
 import util.datatables.filters.TimeFilter;
 
 import javax.annotation.PostConstruct;
@@ -47,16 +48,16 @@ public class CommTable extends DataTable<Comm> {
 
         QTrader trdr = QTrader.Trader;
 
-        List<DomainValue> traders = template.query(
+        List<Selection> traders = template.query(
                 template.newSqlQuery().from(trdr),
-                Projections.constructor(DomainValue.class, trdr.id, trdr.email));
+                Projections.constructor(Selection.class, trdr.id, trdr.email));
 
 
         return new Column[]{
                 new Column("id"),
                 new Column("time", new TimeFilter(c.time, 1420070400000L,1427842799999L)),
-                new Column("sender", new IdFilter(c.senderId, traders, true)),
-                new Column("recipient", new IdFilter(c.recipientId, traders, true)),
+                new Column("sender", new StringFilter(c.senderId.stringValue(), traders, true)),
+                new Column("recipient", new StringFilter(c.recipientId.stringValue(), traders, true)),
         };
     }
 
