@@ -2,7 +2,7 @@ package util.datatables.filters;
 
 import com.mysema.query.types.Predicate;
 import com.mysema.query.types.path.NumberPath;
-import util.datatables.DomainValue;
+import util.datatables.Selection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,16 +12,16 @@ import java.util.List;
  */
 public class IdFilter extends ColumnFilter {
 
-    final List<DomainValue> domain;
+    final List<Selection> domain;
     final NumberPath<Integer> path;
 
-    public IdFilter(NumberPath<Integer> path, List<DomainValue> domain, boolean multi) {
+    public IdFilter(NumberPath<Integer> path, List<Selection> domain, boolean multi) {
         super(multi, null);
         this.path = path;
         this.domain = domain;
     }
 
-    public List<DomainValue> getDomain() {
+    public List<Selection> getDomain() {
         return domain;
     }
 

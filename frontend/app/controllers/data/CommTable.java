@@ -56,8 +56,8 @@ public class CommTable extends DataTable<Comm> {
         return new Column[]{
                 new Column("id"),
                 new Column("time", new TimeFilter(c.time, 1420070400000L,1427842799999L)),
-                new Column("sender", new StringFilter(c.senderId.stringValue(), traders, true)),
-                new Column("recipient", new StringFilter(c.recipientId.stringValue(), traders, true)),
+                new Column("sender", new IdFilter(c.senderId, traders, true)),
+                new Column("recipient", new IdFilter(c.recipientId, traders, true)),
         };
     }
 

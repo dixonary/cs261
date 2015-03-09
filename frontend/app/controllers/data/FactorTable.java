@@ -68,7 +68,7 @@ public class FactorTable extends DataTable<FactorDto> {
             factorSelect.add(new Selection(i.value, i.label));
         }
 
-        List<DomainValue> edges = new ArrayList<>();
+        List<Selection> edges = new ArrayList<>();
 
 
 

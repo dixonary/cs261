@@ -13,6 +13,11 @@ public class Selection {
         this.label = label;
     }
 
+    public Selection(Integer id, String label) {
+        this.id = String.valueOf(id);
+        this.label = label;
+    }
+
     public String getId() {
         return id;
     }

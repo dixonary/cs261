@@ -16,6 +16,7 @@ import util.datatables.Column;
 import util.datatables.DataTable;
 import util.datatables.Selection;
 import util.datatables.filters.ColumnFilter;
+import util.datatables.filters.IdFilter;
 import util.datatables.filters.StringFilter;
 import util.datatables.filters.TimeFilter;
 
@@ -57,24 +58,24 @@ public class TradeTable extends DataTable<TradeDto> {
 
         List<Selection> traders = template.query(
                 template.newSqlQuery().from(trdr),
-                Projections.constructor(Selection.class, trdr.id.stringValue(), trdr.email));
+                Projections.constructor(Selection.class, trdr.id, trdr.email));
         List<Selection> symbols = template.query(
                 template.newSqlQuery().from(sy),
-                Projections.constructor(Selection.class, sy.id.stringValue(), sy.symbol));
+                Projections.constructor(Selection.class, sy.id, sy.symbol));
         List<Selection> sectors = template.query(
                 template.newSqlQuery().from(se),
-                Projections.constructor(Selection.class, se.id.stringValue(), se.sector));
+                Projections.constructor(Selection.class, se.id, se.sector));
 
         return new Column[]{
                 new Column("id"),
                 new Column("time", new TimeFilter(t.time, 1420070400000L, 1427842799999L)),
-                new Column("buyer", new StringFilter(t.buyerId.stringValue(), traders, true)),
-                new Column("seller", new StringFilter(t.sellerId.stringValue(), traders, true)),
+                new Column("buyer", new IdFilter(t.buyerId, traders, true)),
+                new Column("seller", new IdFilter(t.sellerId, traders, true)),
                 new Column("price"),
                 new Column("size"),
                 new Column("currency"),
-                new Column("symbol", new StringFilter(t.symbolId.stringValue(), symbols, true)),
-                new Column("sector", new StringFilter(t.sectorId.stringValue(), sectors, true)),
+                new Column("symbol", new IdFilter(t.symbolId, symbols, true)),
+                new Column("sector", new IdFilter(t.sectorId, sectors, true)),
         };
     }
 

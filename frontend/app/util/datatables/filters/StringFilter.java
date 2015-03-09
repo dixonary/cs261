@@ -2,11 +2,8 @@ package util.datatables.filters;
 
 import com.mysema.query.types.Predicate;
 import com.mysema.query.types.expr.StringExpression;
-import com.mysema.query.types.path.StringPath;
-import util.datatables.DomainValue;
 import util.datatables.Selection;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
