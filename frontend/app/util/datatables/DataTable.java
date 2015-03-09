@@ -93,13 +93,14 @@ public abstract class DataTable<E> {
         return ok(csv.toString());
     }
 
-
+    ObjectNode meta;
     public Result meta() {
-        ObjectNode meta = Json.newObject();
+        if(meta==null) {
+            meta = Json.newObject();
 
-        meta.put("source", getSource());
-        meta.put("columns", Json.toJson(getColumnDefs()));
-
+            meta.put("source", getSource());
+            meta.put("columns", Json.toJson(getColumnDefs()));
+        }
         return ok(meta);
     }
 
