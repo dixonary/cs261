@@ -222,7 +222,7 @@ public class FactorTable extends DataTable<FactorDto> {
                 FactorDto.class, f.id, f.tick, t.start, f.factor, e.id, f.value, f.centile, f.sig
         );*/
         return Projections.constructor(
-                FactorDto.class, f.id, f.tick, t.start,
+                FactorDto.class, f.id, f.tick, t.start, t.end,
                 Projections.constructor(
                         FactorClassDto.class, f.factor
                 ),

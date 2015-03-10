@@ -23,8 +23,8 @@ GET        /clusters        @controllers.Application.clusters()
 GET        /factors        @controllers.Application.factors()
 GET        /factors/classes        @controllers.Application.factorClasses()
 
-GET        /trades        @controllers.Application.tradesBy(buyer: String ?= null, seller: String ?= null, symbol: String ?= null, sector: String ?= null)
-GET        /comms        @controllers.Application.commsBy(sender: String ?= null, recipient:String ?= null)
+GET        /trades        @controllers.Application.tradesBy(time: String ?= null, buyer: String ?= null, seller: String ?= null, symbol: String ?= null, sector: String ?= null)
+GET        /comms        @controllers.Application.commsBy(time: String ?= null, sender: String ?= null, recipient:String ?= null)
 GET        /trades        @controllers.Application.trades()
 GET        /comms        @controllers.Application.comms()
 

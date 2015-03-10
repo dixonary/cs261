@@ -27,7 +27,7 @@ var ClusterVM = function () {
     self.clusters = ko.observableArray();
 
     var since = -1;
-    var count = 12;
+    var count = 8;
 
     var updateInterval = 500; //Fetch data ever x milliseconds
     var realtime = "on"; //If == to on then fetch data every x seconds. else stop fetching

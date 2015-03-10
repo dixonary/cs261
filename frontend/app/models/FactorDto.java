@@ -12,7 +12,9 @@ public class FactorDto {
 
     private int id;
     private int tick;
-    private long time;
+
+    private long start;
+    private long end;
 
     private FactorClassDto factor;
 
@@ -26,10 +28,11 @@ public class FactorDto {
 
 
     @QueryProjection
-    public FactorDto(int id, int tick, long time, FactorClassDto factor, EdgeDto edge, NodeDto source, NodeDto target, int value, double centile, double sig) {
+    public FactorDto(int id, int tick, long start, long end, FactorClassDto factor, EdgeDto edge, NodeDto source, NodeDto target, int value, double centile, double sig) {
         this.id = id;
         this.tick = tick;
-        this.time = time;
+        this.start = start;
+        this.end=end;
 
         this.factor = factor;
         this.edge = edge;
@@ -82,12 +85,20 @@ public class FactorDto {
         this.tick = tick;
     }
 
-    public long getTime() {
-        return time;
+    public long getStart() {
+        return start;
     }
 
-    public void setTime(long time) {
-        this.time = time;
+    public void setStart(long start) {
+        this.start = start;
+    }
+
+    public long getEnd() {
+        return end;
+    }
+
+    public void setEnd(long end) {
+        this.end = end;
     }
 
     public int getId() {

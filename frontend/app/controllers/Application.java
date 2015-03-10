@@ -40,11 +40,11 @@ public class Application {
         return ok(views.html.comms.collection.render());
     }
 
-    public Result tradesBy(String ids1, String ids2, String ids3, String ids4) {
+    public Result tradesBy(String time, String ids1, String ids2, String ids3, String ids4) {
         return ok(views.html.trades.collection.render());
     }
 
-    public Result commsBy(String ids1, String ids2) {
+    public Result commsBy(String time, String ids1, String ids2) {
         return ok(views.html.comms.collection.render());
     }
 

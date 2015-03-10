@@ -54,9 +54,26 @@ $ ( function ( ) {
 
                     console.log("template: " + data.query)
 
+                    var time = row.start+","+row.end
+                    var traders = row.source.id + "," + row.target.id
+
                     values = {
-                        "_traders": row.source.id + "," + row.target.id
+                        "_traders": traders
                     };
+
+                    var link;
+                    switch(data.factor) {
+                        case "COMMON":
+                            link = jsRoutes.controllers.Application.tradesBy(time, traders, traders)
+                        case "COMMON_BUYS":
+                            link = jsRoutes.controllers.Application.tradesBy(time, traders, null)
+                        case "COMMON_SELLS":
+                            link = jsRoutes.controllers.Application.tradesBy(time, null, traders)
+                        case "COMMS":
+                            link = jsRoutes.controllers.Application.commsBy(time, traders, traders)
+                    }
+
+
 
                     console.log("values: " + JSON.stringify(values))
 
@@ -64,7 +81,8 @@ $ ( function ( ) {
 
                     console.log("q: " + q)
 
-                    return data.label + " <a href='"+q+"'>(view events)</a>"
+                    //return data.label + " <a href='"+q+"'>(view events)</a>"
+                    return data.label + " <a href='"+link.url+"'>(view events)</a>"
                 }
             },
             {

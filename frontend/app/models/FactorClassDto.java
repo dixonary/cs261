@@ -36,13 +36,13 @@ public class FactorClassDto {
 
         switch (fc) {
             case COMMON:
-                return routes.Application.tradesBy(s, s, null, null);
+                return routes.Application.tradesBy(null, s, s, null, null);
             case COMMON_BUYS:
-                return routes.Application.tradesBy(s, null, null, null);
+                return routes.Application.tradesBy(null, s, null, null, null);
             case COMMON_SELLS:
-                return routes.Application.tradesBy(null, s, null, null);
+                return routes.Application.tradesBy(null, null, s, null, null);
             case COMMS:
-                return routes.Application.commsBy(s, s);
+                return routes.Application.commsBy(null, s, s);
         }
 
         return null;
