@@ -65,6 +65,64 @@
             </div><!-- /.box-footer -->*@
         </div><!-- /.box -->
     </div>
+
+        <div class="col-xs-4">
+                <!-- TABLE: LATEST ORDERS -->
+            <div id="clusters" class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Ticks</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                        <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                    </div>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <div class="table-responsive">
+
+                        <table class="table no-margin">
+                            <thead>
+                                <tr>
+                                    <th style="width: 20%">Tick</th>
+                                    <th style="width: 20%"></th>
+                                    <th style="width: 30%">Discovered</th>
+                                    <th style="width: 25%">Nodes</th>
+                                    <th style="width: 10%"></th>
+                                </tr>
+                            </thead>
+                            <tbody data-bind="foreach: { data: clusters, afterRender: newRow }">
+                                <tr>
+                                    <td>
+                                        <span data-bind="text: id"></span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="if: unseen" class="">
+                                            <span class="label label-default" data-bind="text: status"></span>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="text: discovered"></span>
+                                    </td>
+                                    <td data-bind="text: nodes"></td>
+                                    <td>
+                                        <a data-bind="attr : { href: link }"
+                                        class="btn btn-xs btn-primary btn-flat pull-right">
+                                            View
+                                        </a>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div><!-- /.table-responsive -->
+                </div><!-- /.box-body -->
+                @*            <div class="box-footer clearfix">
+                <a href="javascript::;" class="btn btn-sm btn-info btn-flat pull-left">Place New Order</a>
+                <a href="javascript::;" class="btn btn-sm btn-default btn-flat pull-right">View All Orders</a>
+                </div><!-- /.box-footer -->*@
+            </div><!-- /.box -->
+        </div>
+
     <div class="col-xs-8">
 
                 <!-- interactive chart -->
