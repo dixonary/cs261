@@ -77,12 +77,12 @@ public class Dashboard {
 
     public Result activity() {
         int ivalRate = 10;
-        int ivals = 60;
+        int ivals = 3*60;
 
         QCounts qC =QCounts.Counts;
 
         SQLQuery query = template.newSqlQuery()
-                .from(qC).orderBy(qC.intvl.asc())
+                .from(qC).orderBy(qC.intvl.desc())
                 .limit(ivals);
 
 

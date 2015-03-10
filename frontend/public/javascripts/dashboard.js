@@ -110,20 +110,40 @@ var Activity = function () {
     // be fetched from a server
     var data = [], totalPoints = 100;
 
+    self.setData = function (data) {
+
+        self.activity.setData(
+            [
+                {label: "Trades/second", color: "#3c8dbc", data: data[0]},
+                {label: "Comms/second", color: "#FDEE00", data: data[1]}
+            ]
+        )
+    };
+
     self.activity = $.plot("#activity",
-        [
-            {label: "Trades", color: "#3c8dbc", data: []},
-            {label: "Comms", color: "#5c8dbc", data: []}
-        ],
+        [],
         {
+            series: {
+                shadowSize: 4,
+                lines: {
+                    show: true
+                }
+                /*                points: {
+                 radius: 3,
+                 fill: true,
+                 show: true
+                 }*/
+            },
             xaxis: {
                 mode: "time", timeformat: "%H:%M",
-                tickSize: [1, "minute"]
+                tickSize: [5, "minute"]
             },
+            yaxis: {
 
-/*            yaxes: [
-                { },
-                { position: "right", min: 20 }
+            },
+            /*yaxes: [
+                { position: "left"  },
+                { position: "right" }
             ],*/
             grid: {
                 borderColor: "#f3f3f3",
@@ -135,10 +155,10 @@ var Activity = function () {
              shadowSize: 0, // Drawing is faster without shadows
              color: "#3c8dbc"
              },*/
-/*            lines: {
-                fill: true, //Converts the line chart to area chart
-                color: "#3c8dbc"
-            },*/
+            /*            lines: {
+             fill: true, //Converts the line chart to area chart
+             color: "#3c8dbc"
+             },*/
 
 
 
@@ -147,7 +167,7 @@ var Activity = function () {
              }*/
             legend: {
                 show: true,
-                position: "ne"
+                position: "sw"
                 //container: "#activity-legend"
             }
         });
@@ -164,8 +184,13 @@ var Activity = function () {
                     console.log(data);
 
                     //interactive_plot.setData([getRandomData()]);
-                    self.activity.setData(data);
+                    //self.activity.setData(self.setData(data));
+                    //self.activity.setupGrid();
+                    self.setData(data);
                     self.activity.setupGrid();
+                    //self.activity.setupAxes();
+
+                    console.log("axes: " + JSON.stringify(self.activity.getAxes()))
 
                     // Since the axes don't change, we don't need to call plot.setupGrid()
                     self.activity.draw();
