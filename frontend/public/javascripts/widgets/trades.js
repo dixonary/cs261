@@ -73,7 +73,7 @@ $ ( function ( ) {
 
     tradeTable.daterangepickerOptions = defaultDrpOptions()
 
-    tradeTable.loadMeta();
+    tradeTable.getMetaData();
     tradeTable.loadRows();
     tradeTable.observables ( )
 

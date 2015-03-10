@@ -4,7 +4,7 @@
 
 
 
-var factorTable;
+var tableVM;
 
 
 $ ( function ( ) {
@@ -68,11 +68,17 @@ $ ( function ( ) {
                 }
             },
             {
+                "data": "nodes",
+                "render": function (data) {
+                    return data
+                }
+            },
+/*            {
                 "className": 'details-control',
                 "orderable": false,
                 "data": null,
                 "defaultContent": ''
-            },
+            },*/
             {
                 "data": "time",
                 "render": function (data) {
@@ -86,16 +92,16 @@ $ ( function ( ) {
 
     var id = '#clusters-table'
 
-    factorTable = new DTModel(id, options)
+    tableVM = new DTModel(id, options)
 
-    factorTable.loadMeta();
-    factorTable.loadRows();
-    factorTable.observables ( )
-    ko.applyBindings ( factorTable, $(id)[0] ) ;
-    factorTable.subscribe ( )
+    tableVM.getMetaData();
+    tableVM.loadRows();
+    tableVM.observables ( )
+    ko.applyBindings ( tableVM, $(id)[0] ) ;
+    tableVM.subscribe ( )
 
 
-    console.log("postload: "+  factorTable.columns[2].filter())
+    console.log("postload: "+  tableVM.columns[2].filter())
 
 
 

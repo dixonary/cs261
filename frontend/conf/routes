@@ -64,7 +64,10 @@ GET        /sectors/:sector        @controllers.Sectors.element(sector: String)
 GET        /dashboard/clusters        @controllers.data.Dashboard.clusters(since: Int ?= 0, count: Int ?= 10)
 GET        /dashboard/activity.json        @controllers.data.Dashboard.activity()
 GET        /dashboard/events.json        @controllers.data.Dashboard.events()
-GET        /dashboard/commons.json        @controllers.data.Dashboard.commons()
+
+GET        /dashboard/factors/freqs.json        @controllers.data.Dashboard.freqs(factor_class: String ?= null)
+GET        /factors/rates.json        @controllers.data.Dashboard.rates()
+
 
 GET        /data/clusters        @controllers.data.ClusterTable.query()
 GET        /data/clusters/meta        @controllers.data.ClusterTable.meta()

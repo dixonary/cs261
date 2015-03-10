@@ -8,50 +8,46 @@ function DTModel(id, options) {
     var self = this;
 
     self.options = options;
-
     self.columns = [];
 
-    self.loadMeta = function () {
+
+
+    self.getMetaData = function () {
         $.ajax({
             "url": options.ajax.meta,
             "async": false,
             "dataType": "json",
-            "success": function (data) {
-                self.source = data.source;
-                //self.columns = data.columns;
-                self.columns = []
-
-                $.each(data.columns, function (index, columnDef) {
-                    self.columns[index] = {
-                        name: columnDef.name
-                    };
-
-                    var col = self.columns[index]
-
-                    //if ('canFilter' in column) {
-                    /*                    if(column.canFilter) {
-                     column.domain = ko.mapping.fromJS(column.domain)
-                     if (column.multi) {
-                     column.filter = ko.observableArray()
-                     } else {
-                     column.filter = ko.observable()
-                     }
-                     }*/
-
-                    if (columnDef.filter) {
-                        col.domain = ko.mapping.fromJS(columnDef.filter.domain)
-                        if (columnDef.filter.multi) {
-                            col.filter = ko.observableArray(columnDef.filter.value)
-                        } else {
-                            col.filter = ko.observable(columnDef.filter.value)
-                        }
-                    } else {
-                        col.filter = ko.observable()
-                    }
-                });
-            }
+            "success": self.loadMetaData
         });
     };
+
+    self.loadMetaData = function(data) {
+            self.source = data.source;
+            //self.columns = data.columns;
+            self.columns = []
+
+            $.each(data.columns, function (index, columnDef) {
+                self.columns[index] = {
+                    title: columnDef.title,
+                    name: columnDef.name
+                };
+
+                var col = self.columns[index]
+
+                if (columnDef.filter) {
+                    col.domain = ko.mapping.fromJS(columnDef.filter.domain)
+                    if (columnDef.filter.multi) {
+                        col.filter = ko.observableArray(columnDef.filter.value)
+                    } else {
+                        col.filter = ko.observable(columnDef.filter.value)
+                    }
+                } else {
+                    col.filter = ko.observable()
+                }
+            });
+
+    };
+
 
     self.openExportUrl = function () {
         var url = self.dt.ajax.url() + ".csv?" + $.param(self.dt.ajax.params())

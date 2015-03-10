@@ -29,7 +29,7 @@ public class Application {
     }
 
     public Result factorClasses() {
-        return ok(views.html.factors.collection.render());
+        return ok(views.html.factors.info.render());
     }
 
     public Result trades() {
@@ -81,7 +81,9 @@ public class Application {
                         //routes.javascript.Application.commsBySender(),
                         //routes.javascript.Application.commsByRecipient(),
                         routes.javascript.Application.commsBy(),
-                        routes.javascript.Clusters.element()
+                        routes.javascript.Clusters.element(),
+                        controllers.data.routes.javascript.Dashboard.rates(),
+                        controllers.data.routes.javascript.Dashboard.freqs()
                 )
         );
     }

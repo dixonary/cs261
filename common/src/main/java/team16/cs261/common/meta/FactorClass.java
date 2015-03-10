@@ -1,6 +1,8 @@
 package team16.cs261.common.meta;
 
+import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.List;
 
 /**
  * Created by martin on 03/03/15.
@@ -56,6 +58,11 @@ public enum FactorClass {
 
         return set;
     }
+
+    public static List<FactorClass> getImplemented() {
+        return Arrays.asList(COMMON, COMMON_BUYS, COMMON_SELLS, COMMS);
+    }
+
 
 
 }

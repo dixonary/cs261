@@ -101,7 +101,7 @@ public class ClusterTable extends DataTable<Cluster> {
     @Override
     public Expression<Cluster> getProjection() {
         return Projections.bean(
-                Cluster.class, c.id, c.tick, c.time, c.status, t.start, t.end
+                Cluster.class, c.id, c.tick, c.time, c.nodes, c.status
         );
     }
 

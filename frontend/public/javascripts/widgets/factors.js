@@ -119,7 +119,7 @@ $ ( function ( ) {
 
     factorTable = new DTModel('#factors-table', options)
 
-    factorTable.loadMeta();
+    factorTable.getMetaData();
     factorTable.loadRows();
     factorTable.observables ( )
     ko.applyBindings ( factorTable, $(id)[0] ) ;

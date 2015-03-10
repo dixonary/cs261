@@ -2,6 +2,7 @@ package controllers.data;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mysema.query.sql.SQLQuery;
+import com.mysema.query.sql.SQLSubQuery;
 import com.mysema.query.types.Projections;
 import models.Point;
 import models.graph.EdgeDto;
@@ -17,6 +18,7 @@ import play.mvc.Result;
 import team16.cs261.common.dao.ClusterDao;
 import team16.cs261.common.dao.FactorDao;
 import team16.cs261.common.dao.TradeDao;
+import team16.cs261.common.meta.FactorClass;
 import team16.cs261.common.querydsl.entity.*;
 
 import java.sql.ResultSet;
@@ -47,12 +49,13 @@ public class Dashboard {
     TradeDao tradeDao;
 
     QCluster cl = QCluster.Cluster;
+
     public Result clusters(int since, int count) {
         ObjectNode res = Json.newObject();
 
         SQLQuery latest = template.newSqlQuery()
                 .from(cl)
-                //.where(cl.status.eq("UNSEEN"))
+                        //.where(cl.status.eq("UNSEEN"))
                 .where(cl.id.gt(since))
                 .orderBy(cl.id.desc())
                 .limit(count);
@@ -62,7 +65,7 @@ public class Dashboard {
         );
 
         long newSince = since;
-        for(Cluster cl : data) {
+        for (Cluster cl : data) {
             newSince = Math.max(newSince, cl.getId());
             System.out.println("new: " + newSince);
         }
@@ -77,14 +80,13 @@ public class Dashboard {
 
     public Result activity() {
         int ivalRate = 10;
-        int ivals = 3*60;
+        int ivals = 3 * 60;
 
-        QCounts qC =QCounts.Counts;
+        QCounts qC = QCounts.Counts;
 
         SQLQuery query = template.newSqlQuery()
                 .from(qC).orderBy(qC.intvl.desc())
                 .limit(ivals);
-
 
 
         List<Point> data = template.query(query,
@@ -149,22 +151,52 @@ public class Dashboard {
         return ok(Json.toJson(points));
     }
 
+    public Result rates() {
 
-    public Result commons() {
-        final String factor = "COMMON_BUYS";
+
+        for (FactorClass fc : FactorClass.getImplemented()) {
+            ObjectNode series = Json.newObject();
+
+            series.put("label", fc.getLabel());
+
+
+
+
+
+        }
+
+
+        return ok("nada");
+    }
+
+
+    public Result freqs(final String factor) {
+        //final String factor = "COMMON_BUYS";
+
+/*        if(factor==null){
+            for(FactorClass fc : FactorClass.getImplemented()) {
+
+            }
+        }*/
 
         QFactorFreq ff = QFactorFreq.FactorFreq;
+        FactorClass fc = FactorClass.valueOf(factor);
+
+        ObjectNode series = Json.newObject();
+        series.put("label", fc.getLabel());
 
 
         SQLQuery query = template.newSqlQuery()
-                .from(ff).where(ff.factor.eq(factor))
-                .groupBy(ff.x);//.list(ff.x, ff.x.sum());
+                .from(ff).where(ff.factor.eq(factor));
+        //.groupBy(ff.x);//.list(ff.x, ff.x.sum());
 
-        List<Point> data = template.query(query,
+        Double fxSum = template.queryForObject(query, ff.fx.sum().doubleValue());
+
+        List<Point> data = template.query(query.groupBy(ff.x),
                 Projections.constructor(Point.class,
-                        ff.x,
-                        ff.fx.avg().castToNum(Double.class),
-                        ff.fx.sum())
+                        ff.x.longValue(),
+                        ff.fx.sum().castToNum(Double.class).divide(fxSum),
+                        ff.fx.sum().doubleValue())
         );
 
 /*        SQLQuery query = template.newSqlQuery()
@@ -178,6 +210,8 @@ public class Dashboard {
                         ff.fx.sum())
         );*/
 
+        double sum = 0;
+
         double[][] points = new double[data.size()][2];
 
         for (int i = 0; i < data.size(); i++) {
@@ -185,13 +219,14 @@ public class Dashboard {
 
             points[i][0] = p.getX();
             points[i][1] = p.getY1();
+
+            sum += p.getY1();
         }
 
+        series.put("data", Json.toJson(points));
 
-        return ok(Json.toJson(points));
+        return ok(series);
     }
-
-
 
 
     public Result cluster(int id) {

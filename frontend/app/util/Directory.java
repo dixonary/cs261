@@ -14,8 +14,9 @@ public enum Directory implements MenuItem {
 
     CLUSTERS("Clusters", "fa-cubes", routes.Application.clusters()),
     FACTORS("Factors", "fa-cube", null),
-    FACTOR_CLASSES(FACTORS, "Overview", "fa-info", routes.Application.factorClasses()),
-    FACTOR_TABLE(FACTORS, "Table", "fa-table", routes.Application.factors()),
+        FACTOR_CLASSES(FACTORS, "Info", "fa-info", routes.Application.factorClasses()),
+        FACTOR_TABLE(FACTORS, "View", "fa-table", routes.Application.factors()),
+
 
     DATA("Events", "fa-database", null),
 

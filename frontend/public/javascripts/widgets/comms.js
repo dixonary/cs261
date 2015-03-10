@@ -1,5 +1,5 @@
 var options;
-var commTable;
+var tableVM;
 
 
 $(function () {
@@ -46,13 +46,13 @@ $(function () {
 
     //$('.selectpicker2').selectpicker()
 
-    commTable = new DTModel('#comms-table', options)
+    tableVM = new DTModel('#comms-table', options)
 
-    commTable.loadMeta();
-    commTable.loadRows();
-    commTable.observables();
-    ko.applyBindings(commTable);
-    commTable.subscribe()
+    tableVM.getMetaData();
+    tableVM.loadRows();
+    tableVM.observables();
+    ko.applyBindings(tableVM);
+    tableVM.subscribe()
 
 
 
