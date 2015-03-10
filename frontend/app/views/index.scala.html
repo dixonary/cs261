@@ -26,9 +26,10 @@
                         <thead>
                             <tr>
                                 <th style="width: 20%">Cluster ID</th>
-                                <th style="width: 25%"></th>
-                                <th style="width: 40%">Discovered</th>
-                                <th style="width: 15%"></th>
+                                <th style="width: 20%"></th>
+                                <th style="width: 30%">Discovered</th>
+                                <th style="width: 25%">Nodes</th>
+                                <th style="width: 10%"></th>
                             </tr>
                         </thead>
                         <tbody data-bind="foreach: { data: clusters, afterRender: newRow }">
@@ -44,7 +45,7 @@
                                 <td>
                                     <span data-bind="text: discovered"></span>
                                 </td>
-
+                                <td data-bind="text: nodes"></td>
                                 <td>
                                     <a data-bind="attr : { href: link }"
                                     class="btn btn-xs btn-primary btn-flat pull-right">

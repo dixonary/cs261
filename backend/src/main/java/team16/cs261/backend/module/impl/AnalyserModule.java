@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import team16.cs261.backend.config.Config;
+import team16.cs261.backend.model.FactorGraph;
 import team16.cs261.backend.model.Graph;
 import team16.cs261.backend.model.MclOutput;
 import team16.cs261.backend.module.Module;
@@ -16,6 +17,7 @@ import team16.cs261.backend.util.Timer;
 import team16.cs261.common.dao.*;
 import team16.cs261.common.entity.Tick;
 import team16.cs261.common.entity.Trade;
+import team16.cs261.common.entity.factor.Factor;
 import team16.cs261.common.entity.graph.Edge;
 
 import java.io.IOException;
@@ -279,39 +281,20 @@ public class AnalyserModule extends Module {
 
     public static final String SELECT_FACTOR_EDGES =
             "SELECT E.id AS id, E.source AS source, E.target AS target, sum(score) AS weight FROM Edge E JOIN Factor F ON E.id = F.edge WHERE tick = ? GROUP BY edge";
-    //"SELECT E.id AS id, E.source AS source, E.target AS target, centile AS weight FROM Edge E JOIN Factor F ON E.id = F.edge WHERE tick = ?";
 
-    // Maximum difference between row elements and row square sum (measure of
-    // idempotence)
-    private double maxResidual = 0.001;
-
-    // inflation exponent for Gamma operator
-    private double pGamma = 4.0;
-
-    // loopGain values for cycles
-    private double loopGain = 1.0;
-
-    // maximum value considered zero for pruning operations
-    private double maxZero = 0.001;
-
-    //Clustererer legacy = new Clustererer(0.001, 2.0, 1.0, 0.001);
-    //Clusterizer cl = new Clusterizer(0.001, 2.0, 1.0, 0.001);
-    //Clustererer legacy = new Clustererer(maxResidual, pGamma, loopGain, maxZero);
-    //Clusterizer cl = new Clusterizer(maxResidual, pGamma, loopGain, maxZero);
-    //Clusterizer3 clr3 = new Clusterizer3(maxResidual, pGamma, loopGain, maxZero);
-    //Mcl mcl4 = new Mcl(pGamma);
+    public static final String SELECT_FACTOR_EDGES2 =
+            "SELECT E.id AS id, E.source, E.target, factor, score FROM Edge E JOIN Factor F ON E.id = F.edge WHERE tick = ? GROUP BY edge";
 
     @Autowired
     MclService mclService;
 
     public void findClusters(long tick) {
-        //Integer maxIndex = jdbcTemplate.queryForObject("SELECT max(id) FROM Node", Integer.class);
         List<Edge> edges = jdbcTemplate.query(SELECT_FACTOR_EDGES, new Object[]{tick}, new BeanPropertyRowMapper<>(Edge.class));
-
         Graph g = new Graph(edges);
-        //System.out.println("Dataset: " + g);
 
-        //List<Set<Integer>> clusters3 = g.getClusterIds(clr3.cluster(g));
+/*        List<Factor> factors = jdbcTemplate.query(SELECT_FACTOR_EDGES2, new Object[]{tick}, new BeanPropertyRowMapper<>(Factor.class));
+        System.out.println("factors: " + factors);
+        FactorGraph fg = new FactorGraph(factors);*/
 
         double[][] input4 = g.toMatrix();
         //double[][] output4 = mcl4.run(input4);
@@ -384,7 +367,7 @@ public class AnalyserModule extends Module {
         for (Set<Integer> cl : clusters) {
             String meta = toJson(cl);
 
-            //if(cl.size() < 2) continue;
+            if(cl.size() <= 2) continue;
 
             //Integer cluster = cl.iterator().next();
             jdbcTemplate.update(insertCluster, tick, now, cl.size(), -1, meta);

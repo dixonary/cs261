@@ -61,7 +61,7 @@ public class Dashboard {
                 .limit(count);
 
         List<Cluster> data = template.query(latest,
-                Projections.bean(Cluster.class, cl.id, cl.tick, cl.time, cl.status)
+                Projections.bean(Cluster.class, cl.id, cl.tick, cl.time, cl.nodes, cl.status)
         );
 
         long newSince = since;

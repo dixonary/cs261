@@ -1,6 +1,5 @@
 package team16.cs261.common.entity.factor;
 
-import com.mysema.query.annotations.QueryProjection;
 import team16.cs261.common.meta.FactorClass;
 
 /**
@@ -9,10 +8,15 @@ import team16.cs261.common.meta.FactorClass;
 public class Factor {
 
     private int id;
+    private int source;
+    private int target;
+    private FactorClass factor;
+    private double score;
+
 
     private long tick;
 
-    private FactorClass factor;
+
 
     private int edge;
 
@@ -26,7 +30,29 @@ public class Factor {
 
     }
 
+    public double getScore() {
+        return score;
+    }
 
+    public void setScore(double score) {
+        this.score = score;
+    }
+
+    public int getSource() {
+        return source;
+    }
+
+    public void setSource(int source) {
+        this.source = source;
+    }
+
+    public int getTarget() {
+        return target;
+    }
+
+    public void setTarget(int target) {
+        this.target = target;
+    }
 
     public int getId() {
         return id;
@@ -82,5 +108,16 @@ public class Factor {
 
     public void setSig(double sig) {
         this.sig = sig;
+    }
+
+    @Override
+    public String toString() {
+        return "Factor{" +
+                "score=" + score +
+                ", factor=" + factor +
+                ", target=" + target +
+                ", source=" + source +
+                ", id=" + id +
+                '}';
     }
 }

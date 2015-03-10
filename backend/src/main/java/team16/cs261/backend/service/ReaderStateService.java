@@ -42,7 +42,7 @@ public class ReaderStateService {
     @Transactional
     //public void saveReaderState(List<RawEvent> rawEvents, RawEvent.Type type) {
     public void saveReaderState(ReaderModule reader) {
-        System.out.println("Persisting raw events: " + reader.type.getKey());
+        //System.out.println("Persisting raw events: " + reader.type.getKey());
 
         List<RawEvent> rawEvents = reader.getRawEvents();
         Counts counts = reader.items2;

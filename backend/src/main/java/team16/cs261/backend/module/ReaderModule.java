@@ -176,8 +176,6 @@ public abstract class ReaderModule extends Module {
     public boolean shouldPersist() {
         int minimum = type == RawEvent.Type.TRADE ? 100 : 100;
 
-        if(rawEvents.size() >= minimum) System.out.println("A");
-
         return rawEvents.size() >= minimum ||
                 rawEvents.size() > 0 && (System.currentTimeMillis() - lastPersisted) > persistInterval;
     }

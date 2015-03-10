@@ -136,7 +136,7 @@ var Activity = function () {
             },
             xaxis: {
                 mode: "time", timeformat: "%H:%M",
-                tickSize: [5, "minute"]
+                tickSize: [5, "minute"],
             },
             yaxis: {
 
@@ -150,21 +150,6 @@ var Activity = function () {
                 borderWidth: 1,
                 tickColor: "#f3f3f3"
             },
-
-            /*        series: {
-             shadowSize: 0, // Drawing is faster without shadows
-             color: "#3c8dbc"
-             },*/
-            /*            lines: {
-             fill: true, //Converts the line chart to area chart
-             color: "#3c8dbc"
-             },*/
-
-
-
-            /*        xaxis: {
-             show: true
-             }*/
             legend: {
                 show: true,
                 position: "sw"
@@ -183,14 +168,10 @@ var Activity = function () {
                 success: function (data) {
                     console.log(data);
 
-                    //interactive_plot.setData([getRandomData()]);
-                    //self.activity.setData(self.setData(data));
-                    //self.activity.setupGrid();
                     self.setData(data);
                     self.activity.setupGrid();
-                    //self.activity.setupAxes();
 
-                    console.log("axes: " + JSON.stringify(self.activity.getAxes()))
+
 
                     // Since the axes don't change, we don't need to call plot.setupGrid()
                     self.activity.draw();
