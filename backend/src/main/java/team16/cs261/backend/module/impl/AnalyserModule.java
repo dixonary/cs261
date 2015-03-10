@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import team16.cs261.backend.config.Config;
-import team16.cs261.backend.model.FactorGraph;
 import team16.cs261.backend.model.Graph;
 import team16.cs261.backend.model.MclOutput;
 import team16.cs261.backend.module.Module;
@@ -17,7 +16,6 @@ import team16.cs261.backend.util.Timer;
 import team16.cs261.common.dao.*;
 import team16.cs261.common.entity.Tick;
 import team16.cs261.common.entity.Trade;
-import team16.cs261.common.entity.factor.Factor;
 import team16.cs261.common.entity.graph.Edge;
 
 import java.io.IOException;

@@ -23,11 +23,13 @@ import java.util.concurrent.Future;
 @Service
 public class MclService {
 
+    // 2.5c / 3i
+
     @Async
     public Future<MclOutput> run(long tick, String mclInput) {
 
-        double i = 2.0D;
-        double c = 2.0D;
+        double i = 4D;
+        double c = 2.5D;
 
         try {
             Path mclWd = Paths.get(System.getProperty("user.home"), "fraud", "mcl");
