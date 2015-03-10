@@ -59,7 +59,7 @@ public class FactorTable extends DataTable<FactorDto> {
     class FactorClassFilter extends StringFilter {
 
         public FactorClassFilter(StringExpression path, List<Selection> domain) {
-            super(path, domain, true);
+            super(path, domain, false);
         }
 
         @Override
@@ -124,11 +124,6 @@ public class FactorTable extends DataTable<FactorDto> {
             String label = tp.getTrader1() + " -> " + tp.getTrader2();
             subjects.add(new Selection(tp.getId(), label));
         }
-
-
-        IdFilter subjectFilter = new IdFilter(f.edge, traders, true) {
-
-        };
 
         return new Column[]{
                 new Column("id"),

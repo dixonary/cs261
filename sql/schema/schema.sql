@@ -27,7 +27,7 @@ CREATE TABLE Counts (
   time         BIGINT    NOT NULL, #realtime
   sealed        BOOL NOT NULL ,
 
-  tradesRead   INTEGER NOT NULL DEFAULT 0,Con
+  tradesRead   INTEGER NOT NULL DEFAULT 0,
   commsRead    INTEGER NOT NULL DEFAULT 0, # comms for the interval
   tradesParsed INTEGER NOT NULL DEFAULT 0,
   commsParsed  INTEGER NOT NULL DEFAULT 0, # comms for the interval

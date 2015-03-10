@@ -25,7 +25,9 @@ public class MclService {
 
     @Async
     public Future<MclOutput> run(long tick, String mclInput) {
-        final String suffix = ".I20";
+
+        double i = 4.0D;
+        double c = 2.0D;
 
         try {
             Path mclWd = Paths.get(System.getProperty("user.home"), "fraud", "mcl");
@@ -47,7 +49,9 @@ public class MclService {
                     fIn,
                     "--abc",
                     "-o", fOut,
+                    //"-I", String.valueOf(i),
                     "--sum-loops",
+                    "-c",  String.valueOf(c)
             }, new String[0], mclWd.toFile());
 
             p.waitFor();

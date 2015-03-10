@@ -5,6 +5,7 @@ import com.mysema.query.types.path.NumberPath;
 import util.datatables.Selection;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -33,12 +34,14 @@ public class IdFilter extends ColumnFilter {
     public Predicate getPredicate(String input) {
         List<Integer> ids = getIds(input);
 
-        if(ids.size()==0)return null;
+        if (ids.size() == 0) return null;
 
         return path.in(ids);
     }
 
     public static List<Integer> getIds(String input) {
+        if (input == null) return Collections.EMPTY_LIST;
+
         List<Integer> ids = new ArrayList<>();
 
         for (String part : input.split(",")) {

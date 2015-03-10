@@ -32,7 +32,7 @@ public class StringFilter extends ColumnFilter {
 
     @Override
     public Predicate getPredicate(String input) {
-        if(input.equals("")) return null;
+        if(input==null || input.equals("")) return null;
 
         List<String> ids = Arrays.asList(input.split(","));
 

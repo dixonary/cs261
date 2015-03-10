@@ -34,7 +34,7 @@ public class ClusterTable extends DataTable<Cluster> {
     private final QCluster c = new QCluster("c");
     private final QTick t = new QTick("t");
     private final ComparableExpressionBase[] columns = {
-            c.id, c.status, c.time
+            c.id, c.status, c.time, c.nodes
     };
 
     @Override
