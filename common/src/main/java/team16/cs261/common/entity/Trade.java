@@ -9,6 +9,7 @@ public class Trade {
 
     private long time;
     private int tick;
+    private String timestamp;
     private String buyer;
     private String seller;
 
@@ -33,9 +34,10 @@ public class Trade {
         this.tick = tick;
     }
 
-    public Trade(long time, int tick, String buyer, String seller, float price, int size, String currency, String symbol, String sector, float bid, float ask) {
+    public Trade(long time, int tick, String timestamp, String buyer, String seller, float price, int size, String currency, String symbol, String sector, float bid, float ask) {
         this.time = time;
         this.tick=tick;
+        this.timestamp=timestamp;
 
         this.buyer = buyer;
         this.seller = seller;
@@ -62,6 +64,14 @@ public class Trade {
 
     public void setTime(long time) {
         this.time = time;
+    }
+
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
     }
 
     public String getBuyer() {

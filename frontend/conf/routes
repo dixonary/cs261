@@ -62,6 +62,7 @@ GET        /sectors/:sector        @controllers.Sectors.element(sector: String)
 # data feeds
 #GET        /dashboard/clusters?since=:since        @controllers.data.Dashboard.clusters(since: Long)
 GET        /dashboard/clusters        @controllers.data.Dashboard.clusters(since: Int ?= 0, count: Int ?= 10)
+GET        /dashboard/activity.json        @controllers.data.Dashboard.activity()
 GET        /dashboard/events.json        @controllers.data.Dashboard.events()
 GET        /dashboard/commons.json        @controllers.data.Dashboard.commons()
 

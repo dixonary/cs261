@@ -33,7 +33,6 @@ var ClusterVM = function () {
     var realtime = "on"; //If == to on then fetch data every x seconds. else stop fetching
 
     self.update = function () {
-
         //interactive_plot.setData([getRandomData()]);
 
         $.ajax(
@@ -50,25 +49,25 @@ var ClusterVM = function () {
 
                         /*var cl = ko.mapping.fromJS(row, {}, new ClVM());
 
-                        console.log(JSON.stringify(ko.mapping.toJS(cl)))
+                         console.log(JSON.stringify(ko.mapping.toJS(cl)))
 
-                        self.clusters.unshift(cl);
+                         self.clusters.unshift(cl);
 
-                        if (self.clusters().length > count) {
-                            self.clusters.pop();
-                        }*/
+                         if (self.clusters().length > count) {
+                         self.clusters.pop();
+                         }*/
 
                         var items = data.clusters.length;
 
-                        var delay = 10 * (count/items)
+                        var delay = 10 * (count / items)
 
-                        $('#clusters').delay(delay).queue(function(next) {
-                            console.log("row: " + JSON.stringify(row))
+                        $('#clusters').delay(delay).queue(function (next) {
+                            //console.log("row: " + JSON.stringify(row))
 
 
                             var cl = ko.mapping.fromJS(row, {}, new ClVM());
 
-                            console.log(JSON.stringify(ko.mapping.toJS(cl)))
+                            //console.log(JSON.stringify(ko.mapping.toJS(cl)))
 
                             self.clusters.unshift(cl);
 
@@ -79,7 +78,6 @@ var ClusterVM = function () {
 
                             next();
                         })
-
 
 
                     })
@@ -100,12 +98,119 @@ var ClusterVM = function () {
 
 }
 
+
+var Activity = function () {
+    var self = this;
+
+    /*
+     * Activity
+     * -----------------------
+     */
+    // We use an inline data source in the example, usually data would
+    // be fetched from a server
+    var data = [], totalPoints = 100;
+
+    self.activity = $.plot("#activity",
+        [
+            {label: "Trades", color: "#3c8dbc", data: []},
+            {label: "Comms", color: "#5c8dbc", data: []}
+        ],
+        {
+            xaxis: {
+                mode: "time", timeformat: "%H:%M",
+                tickSize: [1, "minute"]
+            },
+
+/*            yaxes: [
+                { },
+                { position: "right", min: 20 }
+            ],*/
+            grid: {
+                borderColor: "#f3f3f3",
+                borderWidth: 1,
+                tickColor: "#f3f3f3"
+            },
+
+            /*        series: {
+             shadowSize: 0, // Drawing is faster without shadows
+             color: "#3c8dbc"
+             },*/
+/*            lines: {
+                fill: true, //Converts the line chart to area chart
+                color: "#3c8dbc"
+            },*/
+
+
+
+            /*        xaxis: {
+             show: true
+             }*/
+            legend: {
+                show: true,
+                position: "ne"
+                //container: "#activity-legend"
+            }
+        });
+
+    var updateInterval = 1000; //Fetch data ever x milliseconds
+    var realtime = "on"; //If == to on then fetch data every x seconds. else stop fetching
+
+    self.updateActivity = function () {
+
+        $.ajax(
+            '/dashboard/activity.json',
+            {
+                success: function (data) {
+                    console.log(data);
+
+                    //interactive_plot.setData([getRandomData()]);
+                    self.activity.setData(data);
+                    self.activity.setupGrid();
+
+                    // Since the axes don't change, we don't need to call plot.setupGrid()
+                    self.activity.draw();
+                    if (realtime === "on")
+                        setTimeout(self.updateActivity, updateInterval);
+                }
+            }
+        )
+
+
+    }
+
+    //INITIALIZE REALTIME DATA FETCHING
+    if (realtime === "on") {
+        self.updateActivity();
+    }
+    //REALTIME TOGGLE
+    $("#realtime .btn").click(function () {
+        if ($(self).data("toggle") === "on") {
+            realtime = "on";
+        }
+        else {
+            realtime = "off";
+        }
+        self.updateActivity();
+    });
+    /*
+     * END INTERACTIVE CHART
+     */
+
+}
+
+
 $(function () {
 
 
     vm = new ClusterVM();
     vm.update();
     ko.applyBindings(vm, $('#clusters')[0]);
+
+
+    var ac = new Activity();
+
+
+    if (true) return;
 
 
     /*

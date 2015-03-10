@@ -17,10 +17,7 @@ import play.mvc.Result;
 import team16.cs261.common.dao.ClusterDao;
 import team16.cs261.common.dao.FactorDao;
 import team16.cs261.common.dao.TradeDao;
-import team16.cs261.common.querydsl.entity.Cluster;
-import team16.cs261.common.querydsl.entity.QCluster;
-import team16.cs261.common.querydsl.entity.QFactorFreq;
-import team16.cs261.common.querydsl.entity.QTick;
+import team16.cs261.common.querydsl.entity.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -76,6 +73,47 @@ public class Dashboard {
 
 
         return ok(Json.toJson(res));
+    }
+
+    public Result activity() {
+        int ivalRate = 10;
+        int ivals = 60;
+
+        QCounts qC =QCounts.Counts;
+
+        SQLQuery query = template.newSqlQuery()
+                .from(qC).orderBy(qC.intvl.asc())
+                .limit(ivals);
+
+
+
+        List<Point> data = template.query(query,
+                Projections.constructor(
+                        Point.class,
+                        qC.intvl.longValue().multiply(10000),
+                        qC.tradesRead.doubleValue().divide(ivalRate),
+                        qC.commsRead.doubleValue().divide(ivalRate))
+        );
+
+        double[][] tradesRead = new double[data.size()][2];
+        double[][] commsRead = new double[data.size()][2];
+
+        for (int i = 0; i < data.size(); i++) {
+            Point p = data.get(i);
+
+            tradesRead[i][0] = p.getX();
+            tradesRead[i][1] = p.getY1();
+
+            commsRead[i][0] = p.getX();
+            commsRead[i][1] = p.getY2();
+
+            //points[p.getX()][i] = p.getY1();
+            //points[p.getX()][i] = p.getY1();
+        }
+
+        double[][][] points = {tradesRead, commsRead};
+
+        return ok(Json.toJson(points));
     }
 
     public Result events() {

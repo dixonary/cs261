@@ -23,14 +23,15 @@ CREATE TABLE Counter (#COUNTER TABLE#
 
 DROP TABLE IF EXISTS Counts CASCADE;
 CREATE TABLE Counts (
-  minute       INTEGER NOT NULL, # minutes since the epoch
-  time         LONG    NOT NULL, #realtime
+  intvl        INT NOT NULL,
+  time         BIGINT    NOT NULL, #realtime
+  sealed        BOOL NOT NULL ,
 
-  tradesRead   INTEGER NOT NULL DEFAULT 0,
+  tradesRead   INTEGER NOT NULL DEFAULT 0,Con
   commsRead    INTEGER NOT NULL DEFAULT 0, # comms for the interval
   tradesParsed INTEGER NOT NULL DEFAULT 0,
   commsParsed  INTEGER NOT NULL DEFAULT 0, # comms for the interval
-  PRIMARY KEY (minute)
+  PRIMARY KEY (intvl)
 );
 
 
@@ -114,6 +115,7 @@ DROP TABLE IF EXISTS Trade CASCADE;
 CREATE TABLE Trade (#TRADE TABLE#
   id       INTEGER     NOT NULL AUTO_INCREMENT, #Contains the full representation of a Trade with each field separated out
   time     BIGINT      NOT NULL, #Also has an id as primary key as the timestamp cannot be guranteed to be unique
+  timestamp VARCHAR(50) NOT NULL,
   tick     INTEGER     NOT NULL,
   buyer    VARCHAR(50) NOT NULL,
   seller   VARCHAR(50) NOT NULL,
@@ -148,6 +150,7 @@ DROP TABLE IF EXISTS Comm CASCADE;
 CREATE TABLE Comm (#COMM TABLE#
   id          INTEGER     NOT NULL AUTO_INCREMENT, #Contains individual Communcations between Traders
   time        BIGINT      NOT NULL, #Has an id field as the timestamp cannot be guaranteed to be unique
+  timestamp VARCHAR(50) NOT NULL,
   tick        INTEGER     NOT NULL,
   sender      VARCHAR(50) NOT NULL,
   recipient   VARCHAR(50) NOT NULL,

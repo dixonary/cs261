@@ -23,7 +23,7 @@ public class CommReader extends ReaderModule {
 
     @Autowired
     public CommReader(Config config) throws IOException {
-        super(config, "COMM-READER", RawEvent.Type.COMM, "comms");
+        super(config, "COMM-READER", RawEvent.Type.COMM);
     }
 
 

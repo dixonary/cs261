@@ -52,6 +52,16 @@ public class RawEvent {
     }
 
     public enum Type {
-        TRADE, COMM
+        TRADE("trades"), COMM("comms");
+
+        String key;
+
+        Type(String key) {
+            this.key = key;
+        }
+
+        public String getKey() {
+            return key;
+        }
     }
 }

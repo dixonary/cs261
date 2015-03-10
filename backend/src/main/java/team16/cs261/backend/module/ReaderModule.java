@@ -1,8 +1,12 @@
 package team16.cs261.backend.module;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import team16.cs261.backend.config.Config;
+import team16.cs261.backend.service.ReaderStateService;
 import team16.cs261.backend.util.Counter;
+import team16.cs261.backend.util.Counts;
+import team16.cs261.common.dao.CountsDao;
 import team16.cs261.common.dao.PropDao;
 import team16.cs261.common.dao.RawEventDao;
 import team16.cs261.common.entity.RawEvent;
@@ -16,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -23,8 +28,7 @@ import java.util.List;
  */
 public abstract class ReaderModule extends Module {
 
-    private final RawEvent.Type type;
-    private final String key;
+    public final RawEvent.Type type;
 
 
     @Autowired
@@ -37,6 +41,7 @@ public abstract class ReaderModule extends Module {
     protected List<RawEvent> rawEvents = new ArrayList<>();
 
     Counter items = new Counter();
+    public Counts items2 = new Counts();
 
     boolean seenHeaders = false;
 
@@ -46,16 +51,18 @@ public abstract class ReaderModule extends Module {
 
     private final String countProp;
     private final String rateProp;
-    private final String lineProp;
+    public final String lineProp;
 
-    public ReaderModule(Config config, String name, RawEvent.Type type, String key) {
+    @Autowired
+    ReaderStateService eventService;
+
+    public ReaderModule(Config config, String name, RawEvent.Type type) {
         super(config, name);
         this.type = type;
-        this.key = key;
 
-        countProp = "input." + key + ".count";
-        rateProp = "input." + key + ".rate";
-        lineProp = "input." + key + ".line";
+        countProp = "input." + type.getKey() + ".count";
+        rateProp = "input." + type.getKey() + ".rate";
+        lineProp = "input." + type.getKey() + ".line";
     }
 
     public abstract Socket getSocket() throws IOException;
@@ -88,7 +95,7 @@ public abstract class ReaderModule extends Module {
 
             if (config.getInput() == Config.Input.FILE) {
                 lastLine = props.getProperty(lineProp, Integer.class, -1);
-                if(lastLine != -1) {
+                if (lastLine != -1) {
                     log("Will resume at line: " + lastLine);
                 }
             }
@@ -146,33 +153,44 @@ public abstract class ReaderModule extends Module {
         }
 
 
-
-
         rawEvents.add(new RawEvent(type, time, in));
         //if (rawEvents.size() >= 100) {
-        if (type== RawEvent.Type.COMM && rawEvents.size() >= 10 ||
-                type == RawEvent.Type.TRADE && rawEvents.size() >= 100) {
-            persist();
+        if (shouldPersist()) {
+            //persist();
+            eventService.saveReaderState(this);
+            lastPersisted = System.currentTimeMillis();
         }
 
         items.increment();
+        items2.increment();
+
         props.setProperty(countProp, items.getCount());
         props.setProperty(rateProp, items.getRate(15));
     }
 
     public void onClose() {
-        persist();
+        eventService.saveReaderState(this);
     }
 
-    public void persist() {
-        rawEventDao.insert(rawEvents);
 
-        //System.out.println("Persisted up to line: " + line);
-        if (config.getInput() == Config.Input.FILE)
-            props.setProperty(lineProp, line);
+    public boolean shouldPersist() {
+        int minimum = type == RawEvent.Type.TRADE ? 100 : 100;
 
-        rawEvents.clear();
+        if(rawEvents.size() >= minimum) System.out.println("A");
+
+        return rawEvents.size() >= minimum ||
+                rawEvents.size() > 0 && (System.currentTimeMillis() - lastPersisted) > persistInterval;
     }
+
+
+    @Autowired
+    JdbcTemplate jdbc;
+    @Autowired
+    CountsDao countsDao;
+
+    long lastPersisted = 0;
+    long persistInterval = 10 * 1000;
+
 
 
     public static String join(String[] parts, String delim) {
@@ -188,6 +206,10 @@ public abstract class ReaderModule extends Module {
         }
 
         return sb.toString();
+    }
+
+    public List<RawEvent> getRawEvents() {
+        return rawEvents;
     }
 }
 

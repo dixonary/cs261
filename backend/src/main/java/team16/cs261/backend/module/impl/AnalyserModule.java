@@ -231,8 +231,11 @@ public class AnalyserModule extends Module {
                     "FROM #tbl group by #fld;";
 
     public void updateFactors(long tick, String f, String table, String field, double lambda, double sig) {
+        if(lambda==0) return;
+
         PoissonDistribution dist = new PoissonDistribution(lambda);
         int threshold = dist.inverseCumulativeProbability(1 - sig) + 1;
+
 
 
         // insert poisson numbers
@@ -371,11 +374,12 @@ public class AnalyserModule extends Module {
 
     final String insertCluster =
             //"INSERT INTO Cluster (tick, nodes, edges, meta) VALUES (?, ?, ?, ?);";
-            "INSERT INTO Cluster (tick, nodes, edges, meta) VALUES (?, ?, ?, ?);";
+            "INSERT INTO Cluster (tick, time, nodes, edges, meta) VALUES (?, ?, ?, ?, ?);";
     final String insertCN = "INSERT INTO ClusterNode (cluster, node) VALUES (?, ?)";
 
     public void insertClusters(long tick, List<Set<Integer>> clusters) {
 
+        long now = System.currentTimeMillis();
 
         for (Set<Integer> cl : clusters) {
             String meta = toJson(cl);
@@ -383,7 +387,7 @@ public class AnalyserModule extends Module {
             //if(cl.size() < 2) continue;
 
             //Integer cluster = cl.iterator().next();
-            jdbcTemplate.update(insertCluster, tick, cl.size(), -1, meta);
+            jdbcTemplate.update(insertCluster, tick, now, cl.size(), -1, meta);
             Integer cluster = jdbcTemplate.queryForObject("SELECT max(id) FROM Cluster;", Integer.class);
             //Integer cluster = jdbcTemplate.queryForObject(insertCluster, new Object[]{tick, cl.size(), -1, meta}, Integer.class);
             //jdbcTemplate.update(insertCluster, tick, cluster, cl.size(), -1, meta);

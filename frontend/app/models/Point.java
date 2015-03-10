@@ -6,23 +6,22 @@ import com.mysema.query.annotations.QueryProjection;
  * Created by martin on 08/03/15.
  */
 public class Point {
-    int x;
+    long x;
     double y1;
-    int y2;
+    double y2;
 
     @QueryProjection
-
-    public Point(int x, double y1, int y2) {
+    public Point(long x, double y1, double y2) {
         this.x = x;
         this.y1 = y1;
         this.y2 = y2;
     }
 
-    public int getX() {
+    public long getX() {
         return x;
     }
 
-    public void setX(int x) {
+    public void setX(long x) {
         this.x = x;
     }
 
@@ -34,11 +33,11 @@ public class Point {
         this.y1 = y1;
     }
 
-    public int getY2() {
+    public double getY2() {
         return y2;
     }
 
-    public void setY2(int y2) {
+    public void setY2(double y2) {
         this.y2 = y2;
     }
 }

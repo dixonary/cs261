@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import team16.cs261.backend.util.Counter;
 import team16.cs261.backend.config.Config;
 import team16.cs261.backend.module.Module;
+import team16.cs261.backend.util.Util;
 import team16.cs261.common.dao.*;
 import team16.cs261.common.entity.*;
 
@@ -102,7 +103,7 @@ public class ParserModule extends Module {
             rawEventIds.add(rawEvent.getId());
 
             long time = rawEvent.getTime();
-            int tick = toTick(time);
+            int tick = Util.getTick(time, config.analysis.interval.length);
 
             ticks.add(tick);
             if (maxTick < tick) {
@@ -113,8 +114,8 @@ public class ParserModule extends Module {
                 case COMM:
                     commsCounter.increment();
 
-
                     String[] parts = rawEvent.getRaw().split(",");
+
                     String[] recipients = parts[2].split(";");
 
                     traderEnts.add(Trader.parseRaw(parts[1]));
@@ -126,7 +127,7 @@ public class ParserModule extends Module {
                     }
 
                     for (String rec : recipients) {
-                        commEnts.add(new Comm(time, tick, parts[1], rec));
+                        commEnts.add(new Comm(time, tick, parts[0], parts[1], rec));
                     }
 
                     break;
@@ -224,10 +225,7 @@ public class ParserModule extends Module {
 
     }
 
-    public int toTick(long time) {
-        long over = time % config.analysis.interval.length;
-        return (int) ((time - over) / config.analysis.interval.length);
-    }
+
 
 
     /**
@@ -244,7 +242,9 @@ public class ParserModule extends Module {
 
         return new Trade(
                 time,
-                toTick(time),
+                //toTick(time),
+                Util.getTick(time, config.analysis.interval.length),
+                parts[0],
                 parts[1],
                 parts[2],
                 Float.parseFloat(parts[3]),

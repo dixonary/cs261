@@ -27,7 +27,7 @@ public class TradeReader extends ReaderModule {
 
     @Autowired
     public TradeReader(Config config) throws IOException {
-        super(config, "TRADE-READER", RawEvent.Type.TRADE, "trades");
+        super(config, "TRADE-READER", RawEvent.Type.TRADE);
     }
 
     public boolean flipside = false;

@@ -9,6 +9,7 @@ public class Comm {
 
     private long time;
     private int tick;
+    private String timestamp;
 
     private String sender;
     private String recipient;
@@ -17,9 +18,10 @@ public class Comm {
 
     }
 
-    public Comm(long time, int tick, String sender, String recipient) {
+    public Comm(long time, int tick, String timestamp, String sender, String recipient) {
         this.time = time;
         this.tick=tick;
+        this.timestamp=timestamp;
         this.sender = sender;
         this.recipient = recipient;
     }
@@ -38,6 +40,14 @@ public class Comm {
 
     public void setTime(long time) {
         this.time = time;
+    }
+
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
     }
 
     public int getTick() {

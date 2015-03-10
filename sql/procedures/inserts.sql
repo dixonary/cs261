@@ -91,6 +91,7 @@ DROP PROCEDURE IF EXISTS InsertTrade;
 CREATE PROCEDURE InsertTrade(
   time     BIGINT,
     tick INT,
+  timestamp VARCHAR(50),
   buyer    VARCHAR(50),
   seller   VARCHAR(50),
   price    FLOAT,
@@ -116,9 +117,9 @@ CREATE PROCEDURE InsertTrade(
 
 
     INSERT INTO Trade
-      (time, tick, buyer, seller, price, currency, size, symbol, sector, bid, ask, buyerId, sellerId, symbolId, sectorId)
+      (time, tick, `timestamp`, buyer, seller, price, currency, size, symbol, sector, bid, ask, buyerId, sellerId, symbolId, sectorId)
     VALUES
-      (time, tick, buyer, seller, price,currency, size, inSymbol, inSector, bid, ask, @buyerId, @sellerId, @symbolId, @sectorId);
+      (time, tick, timestamp, buyer, seller, price,currency, size, inSymbol, inSector, bid, ask, @buyerId, @sellerId, @symbolId, @sectorId);
   END //
 DELIMITER ;
 
@@ -217,6 +218,7 @@ DROP PROCEDURE IF EXISTS InsertComm;
 CREATE PROCEDURE InsertComm(
   time     BIGINT,
   tick    INT,
+  timestamp VARCHAR(50),
   sender    VARCHAR(50),
   recipient   VARCHAR(50)
 )
@@ -225,9 +227,9 @@ CREATE PROCEDURE InsertComm(
     SELECT @recipientId := id FROM Trader WHERE `email` = recipient;
 
     INSERT INTO Comm
-    (time, tick, sender, recipient, senderId, recipientId)
+    (time, tick, `timestamp`, sender, recipient, senderId, recipientId)
     VALUES
-      (time, tick, sender, recipient, @senderId, @recipientId);
+      (time, tick, timestamp, sender, recipient, @senderId, @recipientId);
   END //
 DELIMITER ;
 

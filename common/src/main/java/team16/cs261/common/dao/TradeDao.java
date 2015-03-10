@@ -20,7 +20,7 @@ public class TradeDao extends AbstractDao<Integer, Trade> {
     private static final String SELECT_AND_LIMIT = "SELECT * FROM Trade LIMIT ?, ?";
 
     //private static final String INSERT = "INSERT INTO Trade (time, buyer, seller, price, currency, size, symbol, sector, bid, ask) VALUES (?,?,?,?,?,?,?,?,?,?);";
-    private static final String INSERT = "CALL InsertTrade (?,?,?,?,?,?,?,?,?,?,?);";
+    private static final String INSERT = "CALL InsertTrade (?,?,?,?,?,?,?,?,?,?,?,?);";
 
     public TradeDao() {
         super(Trade.class);
@@ -32,6 +32,7 @@ public class TradeDao extends AbstractDao<Integer, Trade> {
                 INSERT,
                 ent.getTime(),
                 ent.getTick(),
+                ent.getTimestamp(),
                 ent.getBuyer(),
                 ent.getSeller(),
                 ent.getPrice(),
@@ -51,6 +52,7 @@ public class TradeDao extends AbstractDao<Integer, Trade> {
             args.add(new Object[]{
                     ent.getTime(),
                     ent.getTick(),
+                    ent.getTimestamp(),
                     ent.getBuyer(),
                     ent.getSeller(),
                     ent.getPrice(),

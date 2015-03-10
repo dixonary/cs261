@@ -1,5 +1,0 @@
-[client]
-host="178.62.32.54"
-user="cs261"
-password="pass"
-database="cs261"

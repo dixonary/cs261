@@ -14,7 +14,7 @@ import java.util.List;
 @Component
 public class CommDao extends AbstractDao<Integer, Comm> {
 
-    private static final String INSERT = "CALL InsertComm(?, ?, ?, ?)";
+    private static final String INSERT = "CALL InsertComm(?, ?, ?, ?, ?)";
     private static final String SELECT = "SELECT * FROM Comm";
 
     public CommDao() {
@@ -23,7 +23,7 @@ public class CommDao extends AbstractDao<Integer, Comm> {
 
     public void insert(Comm ent) {
         jdbcTemplate.update(INSERT,
-                ent.getTime(), ent.getTick(),
+                ent.getTime(), ent.getTick(), ent.getTimestamp(),
                 ent.getSender(), ent.getRecipient()
         );
     }
@@ -32,7 +32,7 @@ public class CommDao extends AbstractDao<Integer, Comm> {
         List<Object[]> args = new ArrayList<>();
         for (Comm ent : ents) {
             args.add(new Object[]{
-                    ent.getTime(), ent.getTick(),
+                    ent.getTime(), ent.getTick(), ent.getTimestamp(),
                     ent.getSender(), ent.getRecipient()
             });
         }
@@ -45,11 +45,6 @@ public class CommDao extends AbstractDao<Integer, Comm> {
         return jdbcTemplate.query(
                 SELECT, new Object[0],
                 new BeanPropertyRowMapper<>(Comm.class));
-    }
-
-    @Override
-    public Comm selectWhereId(Integer id) {
-        return null;
     }
 
 }

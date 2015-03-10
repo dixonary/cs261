@@ -55,7 +55,7 @@ public class CommTable extends DataTable<Comm> {
 
         return new Column[]{
                 new Column("id"),
-                new Column("time", new TimeFilter(c.time, 1420070400000L,1427842799999L)),
+                new Column("time", new TimeFilter(c.time, 1420070400000L, 1427842799999L)),
                 new Column("sender", new IdFilter(c.senderId, traders, true)),
                 new Column("recipient", new IdFilter(c.recipientId, traders, true)),
         };
@@ -87,8 +87,8 @@ public class CommTable extends DataTable<Comm> {
 
         for (int i = 0; i < cds.length; i++) {
             Column cd = cds[i];
-            if(cd.getFilter() == null) continue;
-            ColumnFilter cf= cd.getFilter();
+            if (cd.getFilter() == null) continue;
+            ColumnFilter cf = cd.getFilter();
 
             String queryParam = "columns[" + i + "][search][value]";
             String queryString = request().getQueryString(queryParam);
@@ -124,10 +124,9 @@ public class CommTable extends DataTable<Comm> {
 
     @Override
     public List<StringExpression> getCsvColumns() {
-        return Arrays.asList(
-                c.time.stringValue(),
-                c.sender, c.recipient
-        );
+        return Arrays.asList(new StringExpression[]{
+                c.timestamp, c.sender, c.recipient
+        });
     }
 
     private Expression<String> concatWs(String s, Object... o) {
