@@ -19,31 +19,44 @@ function DTModel(id, options) {
         });
     };
 
-    self.loadMetaData = function(data) {
-            self.source = data.source;
-            self.columns = []
+    self.loadMetaData = function (data) {
+        var query = new URI().search(true);
 
-            $.each(data.columns, function (index, columnDef) {
-                self.columns[index] = {
-                    title: columnDef.title,
-                    name: columnDef.name
-                };
+        self.source = data.source;
+        self.columns = []
 
-                var col = self.columns[index]
 
-                if (columnDef.filter) {
-                    col.multi = columnDef.filter.multi;
-                    col.domain = ko.mapping.fromJS(columnDef.filter.domain)
+        $.each(data.columns, function (index, columnDef) {
+            self.columns[index] = {
+                title: columnDef.title,
+                name: columnDef.name
+            };
 
-                    if (col.multi) {
-                        col.filter = ko.observableArray(columnDef.filter.value)
-                    } else {
-                        col.filter = ko.observable(columnDef.filter.value)
-                    }
-                } else {
-                    col.filter = ko.observable()
+            var col = self.columns[index]
+
+            if (columnDef.filter) {
+                var filterValue = columnDef.filter.value;
+
+                if (query[col.name]) {
+                    filterValue = query[col.name];
                 }
-            });
+
+                col.multi = columnDef.filter.multi;
+                col.domain = ko.mapping.fromJS(columnDef.filter.domain)
+
+                if (col.multi) {
+                    var values = [];
+                    if (filterValue)
+                        values = filterValue.split(",")
+
+                    col.filter = ko.observableArray(values)
+                } else {
+                    col.filter = ko.observable(filterValue)
+                }
+            } else {
+                col.filter = ko.observable()
+            }
+        });
 
     };
 
@@ -72,9 +85,9 @@ function DTModel(id, options) {
              },*/
             "columns": options.columns,
             "stateSave": true,
-/*            "stateLoadCallback": function () {
-                return null;
-            },*/
+            /*            "stateLoadCallback": function () {
+             return null;
+             },*/
             "stateLoadParams": function (settings, data) {
                 console.log("stateLoadParams")
 
@@ -89,41 +102,9 @@ function DTModel(id, options) {
                 //data.order = []
 
                 $.each(self.columns, function (index, column) {
-                    //if (!column.canFilter) return;
-
-                    var querySearch = query[column.name]
-
-                    console.log("col: " + index + " name: " + column.name + " filter: " + querySearch);
-
-                    //data.columns[index].search.search = querySearch;
-
-                    if(column.multi) {
-                        console.log("multi: " + querySearch);
-                        var values = []
-                        if(querySearch) {
-                            console.log("yes");
-                            values = querySearch.split(',');
-
-                            column.filter(values);
-                        } else {
-                            console.log("no");
-
-
-                        }
-                    } else {
-                        console.log("single: " + querySearch);
-
-                        if(querySearch) {
-                            console.log("yes");
-
-                            column.filter(querySearch);
-                        } else {
-                            console.log("no");
-                        }
-                    }
-
-
                     data.columns[index].search.search = column.filter();
+
+                    console.log("col: " + index + " name: " + column.name + " filter: " + column.filter());
                 });
 
 
@@ -132,7 +113,6 @@ function DTModel(id, options) {
 
             "stateSaveCallback": function (settings, data) {
                 console.log("stateSaveCallback")
-
 
                 var u = new URI();
                 u.setSearch({
@@ -151,7 +131,7 @@ function DTModel(id, options) {
 
                     var search = self.columns[index].filter();
 
-                    if(self.columns[index].multi) {
+                    if (self.columns[index].multi) {
                         console.log("index: " + index);
                         search = search.join(",");
                     }
@@ -159,10 +139,10 @@ function DTModel(id, options) {
                     //console.log("col: " + index + " name: " + column.name + " filter: " + colSearch);
                     //console.log("type: " + typeof colSearch);
 
-/*                    if (!search) {
-                        u.removeSearch(column.name)
-                    } else
-                        u.setSearch(column.name, search)*/
+                    /*                    if (!search) {
+                     u.removeSearch(column.name)
+                     } else
+                     u.setSearch(column.name, search)*/
 
 
                     if (!search) {
@@ -273,7 +253,7 @@ function DTModel(id, options) {
 
 
     self.observables = function () {
-       $.each(self.columns, function (index, column) {
+        $.each(self.columns, function (index, column) {
             var tabE = $(id).DataTable()
 
             var querySearch = tabE.column(index).search()
@@ -283,18 +263,18 @@ function DTModel(id, options) {
 
             //var values = colSearch;
 
-/*           var values = querySearch;
-           if(column.multi) {
-               values = []
-               if(querySearch)
-                   values = querySearch.split(',');
-           }*/
+            /*           var values = querySearch;
+             if(column.multi) {
+             values = []
+             if(querySearch)
+             values = querySearch.split(',');
+             }*/
 
-           //column.filter(values);
+            //column.filter(values);
 
             /*var values = colSearch.split(',').map(function (item) {
-                return parseInt(item, 10);
-            });*/
+             return parseInt(item, 10);
+             });*/
 
             /*            var values = [];
              if(colSearch){
