@@ -61,16 +61,24 @@ $ ( function ( ) {
                         "_traders": traders
                     };
 
-                    var link;
+                    var link, icon;
                     switch(data.factor) {
                         case "COMMON":
                             link = jsRoutes.controllers.Application.tradesBy(time, traders, traders)
+                            icon = "fa-exchange"
+                            break;
                         case "COMMON_BUYS":
                             link = jsRoutes.controllers.Application.tradesBy(time, traders, null)
+                            icon = "fa-exchange"
+                            break;
                         case "COMMON_SELLS":
                             link = jsRoutes.controllers.Application.tradesBy(time, null, traders)
+                            icon = "fa-exchange"
+                            break;
                         case "COMMS":
                             link = jsRoutes.controllers.Application.commsBy(time, traders, traders)
+                            icon = "fa-envelope"
+                            break;
                     }
 
 
@@ -81,8 +89,17 @@ $ ( function ( ) {
 
                     console.log("q: " + q)
 
+                    var href = '<a href="' + link.url + '"' +
+                                'class="btn btn-xs btn-primary btn-flat pull-right">' +
+                                'View' +
+                                '</a>'
+
                     //return data.label + " <a href='"+q+"'>(view events)</a>"
-                    return data.label + " <a href='"+link.url+"'>(view events)</a>"
+                    //return data.label + " <a href='"+link.url+"'>(view events)</a>"
+
+                    //return data.label + " " + href
+
+                    return data.label + " " + genIconButton(link.url, '', icon)
                 }
             },
             {
@@ -94,9 +111,23 @@ $ ( function ( ) {
                     //return row.source.label + " -> " + row.target.label
 
                     var label =row.source.label + " -> " + row.target.label
+                    //return label + " <a href='"+q+"'>(view factors)</a>"
 
+                    var edges = row.source.id + "," + row.target.id;
 
-                    return label + " <a href='"+q+"'>(view factors)</a>"
+                    var link = jsRoutes.controllers.Application.factorsBy(edges);
+
+                    var href = '<a href="' + link.url + '"' +
+                        'class="btn btn-xs btn-primary btn-flat pull-right">' +
+                        'View Factors&nbsp;<i class="fa fa-cube"></i>' +
+                        '</a>'
+
+                    return label + " " + genIconButton(link.url, '', 'fa-cube')
+
+                    //return data.label + " <a href='"+q+"'>(view events)</a>"
+                    //return data.label + " <a href='"+link.url+"'>(view events)</a>"
+
+                    return label + " " + href
                 },
                 "orderable": false
             },

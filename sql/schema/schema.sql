@@ -48,6 +48,8 @@ CREATE TABLE Tick (#RAWTRADE TABLE#
                       'CLUSTERED')
                              NOT NULL DEFAULT 'UNPARSED',
 
+  clusterCount    INTEGER NOT NULL DEFAULT 0,
+
 # counts
   trades             INTEGER NOT NULL DEFAULT 0,
   comms              INTEGER NOT NULL DEFAULT 0, # comms for the interval

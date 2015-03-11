@@ -20,7 +20,10 @@ GET        /clusters/:id        @controllers.Clusters.element(id: Integer)
 
 # main navigation
 GET        /clusters        @controllers.Application.clusters()
+GET        /clusters        @controllers.Application.clustersBy(time: String ?= null)
+
 GET        /factors        @controllers.Application.factors()
+GET        /factors         @controllers.Application.factorsBy(edge: String ?= null)
 GET        /factors/classes        @controllers.Application.factorClasses()
 
 GET        /trades        @controllers.Application.tradesBy(time: String ?= null, buyer: String ?= null, seller: String ?= null, symbol: String ?= null, sector: String ?= null)
@@ -60,8 +63,8 @@ GET        /sectors/:sector        @controllers.Sectors.element(sector: String)
 
 
 # data feeds
-#GET        /dashboard/clusters?since=:since        @controllers.data.Dashboard.clusters(since: Long)
-GET        /dashboard/clusters        @controllers.data.Dashboard.clusters(since: Int ?= 0, count: Int ?= 10)
+GET        /dashboard/clusters.json        @controllers.data.Dashboard.clusters(since: Int ?= 0, count: Int ?= 10)
+GET        /dashboard/ticks.json        @controllers.data.Dashboard.ticks(since: Int ?= 0, count: Int ?= 10)
 GET        /dashboard/activity.json        @controllers.data.Dashboard.activity()
 GET        /dashboard/events.json        @controllers.data.Dashboard.events()
 

@@ -3,6 +3,21 @@
  */
 
 var timeFormat = 'DD/MM/YYYY HH:mm:ss'
+var format = {
+    date: 'DD/MM/YYYY',
+    time: 'HH:mm:ss'
+};
+
+var genIconButton = function(href, label, icon) {
+    var html = '<a href="' + href + '" ' +
+        'class="btn btn-xs btn-primary btn-flat pull-right">' +
+        label + '&nbsp;<i class="fa '+icon+'"></i>' +
+        '</a>'
+
+    return html;
+}
+
+
 
 var Item = function (a, b, g) {
     this.value = a;

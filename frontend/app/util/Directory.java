@@ -11,11 +11,13 @@ import java.util.List;
  */
 public enum Directory implements MenuItem {
     DASHBOARD("Dashboard", "fa-dashboard", routes.Application.index()),
+        CHILD(DASHBOARD, "Activity", "fa-line-chart", routes.Application.index()),
+        FACTOR_CLASSES(DASHBOARD, "Factors", "fa-info", routes.Application.factorClasses()),
 
     CLUSTERS("Clusters", "fa-cubes", routes.Application.clusters()),
-    FACTORS("Factors", "fa-cube", null),
-        FACTOR_CLASSES(FACTORS, "Info", "fa-info", routes.Application.factorClasses()),
-        FACTOR_TABLE(FACTORS, "View", "fa-table", routes.Application.factors()),
+    FACTORS("Factors", "fa-cube", routes.Application.factors()),
+        //FACTOR_CLASSES(FACTORS, "Info", "fa-info", routes.Application.factorClasses()),
+        //FACTOR_TABLE(FACTORS, "View", "fa-table", routes.Application.factors()),
 
 
     DATA("Events", "fa-database", null),

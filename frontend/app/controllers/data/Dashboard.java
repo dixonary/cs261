@@ -2,7 +2,6 @@ package controllers.data;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mysema.query.sql.SQLQuery;
-import com.mysema.query.sql.SQLSubQuery;
 import com.mysema.query.types.Projections;
 import models.Point;
 import models.graph.EdgeDto;
@@ -50,6 +49,8 @@ public class Dashboard {
 
     QCluster cl = QCluster.Cluster;
 
+
+
     public Result clusters(int since, int count) {
         ObjectNode res = Json.newObject();
 
@@ -72,36 +73,36 @@ public class Dashboard {
 
         res.put("since", since);
         res.put("latest", newSince);
-        res.put("clusters", Json.toJson(data));
+        res.put("items", Json.toJson(data));
 
 
         return ok(Json.toJson(res));
     }
 
-    QTick qt = QTick.Tick;
+    QTick qT = QTick.Tick;
     public Result ticks(int since, int count) {
         ObjectNode res = Json.newObject();
 
         SQLQuery latest = template.newSqlQuery()
-                .from(qt)
+                .from(qT)
                         //.where(cl.status.eq("UNSEEN"))
-                .where(cl.id.gt(since))
-                .orderBy(cl.id.desc())
+                .where(qT.tick.gt(since))
+                .orderBy(qT.tick.desc())
                 .limit(count);
 
-        List<Cluster> data = template.query(latest,
-                Projections.bean(Cluster.class, cl.id, cl.tick, cl.time, cl.nodes, cl.status)
+        List<Tick> data = template.query(latest,
+                Projections.bean(Tick.class, qT.tick, qT.start, qT.end, qT.clusterCount)
         );
 
         long newSince = since;
-        for (Cluster cl : data) {
-            newSince = Math.max(newSince, cl.getId());
+        for (Tick ti : data) {
+            newSince = Math.max(newSince, ti.getTick());
             System.out.println("new: " + newSince);
         }
 
         res.put("since", since);
         res.put("latest", newSince);
-        res.put("clusters", Json.toJson(data));
+        res.put("items", Json.toJson(data));
 
 
         return ok(Json.toJson(res));

@@ -1,6 +1,6 @@
 var rd;
 
-var ClVM = function () {
+var ClusterVM = function () {
     var self = this;
 
     self.id = ko.observable()
@@ -15,88 +15,60 @@ var ClVM = function () {
     }, self);
 
     self.link = ko.computed(function () {
-        return jsRoutes.controllers.Clusters.element(self.id()).url
+        var url = jsRoutes.controllers.Clusters.element(self.id()).url
+
+        return genIconButton(url, '', 'fa-cubes')
     }, self);
 
     return self;
 }
 
-var ClusterVM = function () {
+var TickVM = function (tick, start, end, clusterCount) {
     var self = this;
 
-    self.clusters = ko.observableArray();
+    self.tick = ko.observable(tick);
+    self.start = ko.observable(start);
+    self.end = ko.observable(end);
+    self.clusterCount = ko.observable(clusterCount);
 
-    var since = -1;
-    var count = 8;
+    self.date = ko.computed(function () {
+        return moment(self.start()).format(format.date)
 
-    var updateInterval = 500; //Fetch data ever x milliseconds
-    var realtime = "on"; //If == to on then fetch data every x seconds. else stop fetching
+    }, this);
 
-    self.update = function () {
-        //interactive_plot.setData([getRandomData()]);
+    self.time = ko.computed(function () {
+        //return moment(self.start()).format(format.time)
+        var s = moment(self.start()).format(format.time) + "&nbsp;-&nbsp;" +
+            moment(self.end()).format(format.time);
 
-        $.ajax(
-            '/dashboard/clusters',
-            {
-                data: {since: since, count: count},
-                success: function (data) {
-                    since = data.latest;
+        return s
 
+    }, this);
 
-                    //var old = self.clusters();
+    self.interval = ko.computed(function () {
+        //return moment(self.start()).format(format.time)
+        var s = moment(self.start()).format(format.date) + " " +
+            moment(self.start()).format(format.time) + "&nbsp;-&nbsp;" +
+            moment(self.end()).format(format.time);
 
-                    $.each(data.clusters.reverse(), function (index, row) {
+        return s
 
-                        /*var cl = ko.mapping.fromJS(row, {}, new ClVM());
+    }, this);
 
-                         console.log(JSON.stringify(ko.mapping.toJS(cl)))
+    self.link = ko.computed(function () {
+        //return jsRoutes.controllers.Clusters.element(self.tick()).url
+        var time = self.start() + "," + self.end()
+        //return jsRoutes.controllers.Application.clustersBy(time).url
 
-                         self.clusters.unshift(cl);
+        var url = jsRoutes.controllers.Application.clustersBy(time).url;
 
-                         if (self.clusters().length > count) {
-                         self.clusters.pop();
-                         }*/
+        return genIconButton(url, '', 'fa-cubes')
+    }, self);
 
-                        var items = data.clusters.length;
-
-                        var delay = 10 * (count / items)
-
-                        $('#clusters').delay(delay).queue(function (next) {
-                            //console.log("row: " + JSON.stringify(row))
-
-
-                            var cl = ko.mapping.fromJS(row, {}, new ClVM());
-
-                            //console.log(JSON.stringify(ko.mapping.toJS(cl)))
-
-                            self.clusters.unshift(cl);
-
-                            if (self.clusters().length > count) {
-                                self.clusters.pop();
-                            }
-
-
-                            next();
-                        })
-
-
-                    })
-
-
-                    setTimeout(self.update, updateInterval);
-                }
-            }
-        )
-    }
-    self.newRow = function (element, index, data) {
-        $el = $(element);
-
-        $el.find("td").hide().slideDown();
-        $el.hide().fadeIn();
-    };
-
-
+    return self;
 }
+
+
 
 
 var Activity = function () {
@@ -136,15 +108,15 @@ var Activity = function () {
             },
             xaxis: {
                 mode: "time", timeformat: "%H:%M",
-                tickSize: [5, "minute"],
+                tickSize: [5, "minute"]
             },
             yaxis: {
 
             },
             /*yaxes: [
-                { position: "left"  },
-                { position: "right" }
-            ],*/
+             { position: "left"  },
+             { position: "right" }
+             ],*/
             grid: {
                 borderColor: "#f3f3f3",
                 borderWidth: 1,
@@ -170,7 +142,6 @@ var Activity = function () {
 
                     self.setData(data);
                     self.activity.setupGrid();
-
 
 
                     // Since the axes don't change, we don't need to call plot.setupGrid()
@@ -205,12 +176,26 @@ var Activity = function () {
 }
 
 
+var clusterLFVM;
+var tickLFVM;
+
 $(function () {
 
 
-    vm = new ClusterVM();
-    vm.update();
-    ko.applyBindings(vm, $('#clusters')[0]);
+    clusterLFVM = new LiveFeedVM({
+        source: '/dashboard/clusters.json',
+        itemVM: ClusterVM
+    });
+    clusterLFVM.update();
+    ko.applyBindings(clusterLFVM, $('#clusters')[0]);
+
+
+    tickLFVM = new LiveFeedVM({
+        source: '/dashboard/ticks.json',
+        itemVM: TickVM
+    });
+    tickLFVM.update();
+    ko.applyBindings(tickLFVM, $('#ticks')[0]);
 
 
     var ac = new Activity();
@@ -366,6 +351,84 @@ $(function () {
     /* END BAR CHART */
 
 });
+
+
+
+
+
+var LiveFeedVM = function (options) {
+    var self = this;
+
+    self.since = -1;
+    self.maxItems = 8;
+    self.items = ko.observableArray();
+
+
+    var updateInterval = 500; //Fetch data ever x milliseconds
+    var realtime = "on"; //If == to on then fetch data every x seconds. else stop fetching
+
+    self.update = function () {
+        //interactive_plot.setData([getRandomData()]);
+
+        $.ajax(
+            //'/dashboard/clusters',
+            options.source,
+            {
+                data: {
+                    since: self.since,
+                    maxItems: self.maxItems
+                },
+                success: function (data) {
+                    self.since = data.latest;
+
+
+                    //var old = self.clusters();
+
+                    $.each(data.items.reverse(), function (index, row) {
+
+                        var itemCount = data.items.length;
+
+                        var delay = 10 * (self.maxItems / itemCount)
+
+                        $('#clusters').delay(delay).queue(function (next) {
+                            //console.log("row: " + JSON.stringify(row))
+
+
+                            var cl = ko.mapping.fromJS(row, {}, new options.itemVM());
+
+                            //console.log(JSON.stringify(ko.mapping.toJS(cl)))
+
+                            self.items.unshift(cl);
+
+                            if (self.items().length > self.maxItems) {
+                                self.items.pop();
+                            }
+
+
+                            next();
+                        })
+
+
+                    })
+
+
+                    setTimeout(self.update, updateInterval);
+                }
+            }
+        )
+    }
+    self.newRow = function (element, index, data) {
+        $el = $(element);
+
+        $el.find("td").hide().slideDown();
+        $el.hide().fadeIn();
+    };
+
+
+}
+
+
+
 
 /*
  * Custom Label formatter

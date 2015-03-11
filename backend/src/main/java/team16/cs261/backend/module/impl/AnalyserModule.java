@@ -76,31 +76,24 @@ public class AnalyserModule extends Module {
         }
     }
 
-    int trades = 0;
-    long timeTaken = 0;
-
-
     public static final String CALL_AGGR = "CALL Aggr(?)";
-    //public static final String UPDATE_COUNTS = "CALL UpdateCounts(?, ?)";
-    //public static final String CALL_OUTPUT = "CALL Output(?, ?, ?, ?, ?)";
-
     Timer timer;
 
     @Transactional
     public void process() {
 
 
-        for(Map.Entry<Long, Future<MclOutput>> entry : mclOutputs.entrySet()) {
+        for (Map.Entry<Long, Future<MclOutput>> entry : mclOutputs.entrySet()) {
             Future<MclOutput> future = entry.getValue();
-            if(!future.isDone()) continue;
+            if (!future.isDone()) continue;
 
             long tick = entry.getKey();
             try {
                 List<Set<Integer>> clusters = future.get().getClusters();
 
                 jdbcTemplate.update(
-                        "UPDATE Tick SET status = 'CLUSTERED', clusters = ? WHERE tick = ?",
-                        toJson(clusters), tick);
+                        "UPDATE Tick SET status = ?, clusterCount = ?, clusters = ? WHERE tick = ?",
+                        "CLUSTERED", clusters.size(), toJson(clusters), tick);
 
                 insertClusters(tick, clusters);
 
@@ -217,11 +210,10 @@ public class AnalyserModule extends Module {
                     "FROM #tbl group by #fld;";
 
     public void updateFactors(long tick, String f, String table, String field, double lambda, double sig) {
-        if(lambda==0) return;
+        if (lambda == 0) return;
 
         PoissonDistribution dist = new PoissonDistribution(lambda);
         int threshold = dist.inverseCumulativeProbability(1 - sig) + 1;
-
 
 
         // insert poisson numbers
