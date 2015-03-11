@@ -77,8 +77,8 @@ public class Graph {
     public static final String SELECT_TRADERS =
             "SELECT " +
                     "T.id, " +
-                    //"T.email AS label, " +
-                    "T.id AS label, " +
+                    "T.email AS label, " +
+                    //"T.id AS label, " +
                     "'trader' AS `group` " +
                     "FROM Node N JOIN Trader T ON N.id = T.id";
 
@@ -91,10 +91,11 @@ public class Graph {
     public static final String SELECT_EDGES =
             "SELECT F.id, TP.id as edge, `trader1Id` AS `from`, trader2Id AS `to`, " +
                     //"score * 100 as label, "+
-                    "centile AS value, CONCAT(factor, ': ',value) AS label, " +
+                    //"centile AS value, " +
+                    "CONCAT(factor, ': ',value) AS label, " +
                     "CONCAT(score * 100, ' (', sig, '%)') as title, "+
-                    "score  as value, "+
-                    "score * 100 as length "+
+                    //"score  as value, "+
+                    "240 as length "+
                     //"centile AS value, CONCAT(factor, ': ',value) AS label, " +
                     //"sig AS title " +
                     "FROM TraderPair TP JOIN Factor F ON TP.id = F.edge WHERE tick = ? " +

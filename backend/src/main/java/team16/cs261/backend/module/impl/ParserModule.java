@@ -93,22 +93,18 @@ public class ParserModule extends Module {
         List<Trade> tradeEnts = new ArrayList<>();
         List<Comm> commEnts = new ArrayList<>();
 
-        long maxTime = -1;
+
 
         Set<Integer> ticks = new HashSet<>();
         int maxTick = -1;
-
 
         for (RawEvent rawEvent : rawEvents) {
             rawEventIds.add(rawEvent.getId());
 
             long time = rawEvent.getTime();
             int tick = Util.getTick(time, config.analysis.interval.length);
-
             ticks.add(tick);
-            if (maxTick < tick) {
-                maxTick = tick;
-            }
+            maxTick = Math.max(maxTick, tick);
 
             switch (rawEvent.getType()) {
                 case COMM:
@@ -160,9 +156,7 @@ public class ParserModule extends Module {
             }
         }
 
-
         List<Tick> tickEnts = new ArrayList<>();
-
         for (Integer t : ticks) {
             Tick tickEnt = new Tick(t, config.analysis.interval.length);
             tickEnts.add(tickEnt);
@@ -172,30 +166,6 @@ public class ParserModule extends Module {
 
         tickDao.insert(tickEnts);
 
-
-
-/*        long currentTick = toTick(maxTime);
-
-        Integer maxTick = jdbcTemplate.queryForObject("SELECT max(tick) FROM Tick", Integer.class);
-        if (maxTick == null) {
-            //jdbcTemplate.update("INSERT INTO Tick (tick) VALUES (?)", currentTick - 1);
-            long tick = currentTick - 1;
-
-            jdbcTemplate.update("CALL InsertTick (?, ?, ?)",
-                    tick,
-                    tick * config.getTimeInterval(),
-                    (tick + 1) * config.getTimeInterval());
-            return;
-        }
-
-        for (int tick = maxTick + 1; tick < currentTick; tick++) {
-            //System.out.println("i: " + tick);
-            //jdbcTemplate.update("INSERT INTO Tick (tick) VALUES (?)", i);
-            jdbcTemplate.update("CALL InsertTick (?, ?, ?)",
-                    tick,
-                    tick * config.getTimeInterval(),
-                    (tick + 1) * config.getTimeInterval());
-        }*/
 
 
         //persist entities

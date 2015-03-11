@@ -31,8 +31,8 @@ public class MclServiceImpl implements MclService {
     @Override
     public Future<MclOutput> run(long tick, String mclInput) {
 
-        double i = 3.5D;
-        double c = 2.5D;
+        double i = 2D;
+        double c = 1D;
 
         try {
             Path mclWd = Paths.get(System.getProperty("user.home"), "fraud", "mcl");

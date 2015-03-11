@@ -8,24 +8,26 @@ import java.util.List;
  * Created by martin on 03/03/15.
  */
 public enum FactorClass {
-    COMMON(FactorGroup.TRADER_TRADER, "Common symbols", "", ""),
-    COMMON_BUYS(FactorGroup.TRADER_TRADER, "Common buys", "", ""),
-    COMMON_SELLS(FactorGroup.TRADER_TRADER, "Common sells", "", ""),
-    COMMS(FactorGroup.TRADER_TRADER, "Comms", "", ""),
+    COMMON(FactorGroup.TRADER_TRADER, "Common symbols", 0.05D, "", ""),
+    COMMON_BUYS(FactorGroup.TRADER_TRADER, "Common buys", 0.25D, "", ""),
+    COMMON_SELLS(FactorGroup.TRADER_TRADER, "Common sells", 0.25D, "", ""),
+    COMMS(FactorGroup.TRADER_TRADER, "Comms", 0.5D,  "", ""),
 
-    TRADES(FactorGroup.TRADER_SYMBOL, "Trades", "", ""),
-    BUYS(FactorGroup.TRADER_SYMBOL, "Buys", "", ""),
-    SELLS(FactorGroup.TRADER_SYMBOL, "Sells", "", "");
+    TRADES(FactorGroup.TRADER_SYMBOL, "Trades", 0.05D, "", ""),
+    BUYS(FactorGroup.TRADER_SYMBOL, "Buys", 0.05D, "", ""),
+    SELLS(FactorGroup.TRADER_SYMBOL, "Sells", 0.05D, "", "");
 
 
     FactorGroup group;
     String label;
+    public double sig;
 
     String lambda;
 
-    FactorClass(FactorGroup group, String label, String lambda, String field) {
+    FactorClass(FactorGroup group, String label, double sig, String lambda, String field) {
         this.group = group;
         this.label = label;
+        this.sig=sig;
         this.lambda = lambda;
     }
 

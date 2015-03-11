@@ -5,138 +5,132 @@
 }{
 
 
+<div class="row">
+    <div class="col-xs-4">
+        <!-- TABLE: LATEST ORDERS -->
+        <div id="clusters" class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">Latest Clusters</h3>
+                <div class="box-tools pull-right">
+                    <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                </div>
+            </div><!-- /.box-header -->
+            <div class="box-body">
+                <div class="table-responsive">
 
+                    <table class="table no-margin">
+                        <thead>
+                            <tr>
+                                <th style="width: 20%">Cluster ID</th>
+                                <th style="width: 20%"></th>
+                                <th style="width: 40%">Discovered</th>
+                                @*<th style="width: 25%">Nodes</th>*@
+                                <th style="width: 20%"></th>
+                            </tr>
+                        </thead>
+                        <tbody data-bind="foreach: { data: items, afterRender: newRow }">
+                            <tr>
+                                <td>
+                                    <span data-bind="text: id"></span>
+                                    <span data-bind="if: unseen" class="">
+                                        <span class="label label-default pull-right" data-bind="text: status"></span>
+                                    </span>
+                                </td>
+                                <td></td>
+                                <td>
+                                    <span data-bind="text: discovered"></span>
+                                </td>
+                                @*<td data-bind="text: nodes"></td>*@
+                                <td data-bind="html: link">
+@*                                    <a data-bind="attr : { href: link }"
+                                        class="btn btn-xs btn-primary btn-flat pull-right">View
+                                    </a>*@
+                                </td>
 
+                            </tr>
+                        </tbody>
+                    </table>
 
-
-    <div class="row">
-
-        <div class="col-xs-4">
-            <!-- TABLE: LATEST ORDERS -->
-            <div id="clusters" class="box box-primary">
-                <div class="box-header with-border">
-                    <h3 class="box-title">Latest Clusters</h3>
-                    <div class="box-tools pull-right">
-                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-                        <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-                    </div>
-                </div><!-- /.box-header -->
-                <div class="box-body">
-                    <div class="table-responsive">
-
-                        <table class="table no-margin">
-                            <thead>
-                                <tr>
-                                    <th style="width: 20%">Cluster ID</th>
-                                    <th style="width: 20%"></th>
-                                    <th style="width: 40%">Discovered</th>
-                                    @*<th style="width: 25%">Nodes</th>*@
-                                    <th style="width: 20%"></th>
-                                </tr>
-                            </thead>
-                            <tbody data-bind="foreach: { data: items, afterRender: newRow }">
-                                <tr>
-                                    <td>
-                                        <span data-bind="text: id"></span>
-                                        <span data-bind="if: unseen" class="">
-                                            <span class="label label-default pull-right" data-bind="text: status"></span>
-                                        </span>
-                                    </td>
-                                    <td></td>
-                                    <td>
-                                        <span data-bind="text: discovered"></span>
-                                    </td>
-                                    @*<td data-bind="text: nodes"></td>*@
-                                    <td data-bind="html: link">
-    @*                                    <a data-bind="attr : { href: link }"
-                                            class="btn btn-xs btn-primary btn-flat pull-right">View
-                                        </a>*@
-                                    </td>
-
-                                </tr>
-                            </tbody>
-                        </table>
-
-                    </div><!-- /.table-responsive -->
-                </div><!-- /.box-body -->
-    @*            <div class="box-footer clearfix">
-                    <a href="javascript::;" class="btn btn-sm btn-info btn-flat pull-left">Place New Order</a>
-                    <a href="javascript::;" class="btn btn-sm btn-default btn-flat pull-right">View All Orders</a>
-                </div><!-- /.box-footer -->*@
-            </div><!-- /.box -->
-        </div>
-
-        <div class="col-xs-4">
-                <!-- TABLE: LATEST ORDERS -->
-            <div id="ticks" class="box box-primary">
-                <div class="box-header with-border">
-                    <h3 class="box-title">Ticks</h3>
-                    <div class="box-tools pull-right">
-                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-                        <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-                    </div>
-                </div><!-- /.box-header -->
-                <div class="box-body">
-                    <div class="table-responsive">
-
-                        <table class="table no-margin">
-                            <thead>
-                                <tr>
-                                    <th style="width: 30%">Date</th>
-                                    <th style="width: 50%">Time Interval</th>
-                                    <th style="width: 20%">Clusters</th>
-                                </tr>
-                            </thead>
-                            <tbody data-bind="foreach: { data: items, afterRender: newRow }">
-                                <tr>
-                                    <td>
-                                        <span data-bind="text: date"></span>
-                                    </td>
-                                    <td  data-bind="html: time">
-
-                                    </td>
-                                    <td class="text-center" >
-                                        <span data-bind="text: clusterCount"></span>
-                                        <span data-bind="html: link"></span>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                    </div><!-- /.table-responsive -->
-                </div><!-- /.box-body -->
-                @*            <div class="box-footer clearfix">
+                </div><!-- /.table-responsive -->
+            </div><!-- /.box-body -->
+@*            <div class="box-footer clearfix">
                 <a href="javascript::;" class="btn btn-sm btn-info btn-flat pull-left">Place New Order</a>
                 <a href="javascript::;" class="btn btn-sm btn-default btn-flat pull-right">View All Orders</a>
-                </div><!-- /.box-footer -->*@
-            </div><!-- /.box -->
-        </div>
+            </div><!-- /.box-footer -->*@
+        </div><!-- /.box -->
+    </div>
 
+    <div class="col-xs-4">
+            <!-- TABLE: LATEST ORDERS -->
+        <div id="ticks" class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">Ticks</h3>
+                <div class="box-tools pull-right">
+                    <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                </div>
+            </div><!-- /.box-header -->
+            <div class="box-body">
+                <div class="table-responsive">
 
-        <div class="col-xs-4">
+                    <table class="table no-margin">
+                        <thead>
+                            <tr>
+                                <th style="width: 30%">Date</th>
+                                <th style="width: 50%">Time Interval</th>
+                                <th style="width: 20%">Clusters</th>
+                            </tr>
+                        </thead>
+                        <tbody data-bind="foreach: { data: items, afterRender: newRow }">
+                            <tr>
+                                <td>
+                                    <span data-bind="text: date"></span>
+                                </td>
+                                <td  data-bind="html: time">
 
-                <!-- interactive chart -->
-            <div class="box box-primary">
-                <div class="box-header">
-                    <i class="fa fa-bar-chart-o"></i>
-                    <h3 class="box-title">Clusters</h3>
-                    <div class="box-tools pull-right">
-                        Real time
-                        <div class="btn-group" id="realtime" data-toggle="btn-toggle">
-                            <button type="button" class="btn btn-default btn-xs active" data-toggle="on">On</button>
-                            <button type="button" class="btn btn-default btn-xs" data-toggle="off">Off</button>
-                        </div>
+                                </td>
+                                <td class="text-center" >
+                                    <span data-bind="text: clusterCount"></span>
+                                    <span data-bind="html: link"></span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div><!-- /.table-responsive -->
+            </div><!-- /.box-body -->
+            @*            <div class="box-footer clearfix">
+            <a href="javascript::;" class="btn btn-sm btn-info btn-flat pull-left">Place New Order</a>
+            <a href="javascript::;" class="btn btn-sm btn-default btn-flat pull-right">View All Orders</a>
+            </div><!-- /.box-footer -->*@
+        </div><!-- /.box -->
+    </div>
+
+    <div class="col-xs-4">
+
+            <!-- interactive chart -->
+        <div class="box box-primary">
+            <div class="box-header">
+                <i class="fa fa-bar-chart-o"></i>
+                <h3 class="box-title">Clusters</h3>
+                <div class="box-tools pull-right">
+                    Real time
+                    <div class="btn-group" id="realtime" data-toggle="btn-toggle">
+                        <button type="button" class="btn btn-default btn-xs active" data-toggle="on">On</button>
+                        <button type="button" class="btn btn-default btn-xs" data-toggle="off">Off</button>
                     </div>
                 </div>
-                <div class="box-body">
+            </div>
+            <div class="box-body">
 
-                    <div id="cluster-rate" style="height: 300px;"></div>
-                    <div id="cluster-rate-legend"></div>
-                </div><!-- /.box-body-->
-            </div><!-- /.box -->
+                <div id="cluster-rate" style="height: 300px;"></div>
+                <div id="cluster-rate-legend"></div>
+            </div><!-- /.box-body-->
+        </div><!-- /.box -->
 
-        </div>
     </div>
+</div>
 
 
 <div class="row">

@@ -7,6 +7,9 @@
 function DTModel(id, options) {
     var self = this;
 
+    self.start = ko.observable(0);
+    self.length = ko.observable(20);
+
     self.options = options;
     self.columns = [];
 

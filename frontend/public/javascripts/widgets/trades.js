@@ -2,7 +2,7 @@ var options;
 var tradeTable;
 
 
-$ ( function ( ) {
+$(function () {
 
     //tradeTable = new TradeTable ( ) ;
 
@@ -12,7 +12,7 @@ $ ( function ( ) {
 
 
     options = {
-        "ajax" :{
+        "ajax": {
             "url": "/data/trades",
             "meta": "/data/trades/meta"
         },
@@ -30,7 +30,7 @@ $ ( function ( ) {
                 "data": "buyer",
                 "render": function (data, type, row) {
                     //return '<a href="/traders/' + data + '">' + data + '</a>'
-                    var url = jsRoutes.controllers.Application.tradesBy(row.buyerId, null, null, null).url;
+                    var url = jsRoutes.controllers.Application.tradesBy(null, row.buyerId, null, null, null).url;
                     return '<a href="' + url + '">' + data + '</a>'
                 }
             },
@@ -38,7 +38,7 @@ $ ( function ( ) {
                 "data": "seller",
                 "render": function (data, type, row) {
                     //return '<a href="/traders/' + data + '">' + data + '</a>'
-                    var url = jsRoutes.controllers.Application.tradesBy(null, row.sellerId, null, null).url;
+                    var url = jsRoutes.controllers.Application.tradesBy(null, null, row.sellerId, null, null).url;
                     return '<a href="' + url + '">' + data + '</a>'
                 }
             },
@@ -50,8 +50,22 @@ $ ( function ( ) {
             },
             { "data": "size" },
             { "data": "currency" },
-            { "data": "symbol" },
-            { "data": "sector" },
+            {
+                "data": "symbol",
+                "render": function (data, type, row) {
+                    //return '<a href="/traders/' + data + '">' + data + '</a>'
+                    var url = jsRoutes.controllers.Application.tradesBy(null, null, null, row.symbolId, null).url;
+                    return '<a href="' + url + '">' + data + '</a>'
+                }
+            },
+            {
+                "data": "sector",
+                "render": function (data, type, row) {
+                    //return '<a href="/traders/' + data + '">' + data + '</a>'
+                    var url = jsRoutes.controllers.Application.tradesBy(null, null, null, null, row.sectorId).url;
+                    return '<a href="' + url + '">' + data + '</a>'
+                }
+            },
             {
                 "data": "bid",
                 "render": function (data) {
@@ -75,13 +89,10 @@ $ ( function ( ) {
 
     tradeTable.getMetaData();
     tradeTable.loadRows();
-    ko.applyBindings ( tradeTable ) ;
-    tradeTable.subscribe ( )
+    ko.applyBindings(tradeTable);
+    tradeTable.subscribe()
 
     //tradeTable.loadRows ( ) ;
 
 
-
-
-
-} ) ;
+});

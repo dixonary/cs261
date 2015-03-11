@@ -18,6 +18,7 @@ import team16.cs261.common.dao.*;
 import team16.cs261.common.entity.Tick;
 import team16.cs261.common.entity.Trade;
 import team16.cs261.common.entity.graph.Edge;
+import team16.cs261.common.meta.FactorClass;
 
 import java.io.IOException;
 import java.util.*;
@@ -133,7 +134,7 @@ public class AnalyserModule extends Module {
         updateCountsTime.stop();*/
 
 
-        int window = 8;
+        int window = 24;
 
         Tick avgTick = tickDao.selectAvgWhereId(tick, window);
 
@@ -147,10 +148,10 @@ public class AnalyserModule extends Module {
 
         double sig = 0.05D;
 
-        updateFactors(tick, "COMMON", "TraderPair", "common", avgTick.getCommonPerPair(), sig);
-        updateFactors(tick, "COMMON_BUYS", "TraderPair", "commonBuys", avgTick.getCommonBuysPerPair(), sig);
-        updateFactors(tick, "COMMON_SELLS", "TraderPair", "commonSells", avgTick.getCommonSellsPerPair(), sig);
-        updateFactors(tick, "COMMS", "TraderPair", "comms", avgTick.getCommsPerPair(), sig);
+        //updateFactors(tick, "COMMON", "TraderPair", "common", avgTick.getCommonPerPair(), FactorClass.COMMON.sig);
+        updateFactors(tick, "COMMON_BUYS", "TraderPair", "commonBuys", avgTick.getCommonBuysPerPair(), FactorClass.COMMON_BUYS.sig);
+        updateFactors(tick, "COMMON_SELLS", "TraderPair", "commonSells", avgTick.getCommonSellsPerPair(), FactorClass.COMMON_SELLS.sig);
+        updateFactors(tick, "COMMS", "TraderPair", "comms", avgTick.getCommsPerPair(), FactorClass.COMMS.sig);
 
 
         //outputTime.stop();
@@ -161,10 +162,6 @@ public class AnalyserModule extends Module {
         //System.out.println(timer);
 
         findClusters(tick);
-
-
-
-   /*     */
 
         //mcl.run(sm, 0.001D, 2D, 0D, 0.001D);
         //System.out.println("Mcl: "+ sm);
@@ -198,7 +195,7 @@ public class AnalyserModule extends Module {
 
     public static final String UPDATE_FACTORS =
             "INSERT INTO Factor (tick, edge, factor, value, centile, sig, score) " +
-                    "SELECT ?, id, ?, #fld, cdf, sig, 1-(sig/0.05) " +
+                    "SELECT ?, id, ?, #fld, cdf, sig, 1-(sig/?) " +
                     "FROM #tbl " +
                     "JOIN Poisson " +
                     "ON #fld = x " +
@@ -209,11 +206,11 @@ public class AnalyserModule extends Module {
                     "SELECT ?, ?, #fld, count(*) " +
                     "FROM #tbl group by #fld;";
 
-    public void updateFactors(long tick, String f, String table, String field, double lambda, double sig) {
+    public void updateFactors(long tick, String f, String table, String field, double lambda, double sigTh) {
         if (lambda == 0) return;
 
         PoissonDistribution dist = new PoissonDistribution(lambda);
-        int threshold = dist.inverseCumulativeProbability(1 - sig) + 1;
+        int threshold = dist.inverseCumulativeProbability(1 - sigTh) + 1;
 
 
         // insert poisson numbers
@@ -238,7 +235,7 @@ public class AnalyserModule extends Module {
         //
         String sql = UPDATE_FACTORS.replaceAll("#fld", field).replace("#tbl", table);
         System.out.println("sql: " + sql);
-        jdbcTemplate.update(sql, tick, f, threshold);
+        jdbcTemplate.update(sql, tick, f, sigTh, threshold);
 
 
         String updateFactorFreqs = UPDATE_FACTOR_FREQS.replaceAll("#fld", field).replace("#tbl", table);
