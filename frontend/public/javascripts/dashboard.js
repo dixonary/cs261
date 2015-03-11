@@ -71,28 +71,20 @@ var TickVM = function (tick, start, end, clusterCount) {
 
 
 
-var Activity = function () {
+var Activity = function (options) {
     var self = this;
 
-    /*
-     * Activity
-     * -----------------------
-     */
-    // We use an inline data source in the example, usually data would
-    // be fetched from a server
-    var data = [], totalPoints = 100;
 
-    self.setData = function (data) {
 
-        self.activity.setData(
-            [
+    self.toSeries = function (data) {
+        return [
                 {label: "Trades/second", color: "#3c8dbc", data: data[0]},
                 {label: "Comms/second", color: "#FDEE00", data: data[1]}
-            ]
-        )
+            ];
     };
 
-    self.activity = $.plot("#activity",
+    var $el = $(options.id);
+    self.activity = $.plot($el,
         [],
         {
             series: {
@@ -135,12 +127,15 @@ var Activity = function () {
     self.updateActivity = function () {
 
         $.ajax(
-            '/dashboard/activity.json',
+            //'/dashboard/activity.json',
+            options.source,
             {
                 success: function (data) {
-                    console.log(data);
+                    console.log(data + " act: " + self.activity);
 
-                    self.setData(data);
+
+
+                    self.activity.setData(data);
                     self.activity.setupGrid();
 
 
@@ -198,7 +193,15 @@ $(function () {
     ko.applyBindings(tickLFVM, $('#ticks')[0]);
 
 
-    var ac = new Activity();
+    var cr = new Activity({
+        id: '#cluster-rate',
+        source: '/dashboard/clusters/rate.json'
+    });
+
+    var ac = new Activity({
+        id: '#activity',
+        source: '/dashboard/activity.json'
+    });
 
 
     if (true) return;

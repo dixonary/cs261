@@ -9,6 +9,7 @@ import team16.cs261.backend.service.MclService;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -30,7 +31,7 @@ public class MclServiceImpl implements MclService {
     @Override
     public Future<MclOutput> run(long tick, String mclInput) {
 
-        double i = 4D;
+        double i = 3.5D;
         double c = 2.5D;
 
         try {
@@ -39,7 +40,7 @@ public class MclServiceImpl implements MclService {
             Files.createDirectories(mclWd);
 
             String fIn = String.valueOf(tick);
-            String fOut = "out."+tick;
+            String fOut = "out." + tick;
 
             Path path = mclWd.resolve(fIn);
             Path out = mclWd.resolve(fOut);
@@ -55,7 +56,7 @@ public class MclServiceImpl implements MclService {
                     "-o", fOut,
                     "-I", String.valueOf(i),
                     "--sum-loops",
-                    "-c",  String.valueOf(c)
+                    "-c", String.valueOf(c)
             }, new String[0], mclWd.toFile());
 
             p.waitFor();
@@ -64,9 +65,10 @@ public class MclServiceImpl implements MclService {
             MclOutput output = new MclOutput(lines);
 
             return new AsyncResult<>(output);
-        } catch (InterruptedException e) {
+        } catch (NoSuchFileException e) {
+            System.out.println("Failed to cluster tick: " + tick);
             e.printStackTrace();
-        } catch (IOException e) {
+        } catch (InterruptedException | IOException e) {
             e.printStackTrace();
         }
 

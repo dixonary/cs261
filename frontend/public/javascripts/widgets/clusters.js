@@ -79,12 +79,6 @@ $ ( function ( ) {
                 "data": null,
                 "defaultContent": ''
             },*/
-            {
-                "data": "time",
-                "render": function (data) {
-                    return moment(data).format(timeFormat)
-                }
-            }
         ]
     }
 

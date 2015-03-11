@@ -22,10 +22,7 @@ import team16.cs261.common.querydsl.entity.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static play.mvc.Results.ok;
 
@@ -85,7 +82,7 @@ public class Dashboard {
 
         SQLQuery latest = template.newSqlQuery()
                 .from(qT)
-                        //.where(cl.status.eq("UNSEEN"))
+                        .where(qT.status.eq("CLUSTERED"))
                 .where(qT.tick.gt(since))
                 .orderBy(qT.tick.desc())
                 .limit(count);
@@ -106,6 +103,47 @@ public class Dashboard {
 
 
         return ok(Json.toJson(res));
+    }
+
+    public Result clusterRate() {
+        int ticks = 30;
+
+        QTick qT = QTick.Tick;
+
+        SQLQuery latest = template.newSqlQuery()
+                .from(qT)
+                        //.where(cl.status.eq("UNSEEN"))
+                .orderBy(qT.tick.desc())
+                .limit(ticks);
+
+
+        List<Point> data = template.query(latest,
+                Projections.constructor(
+                        Point.class,
+                        qT.tick.longValue().multiply(120 * 1000),
+                        qT.clusterCount.doubleValue(),
+                        qT.clusterCount.doubleValue()
+                )
+        );
+
+        double[][] clusters = new double[data.size()][2];
+
+        for (int i = 0; i < data.size(); i++) {
+            Point p = data.get(i);
+
+            clusters [i][0] = p.getX();
+            clusters [i][1] = p.getY1();
+
+            //points[p.getX()][i] = p.getY1();
+            //points[p.getX()][i] = p.getY1();
+        }
+
+
+        ObjectNode series = Json.newObject();
+        series.put("label", "Clusters");
+        series.put("data", Json.toJson(clusters));
+
+        return ok(Json.toJson(Arrays.asList(series)));
     }
 
     public Result activity() {
@@ -145,7 +183,17 @@ public class Dashboard {
 
         double[][][] points = {tradesRead, commsRead};
 
-        return ok(Json.toJson(points));
+        ObjectNode tSeries = Json.newObject();
+        tSeries.put("label", "Trades/second");
+        tSeries.put("color", "#3c8dbc");
+        tSeries.put("data", Json.toJson(tradesRead));
+
+        ObjectNode CSeries = Json.newObject();
+        CSeries.put("label", "Comms/second");
+        CSeries.put("color", "#FDEE00");
+        CSeries.put("data", Json.toJson(commsRead));
+
+        return ok(Json.toJson(Arrays.asList(tSeries, CSeries)));
     }
 
     public Result events() {
@@ -178,7 +226,7 @@ public class Dashboard {
 
         double[][][] points = {trades, comms};
 
-        return ok(Json.toJson(points));
+        return ok("null");
     }
 
     public Result rates() {

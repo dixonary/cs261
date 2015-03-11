@@ -2,7 +2,6 @@ package util.datatables;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mysema.query.sql.SQLQuery;
-import com.mysema.query.types.ConstructorExpression;
 import com.mysema.query.types.Expression;
 import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.Predicate;
@@ -61,7 +60,6 @@ public abstract class DataTable<E> {
 
         long recordsTotal = template.count(total);
         long recordsFiltered = template.count(filtered);
-
         List<E> data = template.query(filtered, getProjection());
 
         ObjectNode response = Json.newObject();
@@ -94,8 +92,9 @@ public abstract class DataTable<E> {
     }
 
     ObjectNode meta;
+
     public Result meta() {
-        if(meta==null) {
+        if (meta == null) {
             meta = Json.newObject();
 
             meta.put("source", getSource());
@@ -105,7 +104,7 @@ public abstract class DataTable<E> {
     }
 
     public String getCsvHeader() {
-        return "headers";
+        return null;
     }
 
     public List<StringExpression> getCsvColumns() {
