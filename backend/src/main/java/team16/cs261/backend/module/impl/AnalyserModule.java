@@ -12,6 +12,7 @@ import team16.cs261.backend.model.Graph;
 import team16.cs261.backend.model.MclOutput;
 import team16.cs261.backend.module.Module;
 import team16.cs261.backend.service.MclService;
+import team16.cs261.backend.service.impl.MclServiceImpl;
 import team16.cs261.backend.util.Timer;
 import team16.cs261.common.dao.*;
 import team16.cs261.common.entity.Tick;
@@ -98,15 +99,13 @@ public class AnalyserModule extends Module {
                 List<Set<Integer>> clusters = future.get().getClusters();
 
                 jdbcTemplate.update(
-                        "UPDATE Tick SET clusters = ? WHERE tick = ?",
+                        "UPDATE Tick SET status = 'CLUSTERED', clusters = ? WHERE tick = ?",
                         toJson(clusters), tick);
 
                 insertClusters(tick, clusters);
 
                 mclOutputs.remove(tick);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
+            } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
         }
@@ -140,19 +139,6 @@ public class AnalyserModule extends Module {
         jdbcTemplate.update(UPDATE_COUNTS, args);
         updateCountsTime.stop();*/
 
-
-        Double lambda = jdbcTemplate.queryForObject(
-                "SELECT commsMa / (SELECT count(*) FROM TraderPair) FROM Tick WHERE tick = ?",
-                new Object[]{tick}, Double.class);
-        Integer maxComms = jdbcTemplate.queryForObject("SELECT max(comms) FROM TraderPair", Integer.class);
-        //System.out.println("Comms: " + lambda);
-
-
-        //SqlRowSet rows = jdbcTemplate.queryForRowSet("SELECT trader1, trader2, common")
-
-
-        //outputs
-        //final Timer outputTime = new Timer(CALL_OUTPUT);
 
         int window = 8;
 
@@ -364,8 +350,6 @@ public class AnalyserModule extends Module {
 
         for (Set<Integer> cl : clusters) {
             String meta = toJson(cl);
-
-            if(cl.size() <= 2) continue;
 
             //Integer cluster = cl.iterator().next();
             jdbcTemplate.update(insertCluster, tick, now, cl.size(), -1, meta);

@@ -1,7 +1,5 @@
 package team16.cs261.backend.util;
 
-import java.util.Random;
-
 /**
  * Created by martin on 24/02/15.
  */

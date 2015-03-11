@@ -88,7 +88,7 @@ public class FactorTable extends DataTable<FactorDto> {
 
             if (ids.size() == 0) return null;
 
-            return e.source.in(ids).or(e.target.in(ids));
+            return e.source.in(ids).and(e.target.in(ids));
         }
     }
 

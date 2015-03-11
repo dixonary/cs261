@@ -20,6 +20,8 @@ public class MclOutput {
                 //System.out.println("node: " + node);
                 cl.add(Integer.parseInt(node));
             }
+
+            if(cl.size() <= 2) continue;
             clusters.add(cl);
         }
     }

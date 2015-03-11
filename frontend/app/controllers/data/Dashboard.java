@@ -78,6 +78,35 @@ public class Dashboard {
         return ok(Json.toJson(res));
     }
 
+    QTick qt = QTick.Tick;
+    public Result ticks(int since, int count) {
+        ObjectNode res = Json.newObject();
+
+        SQLQuery latest = template.newSqlQuery()
+                .from(qt)
+                        //.where(cl.status.eq("UNSEEN"))
+                .where(cl.id.gt(since))
+                .orderBy(cl.id.desc())
+                .limit(count);
+
+        List<Cluster> data = template.query(latest,
+                Projections.bean(Cluster.class, cl.id, cl.tick, cl.time, cl.nodes, cl.status)
+        );
+
+        long newSince = since;
+        for (Cluster cl : data) {
+            newSince = Math.max(newSince, cl.getId());
+            System.out.println("new: " + newSince);
+        }
+
+        res.put("since", since);
+        res.put("latest", newSince);
+        res.put("clusters", Json.toJson(data));
+
+
+        return ok(Json.toJson(res));
+    }
+
     public Result activity() {
         int ivalRate = 10;
         int ivals = 3 * 60;
