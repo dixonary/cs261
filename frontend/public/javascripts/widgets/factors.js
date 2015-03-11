@@ -170,7 +170,6 @@ $ ( function ( ) {
 
     factorTable.getMetaData();
     factorTable.loadRows();
-    factorTable.observables ( )
     ko.applyBindings ( factorTable, $(id)[0] ) ;
     factorTable.subscribe ( )
 

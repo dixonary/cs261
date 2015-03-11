@@ -96,7 +96,6 @@ $ ( function ( ) {
 
     tableVM.getMetaData();
     tableVM.loadRows();
-    tableVM.observables ( )
     ko.applyBindings ( tableVM, $(id)[0] ) ;
     tableVM.subscribe ( )
 

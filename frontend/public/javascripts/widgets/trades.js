@@ -75,10 +75,7 @@ $ ( function ( ) {
 
     tradeTable.getMetaData();
     tradeTable.loadRows();
-    tradeTable.observables ( )
-
     ko.applyBindings ( tradeTable ) ;
-
     tradeTable.subscribe ( )
 
     //tradeTable.loadRows ( ) ;
