@@ -16,22 +16,41 @@
             <div class="nav-tabs-custom">
                 <ul class="nav nav-tabs">
                     @for(fc <- FactorClass.getImplemented()) {
-                        <li class="@if(fc == FactorClass.COMMON){active}"><a href="#tab_@fc.name" data-toggle="tab">@fc.getLabel</a></li>
+                        <li class="@if(fc == FactorClass.COMMON_BUYS){active}"><a href="#tab_@fc.name" data-toggle="tab">@fc.getLabel</a></li>
                     }
                     <li class="pull-right"><a href="#" class="text-muted"><i class="fa fa-gear"></i></a></li>
                 </ul>
                 <div class="tab-content">
                     @for(fc <- FactorClass.getImplemented()) {
-                        <div class="tab-pane @if(fc == FactorClass.COMMON){active}" id="tab_@fc.name">
+                        <div class="tab-pane @if(fc == FactorClass.COMMON_BUYS){active}" id="tab_@fc.name">
 
 
                             <div class="row">
 
-                                <div class="col-md-4">
+                                <div class="col-md-3">
+
+                                    This page shows the probability distribution of the @fc.getLabel
+                                        factor class.
+
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                            <tr>
+                                                <th style="width: 50%"></th>
+                                                <th></th>
+                                            </tr>
+                                            <tr>
+                                                <td>Significance threshold</td>
+                                                <td>@fc.sig%</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Weight</td>
+                                                <td>@fc.weight</td>
+                                            </tr>
+                                        </tbody></table>
 
                                 </div>
 
-                                <div class="col-md-8">
+                                <div class="col-md-9">
                                     <div class="box box-primary">
                                         <div class="box-header">
                                             <i class="fa fa-bar-chart-o"></i>

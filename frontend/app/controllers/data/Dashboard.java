@@ -106,13 +106,13 @@ public class Dashboard {
     }
 
     public Result clusterRate() {
-        int ticks = 30;
+        int ticks = 12;
 
         QTick qT = QTick.Tick;
 
         SQLQuery latest = template.newSqlQuery()
                 .from(qT)
-                        //.where(cl.status.eq("UNSEEN"))
+                .where(qT.status.eq("CLUSTERED"))
                 .orderBy(qT.tick.desc())
                 .limit(ticks);
 
@@ -120,7 +120,8 @@ public class Dashboard {
         List<Point> data = template.query(latest,
                 Projections.constructor(
                         Point.class,
-                        qT.tick.longValue().multiply(120 * 1000),
+                        //qT.tick.longValue().multiply(120 * 1000),
+                        qT.start.longValue(),
                         qT.clusterCount.doubleValue(),
                         qT.clusterCount.doubleValue()
                 )

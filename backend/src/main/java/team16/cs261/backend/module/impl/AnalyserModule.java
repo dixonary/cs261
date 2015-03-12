@@ -3,6 +3,7 @@ package team16.cs261.backend.module.impl;
 import org.apache.commons.math3.distribution.PoissonDistribution;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DeadlockLoserDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -98,15 +99,15 @@ public class AnalyserModule extends Module {
     }
 
 
-
     public static final String CALL_AGGR = "CALL Aggr(?)";
     Timer timer;
 
-    @Transactional
     public void process() {
 
+        Iterator<Map.Entry<Long, Future<MclOutput>>> iterator = mclOutputs.entrySet().iterator();
 
-        for (Map.Entry<Long, Future<MclOutput>> entry : mclOutputs.entrySet()) {
+        while (iterator.hasNext()) {
+            Map.Entry<Long, Future<MclOutput>> entry = iterator.next();
             Future<MclOutput> future = entry.getValue();
             if (!future.isDone()) continue;
 
@@ -115,7 +116,7 @@ public class AnalyserModule extends Module {
 
             try {
                 MclOutput out = future.get();
-                if(out==null) {
+                if (out == null) {
                     logDao.log("CLUSTERING", "Failed to find clusters for tick " + tick);
                     return;
                 }
@@ -128,7 +129,8 @@ public class AnalyserModule extends Module {
 
                 insertClusters(tick, clusters);
 
-                mclOutputs.remove(tick);
+                //mclOutputs.remove(tick);
+                iterator.remove();
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
@@ -152,16 +154,14 @@ public class AnalyserModule extends Module {
 
 
         final Timer aggrTime = new Timer(CALL_AGGR);
-        jdbcTemplate.update(CALL_AGGR, tick);
+        try {
+            jdbcTemplate.update(CALL_AGGR, tick);
+        } catch (DeadlockLoserDataAccessException e) {
+            System.out.println("E: " + e.getMessage());
+            return;
+        }
         aggrTime.stop();
         //System.out.println(timer);
-
-
-        Object[] args = new Object[]{tick, config.analysis.comms.intervals};
-
-        /*final Timer updateCountsTime = new Timer(UPDATE_COUNTS);
-        jdbcTemplate.update(UPDATE_COUNTS, args);
-        updateCountsTime.stop();*/
 
 
         int window = 24;
@@ -203,7 +203,6 @@ public class AnalyserModule extends Module {
         jdbcTemplate.update(
                 "UPDATE Tick SET status = 'ANALYSED', aggrTime = ?, analysisTime = ? WHERE tick = ?",
                 aggrTime.getElapsed(), analysisTime.getElapsed(), tick);
-
 
 
     }

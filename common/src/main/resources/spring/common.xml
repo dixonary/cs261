@@ -29,7 +29,7 @@
     <!--<context:property-placeholder location="classpath:dev.properties"/>
     <context:property-placeholder location="file:./fraud.config" local-override="true"/>-->
 
-    <tx:annotation-driven transaction-manager="transactionManager"  proxy-target-class="true"/>
+    <!--<tx:annotation-driven transaction-manager="transactionManager"  proxy-target-class="true"/>-->
 
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="${jdbc.driver}"/>
@@ -47,9 +47,9 @@
     </bean>
 
 
-    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+<!--    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"/>
-    </bean>
+    </bean>-->
 
 
 

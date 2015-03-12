@@ -118,7 +118,8 @@ CREATE TABLE RawEvent (#RAWTRADE TABLE#
   type ENUM ('TRADE', 'COMM') NOT NULL,
   time BIGINT                 NOT NULL,
   raw  TEXT                   NOT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  INDEX(time)
 );
 
 

@@ -5,6 +5,7 @@
 #dashboard
 GET        /        @controllers.Application.index()
 GET        /logs        @controllers.Application.logs()
+GET        /about        @controllers.Application.about()
 
 GET        /stats        @controllers.Stats.index()
 

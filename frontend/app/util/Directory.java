@@ -24,10 +24,11 @@ public enum Directory implements MenuItem {
     DATA("Events", "fa-database", null),
 
     TRADES(DATA, "Trades", "fa-exchange", routes.Application.trades()),
-    COMMS(DATA, "Communications", "fa-envelope", routes.Application.comms());//,
+    COMMS(DATA, "Communications", "fa-envelope", routes.Application.comms()),//,
     //TRADERS(DATA, "Traders", "fa-user", routes.Application.traders()),
     //SYMBOLS(DATA, "Symbols", "fa-cube", routes.Application.symbols()),
     //SECTORS(DATA, "Sectors", "fa-cubes", routes.Application.sectors());
+    ABOUT("About", "fa-info-circle", routes.Application.about());
 
     Directory parent;
     String label;

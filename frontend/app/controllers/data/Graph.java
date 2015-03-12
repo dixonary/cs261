@@ -1,6 +1,5 @@
 package controllers.data;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import models.graph.EdgeDto;
 import models.graph.NodeDto;
@@ -8,19 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jdbc.query.QueryDslJdbcTemplate;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import play.libs.Json;
 import play.mvc.Result;
 import team16.cs261.common.dao.ClusterDao;
 import team16.cs261.common.dao.FactorDao;
 import team16.cs261.common.dao.TradeDao;
-import team16.cs261.common.querydsl.entity.QCluster;
-import util.JsonNodeRowMapper;
-import views.html.helper.requireJs;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

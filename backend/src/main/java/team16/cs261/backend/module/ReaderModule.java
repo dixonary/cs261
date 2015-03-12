@@ -166,8 +166,8 @@ public abstract class ReaderModule extends Module {
         items.increment();
         items2.increment();
 
-        props.setProperty(countProp, items.getCount());
-        props.setProperty(rateProp, items.getRate(15));
+        //props.setProperty(countProp, items.getCount());
+        //props.setProperty(rateProp, items.getRate(15));
     }
 
     public void onClose() {
