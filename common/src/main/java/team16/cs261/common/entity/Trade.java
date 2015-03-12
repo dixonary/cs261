@@ -23,6 +23,8 @@ public class Trade {
     private float bid;
     private float ask;
 
+    private int buyerId, sellerId, symbolId, sectorId;
+
     public Trade() {
     }
 
@@ -144,5 +146,37 @@ public class Trade {
 
     public void setAsk(float ask) {
         this.ask = ask;
+    }
+
+    public int getBuyerId() {
+        return buyerId;
+    }
+
+    public void setBuyerId(int buyerId) {
+        this.buyerId = buyerId;
+    }
+
+    public int getSellerId() {
+        return sellerId;
+    }
+
+    public void setSellerId(int sellerId) {
+        this.sellerId = sellerId;
+    }
+
+    public int getSymbolId() {
+        return symbolId;
+    }
+
+    public void setSymbolId(int symbolId) {
+        this.symbolId = symbolId;
+    }
+
+    public int getSectorId() {
+        return sectorId;
+    }
+
+    public void setSectorId(int sectorId) {
+        this.sectorId = sectorId;
     }
 }

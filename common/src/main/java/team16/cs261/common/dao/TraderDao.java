@@ -2,11 +2,14 @@ package team16.cs261.common.dao;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.stereotype.Component;
+import team16.cs261.common.entity.Symbol;
 import team16.cs261.common.entity.Trader;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by martin on 13/02/15.
@@ -68,5 +71,15 @@ public class TraderDao extends AbstractDao<String, Trader> {
         return jdbcTemplate.query(
                 SELECT_AND_LIMIT, new Object[]{offset, length},
                 new BeanPropertyRowMapper<>(Trader.class));
+    }
+
+    public Map<String, Trader> selectAsMap() {
+        Map<String, Trader> map = new HashMap<>();
+
+        for(Trader ent : selectAll()) {
+            map.put(ent.getEmail(), ent);
+        }
+
+        return map;
     }
 }

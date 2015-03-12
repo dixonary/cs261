@@ -2,9 +2,11 @@ package team16.cs261.common.dao;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.stereotype.Component;
+import team16.cs261.common.entity.RawEvent;
 import team16.cs261.common.entity.Trade;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -45,28 +47,75 @@ public class TradeDao extends AbstractDao<Integer, Trade> {
         );
     }
 
+    private static Object[] getArgs(Trade ent) {
+        return new Object[]{
+                ent.getTime(),
+                ent.getTimestamp(),
+                ent.getTick(),
+                ent.getBuyer(),
+                ent.getSeller(),
+                ent.getPrice(),
+                ent.getSize(),
+                ent.getCurrency(),
+                ent.getSymbol(),
+                ent.getSector(),
+                ent.getBid(),
+                ent.getAsk(),
+                ent.getBuyerId(),
+                ent.getSellerId(),
+                ent.getSymbolId(),
+                ent.getSectorId()
+        };
+    }
+
+
+
+    int columns = 16;
+    String columnsStmt = "(time, timestamp, tick, buyer, seller, price, size, currency, symbol, sector, bid, ask, buyerId, sellerId, symbolId, sectorId)";
+    public void insert(List<Trade> ents) {
+        if (ents.size() == 0) return;
+        StringBuilder sql = new StringBuilder("INSERT INTO Trade "+columnsStmt+" VALUES ");
+
+
+
+        String values = genValuesStmt(columns);
+
+        Object[] args = new Object[ents.size() * columns];
+
+        for (int i = 0; i < ents.size(); i++) {
+            sql.append(values);
+            if (i < ents.size() - 1) {
+                sql.append(", ");
+            }
+
+            Trade ent = ents.get(i);
+
+            Object[] entArgs = getArgs(ent);
+
+            for (int c = 0; c < columns; c++) {
+                args[i * columns + c] = entArgs[c];
+            }
+
+            //args[i * 3] = ents.get(i).getType().name();
+            //args[i * 3 + 1] = ents.get(i).getTime();
+            //args[i * 3 + 2] = ents.get(i).getRaw();
+
+
+        }
+
+        jdbcTemplate.update(sql.toString(), args);
+    }
+
+
     //@Override
-    public void insert(final Iterable<Trade> ents) {
+/*    public void insert(final Iterable<Trade> ents) {
         List<Object[]> args = new ArrayList<>();
         for (Trade ent : ents) {
-            args.add(new Object[]{
-                    ent.getTime(),
-                    ent.getTick(),
-                    ent.getTimestamp(),
-                    ent.getBuyer(),
-                    ent.getSeller(),
-                    ent.getPrice(),
-                    ent.getSize(),
-                    ent.getCurrency(),
-                    ent.getSymbol(),
-                    ent.getSector(),
-                    ent.getBid(),
-                    ent.getAsk()
-            });
+            args.add(getArgs(ent));
         }
 
         jdbcTemplate.batchUpdate(INSERT, args);
-    }
+    }*/
 
 
 
@@ -104,7 +153,6 @@ public class TradeDao extends AbstractDao<Integer, Trade> {
                 new BeanPropertyRowMapper<>(Trade.class)
         );
     }
-
 
 
     private static final String SELECT_COUNT_BY_TRADER_ID = "SELECT COUNT(*) FROM Trade WHERE buyer = ? OR seller = ?";

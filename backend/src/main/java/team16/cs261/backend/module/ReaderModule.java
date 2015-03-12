@@ -7,6 +7,7 @@ import team16.cs261.backend.service.ReaderStateService;
 import team16.cs261.backend.util.Counter;
 import team16.cs261.backend.util.Counts;
 import team16.cs261.common.dao.CountsDao;
+import team16.cs261.common.dao.LogDao;
 import team16.cs261.common.dao.PropDao;
 import team16.cs261.common.dao.RawEventDao;
 import team16.cs261.common.entity.RawEvent;
@@ -37,6 +38,8 @@ public abstract class ReaderModule extends Module {
     @Autowired
     PropDao props;
 
+    @Autowired
+    LogDao logDao;
 
     protected List<RawEvent> rawEvents = new ArrayList<>();
 
@@ -147,8 +150,7 @@ public abstract class ReaderModule extends Module {
         try {
             time = parseTimestamp(rawTime);
         } catch (ParseException e) {
-            System.out.println("Could not parse timestamp: " + rawTime);
-            e.printStackTrace();
+            logDao.log("READER", "Could not parse event. Raw: '"+in+"', Exception: " + e.toString());
             return;
         }
 

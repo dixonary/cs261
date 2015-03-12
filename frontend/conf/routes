@@ -2,8 +2,9 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Home page
+#dashboard
 GET        /        @controllers.Application.index()
+GET        /logs        @controllers.Application.logs()
 
 GET        /stats        @controllers.Stats.index()
 
@@ -72,6 +73,9 @@ GET        /dashboard/events.json        @controllers.data.Dashboard.events()
 GET        /dashboard/factors/freqs.json        @controllers.data.Dashboard.freqs(factor_class: String ?= null)
 GET        /factors/rates.json        @controllers.data.Dashboard.rates()
 
+
+GET        /data/logs        @controllers.data.LogTable.query()
+GET        /data/logs/meta        @controllers.data.LogTable.meta()
 
 GET        /data/clusters        @controllers.data.ClusterTable.query()
 GET        /data/clusters/meta        @controllers.data.ClusterTable.meta()

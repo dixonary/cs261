@@ -10,6 +10,15 @@ CREATE TABLE Prop (
   PRIMARY KEY (`key`)
 );
 
+DROP TABLE IF EXISTS Log CASCADE;
+CREATE TABLE Log (
+  id      INT    NOT NULL AUTO_INCREMENT, #Counters for all other tables are stored here
+  time    BIGINT NOT NULL DEFAULT 0,
+  type    VARCHAR(40),
+  message VARCHAR(1000),
+  PRIMARY KEY (id)
+);
+
 # statistics
 DROP TABLE IF EXISTS Counter CASCADE;
 CREATE TABLE Counter (#COUNTER TABLE#
@@ -23,9 +32,9 @@ CREATE TABLE Counter (#COUNTER TABLE#
 
 DROP TABLE IF EXISTS Counts CASCADE;
 CREATE TABLE Counts (
-  intvl        INT NOT NULL,
-  time         BIGINT    NOT NULL, #realtime
-  sealed        BOOL NOT NULL ,
+  intvl        INT     NOT NULL,
+  time         BIGINT  NOT NULL, #realtime
+  sealed       BOOL    NOT NULL,
 
   tradesRead   INTEGER NOT NULL DEFAULT 0,
   commsRead    INTEGER NOT NULL DEFAULT 0, # comms for the interval
@@ -48,7 +57,7 @@ CREATE TABLE Tick (#RAWTRADE TABLE#
                       'CLUSTERED')
                              NOT NULL DEFAULT 'UNPARSED',
 
-  clusterCount    INTEGER NOT NULL DEFAULT 0,
+  clusterCount       INTEGER NOT NULL DEFAULT 0,
 
 # counts
   trades             INTEGER NOT NULL DEFAULT 0,
@@ -115,19 +124,19 @@ CREATE TABLE RawEvent (#RAWTRADE TABLE#
 
 DROP TABLE IF EXISTS Trade CASCADE;
 CREATE TABLE Trade (#TRADE TABLE#
-  id       INTEGER     NOT NULL AUTO_INCREMENT, #Contains the full representation of a Trade with each field separated out
-  time     BIGINT      NOT NULL, #Also has an id as primary key as the timestamp cannot be guranteed to be unique
+  id        INTEGER     NOT NULL AUTO_INCREMENT, #Contains the full representation of a Trade with each field separated out
+  time      BIGINT      NOT NULL, #Also has an id as primary key as the timestamp cannot be guranteed to be unique
   timestamp VARCHAR(50) NOT NULL,
-  tick     INTEGER     NOT NULL,
-  buyer    VARCHAR(50) NOT NULL,
-  seller   VARCHAR(50) NOT NULL,
-  price    FLOAT       NOT NULL,
-  size     INTEGER     NOT NULL,
-  currency VARCHAR(3)  NOT NULL,
-  symbol   VARCHAR(10) NOT NULL,
-  sector   VARCHAR(40) NOT NULL,
-  bid      FLOAT       NOT NULL,
-  ask      FLOAT       NOT NULL,
+  tick      INTEGER     NOT NULL,
+  buyer     VARCHAR(50) NOT NULL,
+  seller    VARCHAR(50) NOT NULL,
+  price     FLOAT       NOT NULL,
+  size      INTEGER     NOT NULL,
+  currency  VARCHAR(3)  NOT NULL,
+  symbol    VARCHAR(10) NOT NULL,
+  sector    VARCHAR(40) NOT NULL,
+  bid       FLOAT       NOT NULL,
+  ask       FLOAT       NOT NULL,
 
   PRIMARY KEY (id),
   FOREIGN KEY (tick) REFERENCES Tick (tick),
@@ -137,10 +146,10 @@ CREATE TABLE Trade (#TRADE TABLE#
   FOREIGN KEY (sector) REFERENCES Sector (sector),
 
 #references
-  buyerId  INT         NOT NULL,
-  sellerId INT         NOT NULL,
-  symbolId INT         NOT NULL,
-  sectorId INT         NOT NULL,
+  buyerId   INT         NOT NULL,
+  sellerId  INT         NOT NULL,
+  symbolId  INT         NOT NULL,
+  sectorId  INT         NOT NULL,
 
   FOREIGN KEY (buyerId) REFERENCES Trader (id),
   FOREIGN KEY (sellerId) REFERENCES Trader (id),
@@ -152,7 +161,7 @@ DROP TABLE IF EXISTS Comm CASCADE;
 CREATE TABLE Comm (#COMM TABLE#
   id          INTEGER     NOT NULL AUTO_INCREMENT, #Contains individual Communcations between Traders
   time        BIGINT      NOT NULL, #Has an id field as the timestamp cannot be guaranteed to be unique
-  timestamp VARCHAR(50) NOT NULL,
+  timestamp   VARCHAR(50) NOT NULL,
   tick        INTEGER     NOT NULL,
   sender      VARCHAR(50) NOT NULL,
   recipient   VARCHAR(50) NOT NULL,

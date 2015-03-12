@@ -131,9 +131,6 @@ var Activity = function (options) {
             options.source,
             {
                 success: function (data) {
-                    console.log(data + " act: " + self.activity);
-
-
 
                     self.activity.setData(data);
                     self.activity.setupGrid();

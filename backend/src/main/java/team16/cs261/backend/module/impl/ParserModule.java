@@ -3,19 +3,17 @@ package team16.cs261.backend.module.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
-import team16.cs261.backend.util.Counter;
 import team16.cs261.backend.config.Config;
 import team16.cs261.backend.module.Module;
+import team16.cs261.backend.util.Counter;
+import team16.cs261.backend.util.Timer;
 import team16.cs261.backend.util.Util;
 import team16.cs261.common.dao.*;
 import team16.cs261.common.entity.*;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by martin on 22/01/15.
@@ -30,6 +28,8 @@ public class ParserModule extends Module {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    LogDao logDao;
 
     @Autowired
     RawEventDao rawEventDao;
@@ -72,7 +72,7 @@ public class ParserModule extends Module {
 
     //@Transactional
     public void process() {
-        List<RawEvent> rawEvents = rawEventDao.selectAllLimit(100);
+        List<RawEvent> rawEvents = rawEventDao.selectAllLimit(1000);
         List<Integer> rawEventIds = new ArrayList<>();
 
         if (rawEvents.size() == 0) {
@@ -89,13 +89,16 @@ public class ParserModule extends Module {
 
         //outputs
         List<Trader> traderEnts = new ArrayList<>();
-        //Map<String, Trader> traderEnts = new HashMap<>();
+        List<Symbol> symbolEnts = new ArrayList<>();
+        List<Sector> sectorEnts = new ArrayList<>();
+
         List<Trade> tradeEnts = new ArrayList<>();
         List<Comm> commEnts = new ArrayList<>();
 
 
-
         Set<Integer> ticks = new HashSet<>();
+        int maxComm = -1;
+        int maxTrade = -1;
         int maxTick = -1;
 
         for (RawEvent rawEvent : rawEvents) {
@@ -107,54 +110,65 @@ public class ParserModule extends Module {
             maxTick = Math.max(maxTick, tick);
 
             switch (rawEvent.getType()) {
-                case COMM:
-                    commsCounter.increment();
-
-                    String[] parts = rawEvent.getRaw().split(",");
-
-                    String[] recipients = parts[2].split(";");
-
-                    traderEnts.add(Trader.parseRaw(parts[1]));
-                    //traderEnts.put(parts[1], Trader.parseRaw(parts[1]));
-
-                    for (String rec : recipients) {
-                        //traderEnts.put(rec, Trader.parseRaw(rec));
-                        traderEnts.add(Trader.parseRaw(rec));
-                    }
-
-                    for (String rec : recipients) {
-                        commEnts.add(new Comm(time, tick, parts[0], parts[1], rec));
-                    }
-
-                    break;
                 case TRADE:
                     tradesCounter.increment();
+
+                    maxTrade = Math.max(maxTrade, tick);
 
                     Trade trade;
 
                     try {
                         trade = parseTrade(time, rawEvent.getRaw());
+
+
+                        Trader buyer = Trader.parseRaw(trade.getBuyer());
+                        Trader seller = Trader.parseRaw(trade.getSeller());
+                        Symbol symbol = new Symbol(trade.getSymbol(), trade.getSector());
+                        Sector sector = new Sector(trade.getSector());
+
+                        traderEnts.add(buyer);
+                        traderEnts.add(seller);
+                        symbolEnts.add(symbol);
+                        sectorEnts.add(sector);
+
+                        tradeEnts.add(trade);
                     } catch (ParseException e) {
-                        return;
+                        logDao.log("PARSER", "Failed to parse trade. Raw: '" + rawEvent.getRaw() + "', Exception: " + e.getMessage());
+                        continue;
                     }
 
-                    Trader buyer = Trader.parseRaw(trade.getBuyer());
-                    Trader seller = Trader.parseRaw(trade.getSeller());
-                    //Sector sector = new Sector(trade.getSector());
-                    //Symbol symbol = new Symbol(trade.getSymbol(), trade.getSector());
+                    break;
+                case COMM:
+                    commsCounter.increment();
 
-                    //traderEnts.put(buyer.getEmail(), buyer);
-                    //traderEnts.put(seller.getEmail(), seller);
-                    traderEnts.add(buyer);
-                    traderEnts.add(seller);
-                    //sectorEnts.add(sector);
-                    //symbolEnts.add(symbol);
+                    maxComm= Math.max(maxComm, tick);
 
-                    tradeEnts.add(trade);
+                    try {
+                        String[] parts = rawEvent.getRaw().split(",");
+
+                        String[] recipients = parts[2].split(";");
+
+                        traderEnts.add(Trader.parseRaw(parts[1]));
+                        //traderEnts.put(parts[1], Trader.parseRaw(parts[1]));
+
+                        for (String rec : recipients) {
+                            //traderEnts.put(rec, Trader.parseRaw(rec));
+                            traderEnts.add(Trader.parseRaw(rec));
+                        }
+
+                        for (String rec : recipients) {
+                            commEnts.add(new Comm(time, tick, parts[0], parts[1], rec));
+                        }
+
+                    } catch (Exception e) {
+                        logDao.log("PARSER", "Failed to parse comm. Raw: '" + rawEvent.getRaw() + "', Exception: " + e.getMessage());
+                    }
 
                     break;
             }
         }
+
+        maxTick = Math.min(maxTrade, maxComm);
 
         List<Tick> tickEnts = new ArrayList<>();
         for (Integer t : ticks) {
@@ -166,18 +180,46 @@ public class ParserModule extends Module {
 
         tickDao.insert(tickEnts);
 
+        Timer parseTime = new Timer("Parse time");
 
-
-        //persist entities
+        // persist nodes
+        Timer insertNodes = new Timer("nodes insert");
         traderDao.insert(traderEnts);
+        sectorDao.insert(sectorEnts);
+        symbolDao.insert(symbolEnts);
+        System.out.println(insertNodes + " nodes: " + traderEnts.size());
+
+        Map<String, Trader> traderMap = traderDao.selectAsMap();
+        Map<String, Symbol> symbolMap  = symbolDao.selectAsMap();
+        Map<String, Sector> sectorMap = sectorDao.selectAsMap();
+
+        for(Trade t : tradeEnts) {
+            t.setBuyerId(traderMap.get(t.getBuyer()).getId());
+            t.setSellerId(traderMap.get(t.getSeller()).getId());
+            t.setSymbolId(symbolMap.get(t.getSymbol()).getId());
+            t.setSectorId(sectorMap.get(t.getSector()).getId());
+        }
+
+        for(Comm c : commEnts) {
+            c.setSenderId(traderMap.get(c.getSender()).getId());
+            c.setRecipientId(traderMap.get(c.getRecipient()).getId());
+        }
+
+
         //traderDao.insert(traderEnts.values());
-        commDao.insert(commEnts);
         //sectorDao.insert(sectorEnts);
         //symbolDao.insert(symbolEnts);
-        tradeDao.insert(tradeEnts);
 
-        //System.out.println("Ids: " + AbstractDao.toList(rawTradeIds));
+        Timer insertTrades = new Timer("inserting trades");
+        tradeDao.insert(tradeEnts);
+        System.out.println(insertTrades + " trades: " + tradeEnts.size());
+
+        Timer insertComms = new Timer("inserting comms");
+        commDao.insert(commEnts);
+        System.out.println(insertComms + " comms: " + commEnts.size());
+
         rawEventDao.delete(rawEventIds);
+
 
 
         jdbcTemplate.update("UPDATE Tick SET status = 'PARSED' WHERE status = 'UNPARSED' AND tick < ?", maxTick);
@@ -194,8 +236,6 @@ public class ParserModule extends Module {
 
 
     }
-
-
 
 
     /**

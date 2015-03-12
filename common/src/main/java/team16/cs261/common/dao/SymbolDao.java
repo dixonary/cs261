@@ -4,7 +4,9 @@ import org.springframework.stereotype.Component;
 import team16.cs261.common.entity.Symbol;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by martin on 13/02/15.
@@ -38,6 +40,16 @@ public class SymbolDao extends AbstractDao<Integer, Symbol> {
         }
 
         jdbcTemplate.batchUpdate(INSERT, args);
+    }
+
+    public Map<String, Symbol> selectAsMap() {
+        Map<String, Symbol> map = new HashMap<>();
+
+        for(Symbol ent : selectAll()) {
+            map.put(ent.getSymbol(), ent);
+        }
+
+        return map;
     }
 
 

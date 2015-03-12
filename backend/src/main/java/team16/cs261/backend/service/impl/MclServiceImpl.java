@@ -31,8 +31,8 @@ public class MclServiceImpl implements MclService {
     @Override
     public Future<MclOutput> run(long tick, String mclInput) {
 
-        double i = 2D;
         double c = 1D;
+        double i = 2D;
 
         try {
             Path mclWd = Paths.get(System.getProperty("user.home"), "fraud", "mcl");
@@ -54,9 +54,9 @@ public class MclServiceImpl implements MclService {
                     fIn,
                     "--abc",
                     "-o", fOut,
-                    "-I", String.valueOf(i),
                     "--sum-loops",
-                    "-c", String.valueOf(c)
+                    "-c", String.valueOf(c),
+                    "-I", String.valueOf(i)
             }, new String[0], mclWd.toFile());
 
             p.waitFor();

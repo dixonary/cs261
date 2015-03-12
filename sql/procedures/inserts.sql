@@ -15,7 +15,6 @@ DELIMITER ;
 
 
 
-
 DELIMITER //
 DROP PROCEDURE IF EXISTS InsertTrader;
 CREATE PROCEDURE InsertTrader(newTrader TEXT, inDomain TEXT)
@@ -67,23 +66,6 @@ DELIMITER ;
 
 
 
-#INSERT INTO Trade (time, buyer, seller, price, currency, size, symbol, sector, bid, ask) VALUES (?,?,?,?,?,?,?,?,?,?);
-
-/*
-  id       INTEGER     NOT NULL AUTO_INCREMENT, #Contains the full representation of a Trade as received from the Trades feed
-  time     LONG        NOT NULL, #Also has an id as primary key as the timestamp cannot be guranteed to be unique
-  buyer    VARCHAR(50) NOT NULL,
-  seller   VARCHAR(50) NOT NULL,
-  price    FLOAT       NOT NULL,
-  size     INTEGER     NOT NULL,
-  currency VARCHAR(3)  NOT NULL,
-  symbol   VARCHAR(10) NOT NULL,
-  sector   VARCHAR(40) NOT NULL,
-  bid      FLOAT       NOT NULL,
-  ask      FLOAT       NOT NULL,
- */
-
-
 
 
 DELIMITER //
@@ -106,8 +88,8 @@ CREATE PROCEDURE InsertTrade(
 
     #CALL InsertTrader
 
-    CALL InsertSector(inSector);
-    CALL InsertSymbol(inSymbol, inSector);
+    #CALL InsertSector(inSector);
+    #CALL InsertSymbol(inSymbol, inSector);
 
     SELECT @buyerId := id FROM Trader WHERE `email` = buyer;
     SELECT @sellerId := id FROM Trader WHERE `email` = seller;

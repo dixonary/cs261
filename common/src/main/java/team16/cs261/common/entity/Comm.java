@@ -14,6 +14,8 @@ public class Comm {
     private String sender;
     private String recipient;
 
+    private int senderId, recipientId;
+
     protected Comm() {
 
     }
@@ -86,5 +88,21 @@ public class Comm {
 
     public static Comm parseRaw(String raw) {
         return new Comm();
+    }
+
+    public int getSenderId() {
+        return senderId;
+    }
+
+    public void setSenderId(int senderId) {
+        this.senderId = senderId;
+    }
+
+    public int getRecipientId() {
+        return recipientId;
+    }
+
+    public void setRecipientId(int recipientId) {
+        this.recipientId = recipientId;
     }
 }

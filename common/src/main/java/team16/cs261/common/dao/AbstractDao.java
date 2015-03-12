@@ -147,4 +147,17 @@ public abstract class AbstractDao<ID, E> {
         return builder.toString();
     }
 
+
+    public static String genValuesStmt(int columns) {
+        StringBuilder sb = new StringBuilder("(");
+
+        for (int i = 0; i < columns; i++) {
+            sb.append("?");
+            if (i < columns - 1) {
+                sb.append(", ");
+            }
+        }
+
+        return sb.append(")").toString();
+    }
 }

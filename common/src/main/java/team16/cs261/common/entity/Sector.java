@@ -5,6 +5,7 @@ package team16.cs261.common.entity;
  */
 public class Sector {
 
+    private int id;
     private String sector;
     private int totalTrades;
 
@@ -16,6 +17,14 @@ public class Sector {
 
     public Sector(String sector) {
         this.sector = sector;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getSector() {

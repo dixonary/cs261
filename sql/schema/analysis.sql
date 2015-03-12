@@ -37,6 +37,17 @@ CREATE TABLE TickFactor (
   #FOREIGN KEY (tradeCnt) REFERENCES Counter (id)
 );
 
+DROP TABLE IF EXISTS FactorClass CASCADE;
+CREATE TABLE FactorClass (
+  factor ENUM ('COMMON',
+               'COMMON_BUYS',
+               'COMMON_SELLS',
+               'COMMS') NOT NULL,
+  label  VARCHAR(50)    NOT NULL,
+  sig    DOUBLE         NOT NULL,
+  weight DOUBLE         NOT NULL,
+  PRIMARY KEY (factor)
+);
 
 DROP TABLE IF EXISTS Factor CASCADE;
 CREATE TABLE Factor (
@@ -50,9 +61,11 @@ CREATE TABLE Factor (
                 'COMMS') NOT NULL,
   value   INTEGER        NOT NULL,
   centile DOUBLE         NOT NULL,
+
   sig     DOUBLE         NOT NULL,
 
   score   DOUBLE         NOT NULL,
+  weight  DOUBLE        NOT NULL,
 
   PRIMARY KEY (id),
   UNIQUE KEY (tick, edge, factor),
@@ -80,16 +93,16 @@ CREATE TABLE FactorFreq (
 
 DROP TABLE IF EXISTS Cluster CASCADE;
 CREATE TABLE Cluster (
-  id    INTEGER NOT NULL AUTO_INCREMENT,
-  tick  INTEGER NOT NULL,
-  time  BIGINT NOT NULL,
+  id     INTEGER                                NOT NULL AUTO_INCREMENT,
+  tick   INTEGER                                NOT NULL,
+  time   BIGINT                                 NOT NULL,
 
-  nodes INTEGER NOT NULL,
-  edges INTEGER NOT NULL,
+  nodes  INTEGER                                NOT NULL,
+  edges  INTEGER                                NOT NULL,
 
-  meta  TEXT,
+  meta   TEXT,
 
-  status  ENUM('UNSEEN', 'SEEN', 'INVESTIGATED') NOT NULL DEFAULT 'UNSEEN',
+  status ENUM('UNSEEN', 'SEEN', 'INVESTIGATED') NOT NULL DEFAULT 'UNSEEN',
 
   PRIMARY KEY (id),
   FOREIGN KEY (tick) REFERENCES Tick (tick)

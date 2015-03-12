@@ -5,6 +5,7 @@ package team16.cs261.common.entity;
  */
 public class Trader {
 
+    private int id;
     private String email;
     private String domain;
 
@@ -19,6 +20,14 @@ public class Trader {
 
    public static Trader parseRaw(String raw) {
         return new Trader(raw, raw.split("@")[1]);
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getEmail() {

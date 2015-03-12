@@ -20,6 +20,10 @@ public class Application {
         return ok(index.render("Whoa"));
     }
 
+    public Result logs() {
+        return ok(views.html.logs.render());
+    }
+
     public Result clusters() {
         return ok(views.html.clusters.collection.render());
     }

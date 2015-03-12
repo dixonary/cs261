@@ -20,6 +20,7 @@ import team16.cs261.common.entity.Trade;
 import team16.cs261.common.entity.graph.Edge;
 import team16.cs261.common.meta.FactorClass;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -58,6 +59,8 @@ public class AnalyserModule extends Module {
     @Autowired
     TraderStockDao traderStockDao;
 
+    @Autowired
+    LogDao logDao;
 
     @Autowired
     private Config config;
@@ -70,12 +73,31 @@ public class AnalyserModule extends Module {
 
     Map<Long, Future<MclOutput>> mclOutputs = new HashMap<>();
 
+    @PostConstruct
+    public void init() {
+
+        final String deleteFC = "DELETE FROM FactorClass";
+        final String insertFC = "INSERT INTO FactorClass (factor, label, sig, weight) VALUES (?, ?, ?, ?)";
+
+        List<Object[]> args = new ArrayList<>();
+        for (FactorClass fc : FactorClass.getImplemented()) {
+            args.add(new Object[]{fc.name(), fc.getLabel(), fc.sig, fc.weight});
+        }
+
+        jdbcTemplate.update(deleteFC);
+        jdbcTemplate.batchUpdate(insertFC, args);
+
+
+    }
+
     @Override
     public void run() {
         while (true) {
             process();
         }
     }
+
+
 
     public static final String CALL_AGGR = "CALL Aggr(?)";
     Timer timer;
@@ -89,7 +111,15 @@ public class AnalyserModule extends Module {
             if (!future.isDone()) continue;
 
             long tick = entry.getKey();
+
+
             try {
+                MclOutput out = future.get();
+                if(out==null) {
+                    logDao.log("CLUSTERING", "Failed to find clusters for tick " + tick);
+                    return;
+                }
+
                 List<Set<Integer>> clusters = future.get().getClusters();
 
                 jdbcTemplate.update(
@@ -176,14 +206,6 @@ public class AnalyserModule extends Module {
 
 
 
-/*
-        try {
-            Thread.sleep(100000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-*/
-
     }
 
 
@@ -194,12 +216,13 @@ public class AnalyserModule extends Module {
                     "WHERE #fld >= ?";*/
 
     public static final String UPDATE_FACTORS =
-            "INSERT INTO Factor (tick, edge, factor, value, centile, sig, score) " +
-                    "SELECT ?, id, ?, #fld, cdf, sig, 1-(sig/?) " +
+            "INSERT INTO Factor (tick, edge, factor, value, centile, sig, score, weight) " +
+                    "SELECT ?, id, ?, #fld, cdf, P.sig, 1-(P.sig/FC.sig), FC.weight " +
                     "FROM #tbl " +
-                    "JOIN Poisson " +
-                    "ON #fld = x " +
-                    "WHERE #fld > ?";
+                    "JOIN FactorClass FC ON FC.factor = ? " +
+                    "JOIN Poisson P ON P.x = #fld " +
+                    //"WHERE P.sig < ?";
+                    " WHERE #fld > ? ";
 
     public static final String UPDATE_FACTOR_FREQS =
             "INSERT INTO FactorFreq (tick, factor, x, fx) " +
@@ -233,12 +256,12 @@ public class AnalyserModule extends Module {
 
 
         //
-        String sql = UPDATE_FACTORS.replaceAll("#fld", field).replace("#tbl", table);
+        String sql = UPDATE_FACTORS.replaceAll("#fld", field).replaceAll("#tbl", table);
         System.out.println("sql: " + sql);
-        jdbcTemplate.update(sql, tick, f, sigTh, threshold);
+        jdbcTemplate.update(sql, tick, f, f, threshold);
 
 
-        String updateFactorFreqs = UPDATE_FACTOR_FREQS.replaceAll("#fld", field).replace("#tbl", table);
+        String updateFactorFreqs = UPDATE_FACTOR_FREQS.replaceAll("#fld", field).replaceAll("#tbl", table);
         System.out.println("sql: " + updateFactorFreqs);
         jdbcTemplate.update(updateFactorFreqs, tick, f);
 
@@ -253,7 +276,7 @@ public class AnalyserModule extends Module {
 
 
     public static final String SELECT_FACTOR_EDGES =
-            "SELECT E.id AS id, E.source AS source, E.target AS target, sum(score) AS weight FROM Edge E JOIN Factor F ON E.id = F.edge WHERE tick = ? GROUP BY edge";
+            "SELECT E.id AS id, E.source AS source, E.target AS target, sum(F.score * F.weight) AS weight FROM Edge E JOIN Factor F ON E.id = F.edge WHERE tick = ? GROUP BY edge";
 
     public static final String SELECT_FACTOR_EDGES2 =
             "SELECT E.id AS id, E.source, E.target, factor, score FROM Edge E JOIN Factor F ON E.id = F.edge WHERE tick = ? GROUP BY edge";

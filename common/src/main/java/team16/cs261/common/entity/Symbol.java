@@ -5,6 +5,7 @@ package team16.cs261.common.entity;
  */
 public class Symbol {
 
+    private int id;
     private String symbol;
     private String sector;
     private float price;
@@ -18,6 +19,14 @@ public class Symbol {
     public Symbol(String symbol, String sector) {
         this.symbol = symbol;
         this.sector = sector;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getSymbol() {
