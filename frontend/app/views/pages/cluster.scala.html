@@ -1,6 +1,7 @@
 @(cluster: Integer, graphSource: String)
+@import controllers.meta.Lang
 
-@main("Cluster", "Detailed cluster overview"){
+@main("Cluster", "Detailed cluster overview", Lang.CLUSTER_HELP){
     <link href="//cdn.datatables.net/plug-ins/f2c75b7247b/integration/bootstrap/3/dataTables.bootstrap.css" rel="stylesheet"  type="text/css" />
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/3.10.0/vis.min.css" rel="stylesheet" type="text/css" />
