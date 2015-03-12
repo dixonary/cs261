@@ -107,7 +107,7 @@ public class ParserModule extends Module {
             long time = rawEvent.getTime();
             int tick = Util.getTick(time, config.analysis.interval.length);
             ticks.add(tick);
-            maxTick = Math.max(maxTick, tick);
+            //maxTick = Math.max(maxTick, tick);
 
             switch (rawEvent.getType()) {
                 case TRADE:
@@ -187,7 +187,7 @@ public class ParserModule extends Module {
         traderDao.insert(traderEnts);
         sectorDao.insert(sectorEnts);
         symbolDao.insert(symbolEnts);
-        System.out.println(insertNodes + " nodes: " + traderEnts.size());
+        //System.out.println(insertNodes + " nodes: " + traderEnts.size());
 
         Map<String, Trader> traderMap = traderDao.selectAsMap();
         Map<String, Symbol> symbolMap  = symbolDao.selectAsMap();
@@ -212,11 +212,11 @@ public class ParserModule extends Module {
 
         Timer insertTrades = new Timer("inserting trades");
         tradeDao.insert(tradeEnts);
-        System.out.println(insertTrades + " trades: " + tradeEnts.size());
+        //System.out.println(insertTrades + " trades: " + tradeEnts.size());
 
         Timer insertComms = new Timer("inserting comms");
         commDao.insert(commEnts);
-        System.out.println(insertComms + " comms: " + commEnts.size());
+        //System.out.println(insertComms + " comms: " + commEnts.size());
 
         rawEventDao.delete(rawEventIds);
 
