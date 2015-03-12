@@ -37,38 +37,19 @@ $ ( function ( ) {
                 }
             },
             {
-                "data": "status",
-                "className": "text-center",
-                "render": function (data, type, row) {
-                    var c;
-                    var t;
-
-                    switch(row.status) {
-                        case "UNSEEN":
-                            c = "label-default"
-                            t = "New"
-                            break;
-                        case "SEEN":
-                            c = "label-info"
-                            t = "Pending"
-                            break;
-                        case "INVESTIGATED":
-                            c = "label-success"
-                            t = "Investigated"
-                            break;
-                    }
-
-                    return '<span class="label '+c+'" >'+t+'</span>'
-                }
-            },
-            {
                 "data": "time",
                 "render": function (data) {
                     return moment(data).format(timeFormat)
                 }
             },
             {
-                "data": "nodes",
+                "data": "type",
+                "render": function (data) {
+                    return data
+                }
+            },
+            {
+                "data": "message",
                 "render": function (data) {
                     return data
                 }
