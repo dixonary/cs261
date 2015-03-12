@@ -13,7 +13,7 @@ public enum Directory implements MenuItem {
     DASHBOARD("Dashboard", "fa-dashboard", routes.Application.index()),
     CHILD(DASHBOARD, "Activity", "fa-line-chart", routes.Application.index()),
     FACTOR_CLASSES(DASHBOARD, "Factors", "fa-info", routes.Application.factorClasses()),
-    LOGS(DASHBOARD, "Logs", "fa-info", routes.Application.logs()),
+    LOGS(DASHBOARD, "Logs", "fa-list-ul", routes.Application.logs()),
 
     CLUSTERS("Clusters", "fa-cubes", routes.Application.clusters()),
     FACTORS("Factors", "fa-cube", routes.Application.factors()),

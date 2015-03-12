@@ -20,16 +20,6 @@
                                     <th>
                                     </th>
                                     <th>
-                                        <select class="form-control"
-                                        multiple title='...'
-                                        data-selected-text-format="count>2"
-                                        data-bind="
-                                    options: columns[1].domain, selectedOptions: columns[1].filter,
-                                    optionsValue: 'id', optionsText: 'label', selectPicker: {}
-                                    ">
-                                        </select>
-                                    </th>
-                                    <th>
                                         <div class="form-group"  style="width: 360px">
                                             <div class="input-group">
                                                 <div class="input-group-addon">
@@ -37,7 +27,7 @@
                                                 </div>
                                                 <button class="form-control pull-left"
                                                 id="daterange"
-                                                data-bind="daterangepicker: columns[2].filter">
+                                                data-bind="daterangepicker: columns[1].filter">
                                                     <span>-</span>
                                                         &nbsp;
                                                     <i class="fa fa-caret-down"></i>
@@ -45,6 +35,7 @@
                                             </div>
                                         </div>
                                     </th>
+                                    <th></th>
                                     <th></th>
                                 </tr>
                                 <tr>
@@ -83,7 +74,7 @@
 
         <!-- page script -->
         <script src="@routes.Assets.at("javascripts/widgets/datatable.js")"></script>
-        <script src="@routes.Assets.at("javascripts/widgets/clusters.js")"></script>
+        <script src="@routes.Assets.at("javascripts/widgets/logs.js")"></script>
         @*<script src="@routes.Assets.at("javascripts/clusters/collection.js")"></script>*@
 
         @Html("")

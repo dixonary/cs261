@@ -31,9 +31,20 @@ public class FactorClassUtil {
     }
 
 
+    public static List<Item> getFactorTree() {
+        List<Item> items = new ArrayList<>();
+
+        items.add(new Item("null", "*"));
+
+        for(FactorClass fc : FactorClass.getImplemented()) {
+            items.add(new Item(fc.name(), fc.getLabel()));
+        }
+
+        return items;
+    }
 
     //public static Map<String, String> getFactorTree() {
-    public static List<Item> getFactorTree() {
+    public static List<Item> getFactorTree2() {
         //Map<String, String> selection = new HashMap<>();
         List<Item> items = new ArrayList<>();
 
