@@ -49,11 +49,11 @@
         </dependency>
 
 
-        <dependency>
+<!--        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
             <version>${org.springframework.version}</version>
-        </dependency>
+        </dependency>-->
 
 
         <dependency>
@@ -87,7 +87,7 @@
                 </executions>
                 <configuration>
                     <jdbcDriver>com.mysql.jdbc.Driver</jdbcDriver>
-                    <jdbcUrl>jdbc:mysql://localhost/cs261</jdbcUrl>
+                    <jdbcUrl>jdbc:mysql://localhost/dirty</jdbcUrl>
                     <jdbcUser>cs261</jdbcUser>
                     <jdbcPassword>pass</jdbcPassword>
                     <packageName>team16.cs261.common.querydsl.entity</packageName>
