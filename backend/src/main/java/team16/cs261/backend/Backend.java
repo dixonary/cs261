@@ -33,8 +33,6 @@ public class Backend {
 
         System.out.println("Cfg: " + config.getHostname() + ", " + config.getCommsPort());
 
-        System.out.println("Ivals: " + config.analysis.comms.threshold);
-
         for (Module m : modules) {
             Thread t = new Thread(m);
             t.start();

@@ -12,6 +12,5 @@ jdbc.username=cs261
 jdbc.password=pass
 
 # analysis
-analysis.time.interval=60000
-analysis.time.short=60000
-analysis.time.long=300000
+stats.interval=6000
+analysis.interval.length=300000

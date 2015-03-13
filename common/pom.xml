@@ -49,11 +49,11 @@
         </dependency>
 
 
-<!--        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-tx</artifactId>
-            <version>${org.springframework.version}</version>
-        </dependency>-->
+        <!--        <dependency>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-tx</artifactId>
+                    <version>${org.springframework.version}</version>
+                </dependency>-->
 
 
         <dependency>
@@ -73,6 +73,29 @@
 
     <build>
         <plugins>
+
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>1.0-alpha-1</version>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>read-project-properties</goal>
+                        </goals>
+                        <configuration>
+                            <files>
+                                <file>src/main/resources/dev.properties</file>
+                                <file>${user.home}/fraud/config</file>
+                            </files>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+
             <plugin>
                 <groupId>com.mysema.querydsl</groupId>
                 <artifactId>querydsl-maven-plugin</artifactId>
@@ -87,9 +110,9 @@
                 </executions>
                 <configuration>
                     <jdbcDriver>com.mysql.jdbc.Driver</jdbcDriver>
-                    <jdbcUrl>jdbc:mysql://localhost/dirty</jdbcUrl>
-                    <jdbcUser>cs261</jdbcUser>
-                    <jdbcPassword>pass</jdbcPassword>
+                    <jdbcUrl>${jdbc.url}</jdbcUrl>
+                    <jdbcUser>${jdbc.username}</jdbcUser>
+                    <jdbcPassword>${jdbc.password}</jdbcPassword>
                     <packageName>team16.cs261.common.querydsl.entity</packageName>
                     <targetFolder>${project.basedir}/target/generated-sources/java</targetFolder>
                     <exportBeans>true</exportBeans>

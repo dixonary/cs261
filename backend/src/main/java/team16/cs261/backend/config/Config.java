@@ -112,12 +112,9 @@ public class Config {
     public static class Analysis {
 
         public final Interval interval;
-        public final Comms comms;
-
         @Autowired
-        public Analysis(Interval interval, Comms comms) {
+        public Analysis(Interval interval) {
             this.interval = interval;
-            this.comms = comms;
         }
     }
 
@@ -130,21 +127,6 @@ public class Config {
                 @Value("${analysis.interval.length}") int length
         ) {
             this.length=length;
-        }
-    }
-
-    @Component
-    public static class Comms {
-        public final int intervals;
-        public final float threshold;
-
-        @Autowired
-        public Comms(
-                @Value("${analysis.comms.intervals}") int intervals,
-                @Value("${analysis.comms.threshold}") float threshold
-        ) {
-            this.intervals = intervals;
-            this.threshold = threshold;
         }
     }
 }
