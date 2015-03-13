@@ -2,18 +2,18 @@ package controllers.data;
 
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.sql.SQLQuery;
-import com.mysema.query.support.Expressions;
-import com.mysema.query.types.*;
+import com.mysema.query.types.Expression;
+import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.Predicate;
+import com.mysema.query.types.Projections;
 import com.mysema.query.types.expr.ComparableExpressionBase;
 import com.mysema.query.types.expr.StringExpression;
-import models.TradeDto;
 import org.springframework.stereotype.Controller;
 import team16.cs261.common.querydsl.entity.*;
 import util.datatables.Column;
 import util.datatables.DataTable;
 import util.datatables.Selection;
 import util.datatables.filters.ColumnFilter;
-import util.datatables.filters.IdFilter;
 import util.datatables.filters.TimeFilter;
 
 import javax.annotation.PostConstruct;
@@ -107,11 +107,6 @@ public class LogTable extends DataTable<Log> {
 
     @Override
     public Expression<Log> getProjection() {
-/*        return Projections.constructor(
-                FactorDto.class, f.id, f.tick, t.start, f.factor, e.id, f.value, f.centile, f.sig
-        );*/
-
-
         return Projections.bean(
                 Log.class,
                 l.id, l.time, l.type, l.message
