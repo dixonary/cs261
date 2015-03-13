@@ -61,6 +61,7 @@ function DTModel(id, options) {
             }
         });
 
+
     };
 
 
@@ -105,7 +106,7 @@ function DTModel(id, options) {
                 //data.order = []
 
                 $.each(self.columns, function (index, column) {
-                    data.columns[index].search.search = column.filter();
+                    //data.columns[index].search.search = column.filter();
 
                     console.log("col: " + index + " name: " + column.name + " filter: " + column.filter());
                 });
@@ -173,6 +174,8 @@ function DTModel(id, options) {
         $(id + '_length').find("> label > select").removeClass("input-sm")
 
         $(id + '_export').click(self.openExportUrl)
+
+        self.applyFilters();
     };
 
 
@@ -198,6 +201,8 @@ function DTModel(id, options) {
     };
 
     self.applyFilters = function () {
+        console.log("applying filters");
+
         var catalog = $(id).DataTable();
         //catalog.fnFilter(self.emailFilter(), 0);
 
