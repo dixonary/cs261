@@ -9,10 +9,10 @@ import com.mysema.query.types.Projections;
 import com.mysema.query.types.expr.ComparableExpressionBase;
 import com.mysema.query.types.expr.StringExpression;
 import org.springframework.stereotype.Controller;
-import team16.cs261.common.querydsl.entity.*;
+import team16.cs261.common.querydsl.entity.Log;
+import team16.cs261.common.querydsl.entity.QLog;
 import util.datatables.Column;
 import util.datatables.DataTable;
-import util.datatables.Selection;
 import util.datatables.filters.ColumnFilter;
 import util.datatables.filters.TimeFilter;
 
@@ -45,21 +45,6 @@ public class LogTable extends DataTable<Log> {
 
     @Override
     public Column[] getColumnDefs() {
-
-        QTrader trdr = QTrader.Trader;
-        QSymbol sy = QSymbol.Symbol;
-        QSector se = QSector.Sector;
-
-        List<Selection> traders = template.query(
-                template.newSqlQuery().from(trdr),
-                Projections.constructor(Selection.class, trdr.id, trdr.email));
-        List<Selection> symbols = template.query(
-                template.newSqlQuery().from(sy),
-                Projections.constructor(Selection.class, sy.id, sy.symbol));
-        List<Selection> sectors = template.query(
-                template.newSqlQuery().from(se),
-                Projections.constructor(Selection.class, se.id, se.sector));
-
         return new Column[]{
                 new Column("id"),
                 new Column("time", new TimeFilter(l.time, 1420070400000L, 1427842799999L)),
